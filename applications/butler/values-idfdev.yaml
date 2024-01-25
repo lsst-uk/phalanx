@@ -1,0 +1,7 @@
+image:
+  pullPolicy: Always
+
+config:
+  indexUri: "s3://butler-us-central1-repo-locations/data-dev-repos.yaml"
+  repositoryLabels:
+    - dp02

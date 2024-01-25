@@ -12,9 +12,6 @@ name: ""
 # @default -- None, must be set
 fqdn: ""
 
-# -- UUID of the 1Password item in which to find Vault tokens
-onepasswordUuid: "dg5afgiadsffeklfr6jykqymeu"
-
 # -- URL of the repository for all applications
 repoUrl: https://github.com/lsst-sqre/phalanx.git
 
@@ -22,8 +19,7 @@ repoUrl: https://github.com/lsst-sqre/phalanx.git
 targetRevision: "main"
 
 # -- URL of Vault server for this environment
-# @default -- None, must be set
-vaultUrl: ""
+vaultUrl: "https://vault.lsst.codes/"
 
 # -- Prefix for Vault secrets for this environment
 # @default -- None, must be set
@@ -40,18 +36,33 @@ applications:
   # environments and is present here only because it makes parsing easier
   argocd: true
 
-  # -- Enable the cachemachine application (required by nublado2)
-  cachemachine: false
+  # -- Enable the auxtel control system application
+  auxtel: false
+
+  # -- Enable the butler application
+  butler: false
+
+  # -- Enable the calsys control system application
+  calsys: false
 
   # -- Enable the cert-manager application, required unless the environment
   # makes separate arrangements to inject a current TLS certificate
   cert-manager: true
 
+  # -- Enable the control-system-test application
+  control-system-test: false
+
   # -- Eanble the datalinker application
   datalinker: false
 
+  # -- Enable the eas control system application
+  eas: false
+
   # -- Enable the exposurelog application
   exposurelog: false
+
+  # -- Enable the filestore-backup application
+  filestore-backup: false
 
   # -- Enable the Gafaelfawr application. This is required by Phalanx since
   # most other applications use `GafaelfawrIngress`
@@ -69,6 +80,9 @@ applications:
   # cluster.
   ingress-nginx: true
 
+  # -- Enable the jira-data-proxy application
+  jira-data-proxy: false
+
   # -- Enable the kubernetes-replicator application
   kubernetes-replicator: false
 
@@ -78,11 +92,11 @@ applications:
   # -- Enable the livetap application
   livetap: false
 
+  # -- Enable the love control system application
+  love: false
+
   # -- Enable the mobu application
   mobu: false
-
-  # -- Enable the moneypenny application (required by nublado2)
-  moneypenny: false
 
   # -- Enable the monitoring application
   monitoring: false
@@ -99,12 +113,11 @@ applications:
   # -- Enable the nublado application (v3 of the Notebook Aspect)
   nublado: false
 
-  # -- Enable the nublado2 application (v2 of the Notebook Aspect, now
-  # deprecated). This should not be used for new environments.
-  nublado2: false
+  # -- Enable the obssys control system application
+  obssys: false
 
-  # -- Enable the onepassword-connect-dev application
-  onepassword-connect-dev: false
+  # -- Enable the onepassword-connect application
+  onepassword-connect: false
 
   # -- Enable the ook application
   ook: false
@@ -128,6 +141,18 @@ applications:
 
   # -- Enable the sasquatch application
   sasquatch: false
+
+  # -- Enable the schedview-prenight application
+  schedview-prenight: false
+
+  # -- Enable the schedview-snapshot application
+  schedview-snapshot: false
+
+  # -- Enable the siav2 application
+  siav2: false
+
+  # -- Enable the simonyitel control system application
+  simonyitel: false
 
   # -- Enable the ssotap application
   ssotap: false
@@ -180,9 +205,43 @@ applications:
   # -- Enable the times-square application
   times-square: false
 
+  # -- Enable the uws application. This includes the dmocps control system
+  # application.
+  uws: false
+
   # -- Enable the vault-secrets-operator application. This is required for all
   # environments.
   vault-secrets-operator: true
 
   # -- Enable the vo-cutouts application
   vo-cutouts: false
+
+# The following settings are used for the control system
+controlSystem:
+  # -- Application namespacce for the control system deployment
+  # @default -- None, must be set
+  appNamespace: ""
+
+  # -- Image tag for the control system deployment
+  # @default -- None, must be set
+  imageTag: ""
+
+  # -- Site tag for the control system deployment
+  # @default -- None, must be set
+  siteTag: ""
+
+  # -- Topic name tag for the control system deployment
+  topicName: sal
+
+  # -- Kafka broker address for the control system deployment
+  kafkaBrokerAddress: sasquatch-kafka-brokers.sasquatch:9092
+
+  # -- Kafka topic replication factor for control system topics
+  kafkaTopicReplicationFactor: 3
+
+  # -- Schema registry URL for the control system deployment
+  schemaRegistryUrl: http://sasquatch-schema-registry.sasquatch:8081
+
+  # -- S3 endpoint (LFA) for the control system deployment
+  # @default -- None, must be set: ""
+  s3EndpointUrl: ""

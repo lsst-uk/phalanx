@@ -23,19 +23,19 @@ To learn how to develop applications for Phalanx, see the :doc:`/developers/inde
    :maxdepth: 1
    :caption: Rubin Science Platform
 
-   cachemachine/index
+   butler/index
    datalinker/index
+   filestore-backup/index
    hips/index
    linters/index
    livetap/index
    mobu/index
-   moneypenny/index
    noteburst/index
    nublado/index
-   nublado2/index
    portal/index
    semaphore/index
    sherlock/index
+   siav2/index
    sqlproxy-cross-project/index
    squareone/index
    ssotap/index
@@ -50,12 +50,15 @@ To learn how to develop applications for Phalanx, see the :doc:`/developers/inde
    argo-workflows/index
    alert-stream-broker/index
    exposurelog/index
+   jira-data-proxy/index
    narrativelog/index
    obsloctap/index
    plot-navigator/index
    production-tools/index
    rubintv/index
    sasquatch/index
+   schedview-prenight/index
+   schedview-snapshot/index
    strimzi/index
    strimzi-access-operator/index
    telegraf/index
@@ -68,7 +71,7 @@ To learn how to develop applications for Phalanx, see the :doc:`/developers/inde
    giftless/index
    kubernetes-replicator/index
    monitoring/index
-   onepassword-connect-dev/index
+   onepassword-connect/index
    ook/index
    squarebot/index
 
@@ -81,3 +84,16 @@ To learn how to develop applications for Phalanx, see the :doc:`/developers/inde
    prompt-proto-service-latiss/index
    prompt-proto-service-lsstcam/index
    prompt-proto-service-lsstcomcam/index
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Rubin Observatory Control System
+
+   auxtel/index
+   calsys/index
+   control-system-test/index
+   eas/index
+   love/index
+   obssys/index
+   simonyitel/index
+   uws/index

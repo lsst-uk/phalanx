@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import binascii
 from base64 import b64decode
 from collections import defaultdict
 from dataclasses import dataclass, field
@@ -9,7 +10,13 @@ from dataclasses import dataclass, field
 import yaml
 from pydantic import SecretStr
 
-from ..exceptions import NoOnepasswordConfigError, UnresolvedSecretsError
+from ..constants import ONEPASSWORD_ENCODED_WARNING
+from ..exceptions import (
+    MalformedOnepasswordSecretError,
+    MissingOnepasswordSecretsError,
+    NoOnepasswordConfigError,
+    UnresolvedSecretsError,
+)
 from ..models.environments import Environment
 from ..models.secrets import (
     PullSecret,
@@ -51,7 +58,8 @@ class SecretsAuditReport:
             report += "Missing secrets:\n• " + secrets + "\n"
         if self.mismatch:
             secrets = "\n• ".join(sorted(self.mismatch))
-            report += "Incorrect secrets:\n• " + secrets + "\n"
+            heading = "Secrets that do not have their expected value:"
+            report += f"{heading}\n• " + secrets + "\n"
         if self.unknown:
             secrets = "\n• ".join(sorted(self.unknown))
             report += "Unknown secrets in Vault:\n• " + secrets + "\n"
@@ -102,7 +110,11 @@ class SecretsService:
         """
         environment = self._config.load_environment(env_name)
         if not static_secrets:
-            static_secrets = self._get_onepassword_secrets(environment)
+            try:
+                static_secrets = self._get_onepassword_secrets(environment)
+            except MissingOnepasswordSecretsError as e:
+                heading = "Missing static secrets from 1Password:"
+                return f"{heading}\n• " + "\n• ".join(e.secrets) + "\n"
         vault_client = self._vault.get_vault_client(environment)
         pull_secret = static_secrets.pull_secret if static_secrets else None
 
@@ -126,8 +138,6 @@ class SecretsService:
         # Generate the textual report.
         return report.to_text()
 
-        # Generate the textual report.
-
     def generate_static_template(self, env_name: str) -> str:
         """Generate a template for providing static secrets.
 
@@ -147,17 +157,21 @@ class SecretsService:
             YAML template the user can fill out, as a string.
         """
         environment = self._config.load_environment(env_name)
+        warning = ONEPASSWORD_ENCODED_WARNING
         template: defaultdict[str, dict[str, StaticSecret]] = defaultdict(dict)
         for application in environment.all_applications():
             for secret in application.all_static_secrets():
-                template[secret.application][secret.key] = StaticSecret(
+                static_secret = StaticSecret(
                     description=YAMLFoldedString(secret.description),
                     value=None,
                 )
+                if secret.onepassword.encoded:
+                    static_secret.warning = YAMLFoldedString(warning)
+                template[secret.application][secret.key] = static_secret
         static_secrets = StaticSecrets(
             applications=template, pull_secret=PullSecret()
         )
-        return yaml.dump(static_secrets.model_dump(by_alias=True), width=70)
+        return yaml.dump(static_secrets.to_template(), width=70)
 
     def get_onepassword_static_secrets(self, env_name: str) -> StaticSecrets:
         """Retrieve static secrets for an environment from 1Password.
@@ -240,7 +254,9 @@ class SecretsService:
 
         # Replace any Vault secrets that are incorrect.
         self._sync_application_secrets(vault_client, vault_secrets, resolved)
+        has_pull_secret = False
         if resolved.pull_secret and resolved.pull_secret.registries:
+            has_pull_secret = True
             pull_secret = resolved.pull_secret
             self._sync_pull_secret(vault_client, vault_secrets, pull_secret)
 
@@ -250,7 +266,7 @@ class SecretsService:
                 vault_client,
                 vault_secrets,
                 resolved,
-                has_pull_secret=resolved.pull_secret is not None,
+                has_pull_secret=has_pull_secret,
             )
 
     def _audit_secrets(
@@ -293,7 +309,7 @@ class SecretsService:
         ]
 
         # The pull-secret has to be handled separately.
-        if pull_secret:
+        if pull_secret and pull_secret.registries:
             if "pull-secret" in vault_secrets:
                 value = SecretStr(pull_secret.to_dockerconfigjson())
                 expected = {".dockerconfigjson": value}
@@ -330,7 +346,7 @@ class SecretsService:
         has_pull_secret
             Whether there should be a pull secret for this environment.
         """
-        for application, values in vault_secrets.items():
+        for application, values in sorted(vault_secrets.items()):
             if application not in resolved.applications:
                 if application == "pull-secret" and has_pull_secret:
                     continue
@@ -345,6 +361,37 @@ class SecretsService:
                 vault_client.store_application_secret(application, values)
                 for key in sorted(to_delete):
                     print("Deleted Vault secret for", application, key)
+
+    def _decode_base64_secret(
+        self, application: str, key: str, value: SecretStr
+    ) -> SecretStr:
+        """Decode a secret value that was encoded in base64.
+
+        Parameters
+        ----------
+        application
+            Name of the application owning the secret, for error reporting.
+        key
+            Key of the secret, for error reporting.
+        value
+            Value of the secret.
+
+        Returns
+        -------
+        pydantic.SecretStr or None
+            Decoded value of the secret.
+
+        Raises
+        ------
+        MalformedOnepasswordSecretError
+            Raised if the secret could not be decoded.
+        """
+        try:
+            secret = value.get_secret_value()
+            return SecretStr(b64decode(secret.encode()).decode())
+        except (binascii.Error, UnicodeDecodeError) as e:
+            msg = "value could not be base64-decoded to a valid secret string"
+            raise MalformedOnepasswordSecretError(application, key, msg) from e
 
     def _get_onepassword_secrets(
         self, environment: Environment
@@ -364,6 +411,11 @@ class SecretsService:
 
         Raises
         ------
+        MalformedOnepasswordSecretError
+            Raised if the secret could not be decoded.
+        MissingOnepasswordSecretsError
+            Raised if any of the items or fields expected to be in 1Password
+            are not present.
         NoOnepasswordCredentialsError
             Raised if the environment uses 1Password but no 1Password
             credentials were available in the environment.
@@ -375,6 +427,8 @@ class SecretsService:
         encoded = {}
         for application in environment.all_applications():
             static_secrets = application.all_static_secrets()
+            if not static_secrets:
+                continue
             query[application.name] = [s.key for s in static_secrets]
             encoded[application.name] = {
                 s.key for s in static_secrets if s.onepassword.encoded
@@ -386,8 +440,9 @@ class SecretsService:
             for key in secrets:
                 secret = result.applications[app_name][key]
                 if secret.value:
-                    value = secret.value.get_secret_value().encode()
-                    secret.value = SecretStr(b64decode(value).decode())
+                    secret.value = self._decode_base64_secret(
+                        app_name, key, secret.value
+                    )
         return result
 
     def _resolve_secrets(

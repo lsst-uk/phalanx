@@ -1,12 +1,21 @@
-name: roundtable-prod
-fqdn: roundtable.lsst.cloud
-vaultUrl: "https://vault.lsst.codes"
-vaultPathPrefix: secret/k8s_operator/roundtable.lsst.cloud
+name: "roundtable-prod"
+fqdn: "roundtable.lsst.cloud"
+gcp:
+  projectId: "roundtable-prod-f6fd"
+  region: "us-central1"
+  clusterName: "roundtable-prod"
+onepassword:
+  connectUrl: "https://roundtable.lsst.cloud/1password"
+  vaultTitle: "RSP roundtable.lsst.cloud"
+vaultPathPrefix: "secret/phalanx/roundtable-prod"
 
 applications:
+  giftless: true
   kubernetes-replicator: true
+  onepassword-connect: true
   ook: true
   sasquatch: true
   squareone: true
   strimzi: true
   strimzi-access-operator: true
+  squarebot: true

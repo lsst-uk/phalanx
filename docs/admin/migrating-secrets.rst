@@ -5,7 +5,8 @@ Migrating to the new secrets management system
 We introduced a new command-line-driven secrets management system for Phalanx environments in September of 2023.
 This page documents how to migrate to the new system from the older scripts in :file:`installer`.
 
-These instructions assume that, if you are using 1Password for static secrets, you have already set up a 1Password vault and corresponding :px-app:`1Password Connect server <onepassword-connect-dev>` for this environment, but that vault may be empty.
+These instructions assume that, if you are using 1Password for static secrets, you have already set up a 1Password vault and enabled the :px-app:`1Password Connect server <onepassword-connect>` for this environment.
+If you have not yet done this, see :doc:`/applications/onepassword-connect/add-new-environment`.
 
 In all :command:`phalanx` commands listed below, replace ``<environment>`` with the short identifier of your environment.
 
@@ -51,7 +52,7 @@ The new secret management system uses Vault AppRoles instead, which are the reco
    If you are using some other Vault server with its own path conventions, you can skip this step, although it is easier to do the migration if you can set up the new secrets in a new Vault path without having to change the old Vault path.
 
 #. Set the ``VAULT_TOKEN`` environment variable to a token with access to create new AppRoles and tokens and to list token accessors and secret IDs.
-   If you are using the SQuaRE Vault server, use the admin token.
+   If you are using the SQuaRE Vault server, use the admin token from the ``Phalanx Vault admin credentials`` 1Password item in the SQuaRE 1Password vault.
    This environment variable will be used for multiple following commands.
    You will be told when you can clear it again.
 
@@ -84,7 +85,7 @@ The new secret management system uses Vault AppRoles instead, which are the reco
 
    The new token will be printed to standard output along with some metadata about it.
 
-   For SQuaRE-managed environments, save that token in the ``SQuaRE`` 1Password vault (**not** the vault for the RSP environment) in the item named ``RSP Vault write tokens``.
+   For SQuaRE-managed environments, save that token in the ``SQuaRE`` 1Password vault (**not** the vault for the RSP environment) in the item named ``Phalanx Vault write tokens``.
    Add a key for the short environment identifier and set the value to the newly-created write token.
    Don't forget to mark it as a password using the icon on the right.
    Then, add a key under the :guilabel:`Accessors` heading for the environment and set the value to the token accessor.
@@ -100,6 +101,7 @@ The new secret management system uses Vault AppRoles instead, which are the reco
       phalanx vault audit <environment>
 
    This command will print diagnostics if it finds any problems.
+   You will still need ``VAULT_TOKEN`` set to a privileged token to run this command.
 
 Update secrets
 ==============
@@ -155,7 +157,7 @@ Update secrets
    Replace ``<vault-path>`` with the value of ``vaultPathPrefix`` in :file:`environments/values-{environment}.yaml` for your environment.
 
 #. If you are using 1Password as the source for static secrets, set ``OP_CONNECT_TOKEN`` to the 1Password Connect token for this environment.
-   For SQuaRE-managed environments, this can be found in the :guilabel:`RSP 1Password tokens` item in the :guilabel:`SQuaRE` 1Password vault.
+   For SQuaRE-managed environments, this can be found in the ``RSP 1Password tokens`` item in the SQuaRE 1Password vault.
 
 #. Check what secrets are missing or incorrect and fix them.
 
@@ -192,6 +194,16 @@ Switch to the new secrets tree
 
    If you are using a static secrets file, add the ``--secrets`` flag pointing to that file.
    This will fix any secrets that are missing or incorrect in Vault.
+
+#. Some Phalanx applications need to know whether the old or new secrets layout is in use.
+   On your working branch, add the necessary settings for those applications to their :file:`values-{environment}.yaml` files for your environment.
+   Applications to review:
+
+   - :px-app:`datalinker` (``config.separateSecrets``)
+   - :px-app:`nublado` (``secrets.templateSecrets``)
+   - :px-app:`obsloctap` (``config.separateSecrets``)
+   - :px-app:`plot-navigator` (``config.separateSecrets``)
+   - :px-app:`production-tools` (``config.separateSecrets``)
 
 #. You're now ready to test the new secrets tree.
    You can do this on a branch that contains the changes you made above.

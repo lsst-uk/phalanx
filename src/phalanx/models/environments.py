@@ -8,6 +8,7 @@ from pydantic import (
     AnyHttpUrl,
     BaseModel,
     ConfigDict,
+    Field,
     GetJsonSchemaHandler,
     field_validator,
 )
@@ -19,10 +20,12 @@ from .applications import Application, ApplicationInstance
 from .secrets import Secret
 
 __all__ = [
+    "ControlSystemConfig",
     "Environment",
     "EnvironmentBaseConfig",
     "EnvironmentConfig",
     "EnvironmentDetails",
+    "GCPMetadata",
     "GafaelfawrGitHubGroup",
     "GafaelfawrGitHubTeam",
     "GafaelfawrScope",
@@ -32,33 +35,174 @@ __all__ = [
 ]
 
 
+class GCPMetadata(CamelCaseModel):
+    """Google Cloud Platform hosting metadata.
+
+    Holds information about where in Google Cloud Platform this Phalanx
+    environment is hosted. This supports generating documentation that
+    includes this metadata, making it easier for administrators to know what
+    options to pass to :command:`gcloud` to do things such as get Kubernetes
+    credentials.
+    """
+
+    project_id: str = Field(
+        ...,
+        title="GCP project ID",
+        description="Project ID of GCP project hosting this environment",
+    )
+
+    region: str = Field(
+        ...,
+        title="GCP region",
+        description="GCP region in which this environment is hosted",
+    )
+
+    cluster_name: str = Field(
+        ...,
+        title="Kubernetes cluster name",
+        description="Name of the GKE cluster hosting this environment",
+    )
+
+
 class OnepasswordConfig(CamelCaseModel):
     """Configuration for 1Password static secrets source."""
 
-    connect_url: AnyHttpUrl
-    """URL to the 1Password Connect API server."""
+    connect_url: AnyHttpUrl = Field(
+        ...,
+        title="1Password Connect URL",
+        description="URL to the 1Password Connect API server",
+    )
 
-    vault_title: str
-    """Title of the 1Password vault from which to retrieve secrets."""
+    vault_title: str = Field(
+        ...,
+        title="1Password vault title",
+        description=(
+            "Title of the 1Password vault from which to retrieve secrets"
+        ),
+    )
+
+
+class ControlSystemConfig(CamelCaseModel):
+    """Configuration for the Control System."""
+
+    app_namespace: str | None = Field(
+        None,
+        title="Application Namespace",
+        description=(
+            "Set the namespace for the control system components. Each control"
+            " system application consists of many components that need to know"
+            " what namespace to which they belong."
+        ),
+    )
+
+    image_tag: str | None = Field(
+        None,
+        title="Image Tag",
+        description=("The image tag to use for control system images."),
+    )
+
+    site_tag: str | None = Field(
+        None,
+        title="Site Tag",
+        description=(
+            "The tag that tells the control system component where it is"
+            " running."
+        ),
+    )
+
+    topic_name: str | None = Field(
+        None,
+        title="Topic Identifier",
+        description="The Kafka identifier for control system topics.",
+    )
+
+    kafka_broker_address: str | None = Field(
+        None,
+        title="Kafka Broker Address",
+        description=(
+            "The Kafka broker address for the control system components."
+        ),
+    )
+
+    kafka_topic_replication_factor: int | None = Field(
+        None,
+        title="Kafka Topic Replication Factor",
+        description=(
+            "The Kafka topic replication factor for control system components."
+        ),
+    )
+
+    schema_registry_url: str | None = Field(
+        None,
+        title="Schema Registry URL",
+        description=(
+            "The Schema Registry URL for the control system components."
+        ),
+    )
+
+    s3_endpoint_url: str | None = Field(
+        None,
+        title="S3 Endpoint URL",
+        description="The S3 URL for the environment specific LFA.",
+    )
 
 
 class EnvironmentBaseConfig(CamelCaseModel):
     """Configuration common to `EnviromentConfig` and `Environment`."""
 
-    name: str
-    """Name of the environment."""
+    name: str = Field(..., title="Name", description="Name of the environment")
 
-    fqdn: str
-    """Fully-qualified domain name."""
+    fqdn: str = Field(
+        ...,
+        title="Domain name",
+        description=(
+            "Fully-qualified domain name on which the environment listens"
+        ),
+    )
 
-    onepassword: OnepasswordConfig | None = None
-    """Configuration for using 1Password as a static secrets source."""
+    butler_repository_index: str | None = Field(
+        None,
+        title="Butler repository index URL",
+        description="URL to Butler repository index",
+    )
 
-    vault_url: str
-    """URL of Vault server."""
+    gcp: GCPMetadata | None = Field(
+        None,
+        title="GCP hosting metadata",
+        description=(
+            "If this environment is hosted on Google Cloud Platform,"
+            " metadata about the hosting project, location, and other details."
+            " Used to generate additional environment documentation."
+        ),
+    )
 
-    vault_path_prefix: str
-    """Prefix of Vault paths, including the Kv2 mount point."""
+    onepassword: OnepasswordConfig | None = Field(
+        None,
+        title="1Password configuration",
+        description=(
+            "Configuration for using 1Password as a static secrets source"
+        ),
+    )
+
+    vault_url: AnyHttpUrl | None = Field(
+        None,
+        title="Vault server URL",
+        description=(
+            "URL of the Vault server. This is required in the merged values"
+            " file that includes environment overrides, but the environment"
+            " override file doesn't need to set it, so it's marked as"
+            " optional for schema checking purposes to allow the override"
+            " file to be schema-checked independently."
+        ),
+    )
+
+    vault_path_prefix: str = Field(
+        ...,
+        title="Vault path prefix",
+        description="Prefix of Vault paths, including the KV v2 mount point",
+    )
+
+    control_system: ControlSystemConfig | None = None
 
     @field_validator("onepassword", mode="before")
     @classmethod
@@ -123,38 +267,41 @@ class EnvironmentConfig(EnvironmentBaseConfig):
     environment and is also used to validate those files. For the complete
     configuration for an environment, initialize this model with the merger of
     :file:`values.yaml` and :file:`values-{environment}.yaml`.
+
+    Fields listed here are not available to application linting. If the field
+    value has to be injected during linting, the field needs to be defined in
+    `EnvironmentBaseConfig` instead.
     """
 
-    applications: dict[str, bool]
-    """List of applications and whether they are enabled."""
+    applications: dict[str, bool] = Field(
+        ...,
+        title="Enabled applications",
+        description="List of applications and whether they are enabled",
+    )
 
-    butler_repository_index: str | None = None
-    """URL to Butler repository index."""
+    repo_url: str | None = Field(
+        None,
+        title="URL of Git repository",
+        description=(
+            "URL of the Git repository holding Argo CD configuration. This is"
+            " required in the merged values file that includes environment"
+            " overrides, but the environment override file doesn't need to"
+            " set it, so it's marked as optional for schema checking purposes"
+            " to allow the override file to be schema-checked independently."
+        ),
+    )
 
-    onepassword_uuid: str | None = None
-    """UUID of 1Password item in which to find Vault tokens.
-
-    This is used only by the old installer and will be removed once the new
-    secrets management and 1Password integration is deployed everywhere.
-    """
-
-    repo_url: str | None = None
-    """URL of the Git repository holding Argo CD configuration.
-
-    This is required in the merged values file that includes environment
-    overrides, but the environment override file doesn't need to set it, so
-    it's marked as optional for schema checking purposes to allow the override
-    file to be schema-checked independently.
-    """
-
-    target_revision: str | None = None
-    """Branch of the Git repository holding Argo CD configuration.
-
-    This is required in the merged values file that includes environment
-    overrides, but the environment override file doesn't need to set it, so
-    it's marked as optional for schema checking purposes to allow the override
-    file to be schema-checked independently.
-    """
+    target_revision: str | None = Field(
+        None,
+        title="Git repository branch",
+        description=(
+            "Branch of the Git repository holding Argo CD configuration. This"
+            " is required in the merged values file that includes environment"
+            " overrides, but the environment override file doesn't need to set"
+            " it, so it's marked as optional for schema checking purposes to"
+            " allow the override file to be schema-checked independently."
+        ),
+    )
 
     model_config = ConfigDict(extra="forbid")
 

@@ -23,7 +23,7 @@ You will likely need to make changes to Phalanx and create pull requests, so you
 
 Members of the `lsst-sqre/phalanx`_ repository on GitHub can clone the repository directly and create a ticket branch, per the `Data Management workflow guide`_.
 
-Otherwise, fork lsst-sqre/phalanx `following GitHub's guide <https://docs.github.com/en/get-started/quickstart/fork-a-repo>`__.
+Otherwise, fork lsst-sqre/phalanx `following GitHub's guide <https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/fork-a-repo>`__.
 
 .. _about-venv:
 
@@ -79,9 +79,7 @@ Install helm
 
 Some Phalanx commands require Helm (v3 or later) to be available on your PATH.
 Any version of Helm after v3 should be okay.
-You therefore must have it installed on your PATH.
-
-See the `Helm installation guide <https://helm.sh/docs/intro/install/>`__ for more details.
+See the `Helm installation guide <https://helm.sh/docs/intro/install/>`__ for installation instructions.
 
 If you don't want to (or don't have access to) install helm globally on your system, you can put the binary in the :file:`bin` directory of the virtual environment you created in :ref:`about-venv`.
 

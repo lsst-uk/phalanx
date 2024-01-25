@@ -1,13 +1,10 @@
 name: ccin2p3
 fqdn: data-dev.lsst.eu
-vaultUrl: "https://vault.lsst.codes"
 vaultPathPrefix: secret/k8s_operator/rsp-cc
 
 applications:
-  cachemachine: true
   datalinker: true
-  moneypenny: true
-  nublado2: true
+  nublado: true
   portal: true
   postgres: true
   squareone: true

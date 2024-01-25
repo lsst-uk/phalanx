@@ -1,8 +1,14 @@
+name: "idfprod"
+fqdn: "data.lsst.cloud"
 butlerRepositoryIndex: "s3://butler-us-central1-repo-locations/data-repos.yaml"
-fqdn: data.lsst.cloud
-name: idfprod
-vaultUrl: "https://vault.lsst.codes"
-vaultPathPrefix: secret/k8s_operator/data.lsst.cloud
+gcp:
+  projectId: "science-platform-stable-6994"
+  region: "us-central1"
+  clusterName: "science-platform-stable"
+onepassword:
+  connectUrl: "https://roundtable.lsst.cloud/1password"
+  vaultTitle: "RSP data.lsst.cloud"
+vaultPathPrefix: "secret/phalanx/idfprod"
 
 applications:
   datalinker: true
@@ -10,9 +16,9 @@ applications:
   mobu: true
   nublado: true
   portal: true
-  postgres: true
   semaphore: true
   sherlock: true
+  siav2: true
   squareone: true
   ssotap: true
   tap: true
