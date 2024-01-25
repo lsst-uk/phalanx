@@ -2,16 +2,12 @@
 cluster:
   # -- Name used for the Kafka cluster, and used by Strimzi for many annotations.
   name: sasquatch
-  # -- Site wide label required for gathering Prometheus metrics if they are enabled.
-  releaseLabel: "site-prom"
 
 kafka:
   # -- Version of Kafka to deploy.
   version: "3.5.1"
   # -- Number of Kafka broker replicas to run.
   replicas: 3
-  # -- Number of down brokers that the system can tolerate.
-  disruption_tolerance: 0
   storage:
     # -- Size of the backing storage disk for each of the Kafka brokers.
     size: 500Gi
@@ -19,11 +15,11 @@ kafka:
     storageClassName: ""
   config:
     # -- Number of minutes for a consumer group's offsets to be retained.
-    offsets.retention.minutes: 2880
+    offsets.retention.minutes: 4320
     # -- Number of days for a topic's data to be retained.
-    log.retention.hours: 48
-    # -- How much disk space Kafka will ensure is available, set to 70% of the data partition size
-    log.retention.bytes: "350000000000"
+    log.retention.hours: 72
+    # -- Maximum retained number of bytes for a topic's data.
+    log.retention.bytes: "429496729600"
     # -- The largest record batch size allowed by Kafka.
     message.max.bytes: 10485760
     # -- The number of bytes of messages to attempt to fetch for each partition.
@@ -31,22 +27,18 @@ kafka:
     # -- Replica lag time can't be smaller than request.timeout.ms configuration in kafka connect.
     replica.lag.time.max.ms: 120000
 
-  metricsConfig:
-    # -- Whether metric configuration is enabled.
-    enabled: false
-
   listeners:
     plain:
       # -- Whether internal plaintext listener is enabled.
-      enabled: false
+      enabled: true
 
     tls:
       # -- Whether internal TLS listener is enabled.
-      enabled: false
+      enabled: true
 
     external:
       # -- Whether external listener is enabled.
-      enabled: false
+      enabled: true
 
   externalListener:
     tls:
@@ -97,20 +89,6 @@ kafka:
   # -- Tolerations for Kafka broker pod assignment.
   tolerations: []
 
-kafkaExporter:
-  # -- Enable Kafka exporter
-  enabled: false
-  # -- Kafka topics to monitor
-  topicRegex: ".*"
-  # -- Consumer groups to monitor
-  groupRegex: ".*"
-  # -- Logging level
-  logging: info
-  # -- Enable Sarama logging for pod
-  enableSaramaLogging: false
-  # -- Resource specification for Kafka exporter
-  resources: {}
-
 zookeeper:
   # -- Number of Zookeeper replicas to run.
   replicas: 3
@@ -119,10 +97,6 @@ zookeeper:
     size: 100Gi
     # -- Name of a StorageClass to use when requesting persistent volumes.
     storageClassName: ""
-
-  metricsConfig:
-    # -- Whether metric configuration is enabled.
-    enabled: false
 
   # -- Affinity for Zookeeper pod assignment.
   affinity:
@@ -141,16 +115,11 @@ zookeeper:
 
 connect:
   # -- Enable Kafka Connect.
-  enabled: false
+  enabled: true
   # -- Custom strimzi-kafka image with connector plugins used by sasquatch.
   image: ghcr.io/lsst-sqre/strimzi-0.36.1-kafka-3.5.1:tickets-dm-40655
   # -- Number of Kafka Connect replicas to run.
   replicas: 3
-  config:
-    # -- Set the converter for the message key
-    key.converter: io.confluent.connect.avro.AvroConverter
-    # -- Enable converted schemas for the message key
-    key.converter.schemas.enable: true
 
 registry:
   ingress:
@@ -170,28 +139,28 @@ superusers:
 
 users:
   replicator:
-    # -- Enable user replicator (used by Mirror Maker 2 and required at both source and target clusters)
+    # -- Enabled user replicator (used by Mirror Maker 2 and required at both source and target clusters)
     enabled: false
 
   tsSalKafka:
-    # -- Enable user ts-salkafka, used at the telescope environments
-    enabled: false
+    # -- Enable user ts-salkafka.
+    enabled: true
 
   kafdrop:
     # -- Enable user Kafdrop (deployed by parent Sasquatch chart).
-    enabled: false
+    enabled: true
 
   telegraf:
     # -- Enable user telegraf (deployed by parent Sasquatch chart)
-    enabled: false
+    enabled: true
 
   promptProcessing:
     # -- Enable user prompt-processing
-    enabled: false
+    enabled: true
 
   kafkaConnectManager:
     # -- Enable user kafka-connect-manager
-    enabled: false
+    enabled: true
 
 mirrormaker2:
   # -- Enable replication in the target (passive) cluster.

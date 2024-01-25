@@ -107,7 +107,7 @@ def test_copy_secrets(
 
     result = run_cli("vault", "copy-secrets", "idfdev", old_path)
     assert result.exit_code == 0
-    assert result.output == read_output_data("idfdev", "copy-output")
+    assert result.output == ""
     result = run_cli("vault", "export-secrets", "idfdev", str(tmp_path))
     assert result.exit_code == 0
     assert result.output == ""

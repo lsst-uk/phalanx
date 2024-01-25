@@ -5,28 +5,21 @@ prompt-proto-service:
     revision: "12"
 
   image:
+    repository: ghcr.io/lsst-dm/prompt-proto-service
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the chart appVersion.
-    tag: d_2023_12_18
+    tag: d_2023_09_22
 
   instrument:
     pipelines: >-
-      (survey="AUXTEL_PHOTO_IMAGING")=[${PROMPT_PROCESSING_DIR}/pipelines/LATISS/ApPipe.yaml,
-      ${PROMPT_PROCESSING_DIR}/pipelines/LATISS/SingleFrame.yaml,
-      ${PROMPT_PROCESSING_DIR}/pipelines/LATISS/Isr.yaml]
-      (survey="AUXTEL_DRP_IMAGING")=[${PROMPT_PROCESSING_DIR}/pipelines/LATISS/ApPipe.yaml,
-      ${PROMPT_PROCESSING_DIR}/pipelines/LATISS/SingleFrame.yaml,
-      ${PROMPT_PROCESSING_DIR}/pipelines/LATISS/Isr.yaml]
-      (survey="spec")=[]
-      (survey="spec-survey")=[]
-      (survey="spec_with_rotation")=[]
-      (survey="spec_bright")=[]
-      (survey="spec_bright_with_rotation")=[]
-      (survey="spec_pole")=[]
-      (survey="spec_pole_with_rotation")=[]
-      (survey="")=[]
-    calibRepo: s3://rubin-summit-users
-    calibRepoPguser: rubin
+      (survey="AUXTEL_PHOTO_IMAGING")=[${PROMPT_PROTOTYPE_DIR}/pipelines/LATISS/ApPipe.yaml,
+      ${PROMPT_PROTOTYPE_DIR}/pipelines/LATISS/SingleFrame.yaml,
+      ${PROMPT_PROTOTYPE_DIR}/pipelines/LATISS/Isr.yaml]
+      (survey="AUXTEL_DRP_IMAGING")=[${PROMPT_PROTOTYPE_DIR}/pipelines/LATISS/ApPipe.yaml,
+      ${PROMPT_PROTOTYPE_DIR}/pipelines/LATISS/SingleFrame.yaml,
+      ${PROMPT_PROTOTYPE_DIR}/pipelines/LATISS/Isr.yaml]
+      (survey="spec")=[] (survey="spec_with_rotation")=[] (survey="spec_bright")=[] (survey="spec_bright_with_rotation")=[] (survey="spec_pole")=[] (survey="spec_pole_with_rotation")=[] (survey="")=[]
+    calibRepo: /app/butler
 
   s3:
     imageBucket: rubin-summit
@@ -35,13 +28,14 @@ prompt-proto-service:
   imageNotifications:
     kafkaClusterAddress: prompt-processing-kafka-bootstrap.kafka:9092
     topic: rubin-prompt-processing-prod
-    # Scheduler adds an extra 60-80-second delay for first visit in a sequence,
-    # and files can take up to 20 seconds to arrive. Scheduler delay associated
-    # with CWFS engineering data, should not apply to other cameras.
-    imageTimeout: '110'
 
   apdb:
     url: postgresql://rubin@usdf-prompt-processing.slac.stanford.edu:5432/lsst-devl
+    ip: usdf-prompt-processing.slac.stanford.edu:5432  # TODO: remove on DM-40839
+
+  registry:
+    ip: usdf-butler.slac.stanford.edu:5432  # TODO: remove on DM-40839
+    centralRepoFile: true
 
   logLevel: lsst.resources=DEBUG
 

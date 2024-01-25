@@ -2,12 +2,11 @@ controller:
   googleServiceAccount: "nublado-controller@science-platform-dev-7696.iam.gserviceaccount.com"
   slackAlerts: true
   config:
-    logLevel: "DEBUG"
+    safir:
+      logLevel: "DEBUG"
     fileserver:
       enabled: true
-      volumeMounts:
-        - containerPath: "/home"
-          volumeName: "home"
+      timeout: 43200
     images:
       source:
         type: "google"
@@ -15,6 +14,10 @@ controller:
         projectId: "rubin-shared-services-71ec"
         repository: "sciplat"
         image: "sciplat-lab"
+      recommendedTag: "recommended"
+      numReleases: 1
+      numWeeklies: 2
+      numDailies: 3
     lab:
       env:
         AUTO_REPO_SPECS: "https://github.com/lsst-sqre/system-test@prod,https://github.com/rubin-dp0/tutorial-notebooks@prod"
@@ -24,14 +27,17 @@ controller:
         GOOGLE_APPLICATION_CREDENTIALS: "/opt/lsst/software/jupyterlab/secrets/butler-gcs-idf-creds.json"
         S3_ENDPOINT_URL: "https://storage.googleapis.com"
       initContainers:
-        - name: "inithome"
-          image:
-            repository: "ghcr.io/lsst-sqre/nublado-inithome"
-            tag: "4.0.2"
+        - name: "initdir"
+          image: "ghcr.io/lsst-sqre/initdir:0.0.4"
           privileged: true
-          volumeMounts:
+          volumes:
             - containerPath: "/home"
-              volumeName: "home"
+              mode: "rw"
+              source:
+                type: nfs
+                serverPath: "/share1/home"
+                server: "10.87.86.26"
+
       secrets:
         - secretName: "nublado-lab-secret"
           secretKey: "aws-credentials.ini"
@@ -42,37 +48,28 @@ controller:
         - secretName: "nublado-lab-secret"
           secretKey: "postgres-credentials.txt"
       volumes:
-        - name: "home"
+        - containerPath: "/home"
+          mode: "rw"
           source:
             type: nfs
             serverPath: "/share1/home"
             server: "10.87.86.26"
-        - name: "project"
+        - containerPath: "/project"
+          mode: "rw"
           source:
             type: nfs
             serverPath: "/share1/project"
             server: "10.87.86.26"
-        - name: "scratch"
+        - containerPath: "/scratch"
+          mode: "rw"
           source:
             type: nfs
             serverPath: "/share1/scratch"
             server: "10.87.86.26"
-      volumeMounts:
-        - containerPath: "/home"
-          volumeName: "home"
-        - containerPath: "/project"
-          volumeName: "project"
-        - containerPath: "/scratch"
-          volumeName: "scratch"
 jupyterhub:
   hub:
     db:
-      url: "postgresql://nublado@cloud-sql-proxy.nublado/nublado"
-hub:
-  internalDatabase: false
-cloudsql:
-  enabled: true
-  instanceConnectionName: "science-platform-dev-7696:us-central1:science-platform-dev-e9e11de2"
-  serviceAccount: "nublado@science-platform-dev-7696.iam.gserviceaccount.com"
+      url: "postgresql://nublado3@postgres.postgres/nublado3"
+
 secrets:
   templateSecrets: true

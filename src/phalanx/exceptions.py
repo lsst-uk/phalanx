@@ -13,9 +13,6 @@ __all__ = [
     "InvalidApplicationConfigError",
     "InvalidEnvironmentConfigError",
     "InvalidSecretConfigError",
-    "MalformedOnepasswordSecretError",
-    "MissingOnepasswordSecretsError",
-    "NoOnepasswordConfigError",
     "NoOnepasswordCredentialsError",
     "UnknownEnvironmentError",
     "UnresolvedSecretsError",
@@ -59,8 +56,6 @@ class HelmFailedError(Exception):
         args_str = " ".join(args)
         msg = f"helm {command} {args_str} failed with status {exc.returncode}"
         super().__init__(msg)
-        self.stdout = exc.stdout
-        self.stderr = exc.stderr
 
 
 class InvalidApplicationConfigError(Exception):
@@ -118,46 +113,6 @@ class InvalidSecretConfigError(Exception):
     def __init__(self, application: str, key: str, error: str) -> None:
         name = f"{application}/{key}"
         msg = f"Invalid configuration for secret {name}: {error}"
-        super().__init__(msg)
-
-
-class MalformedOnepasswordSecretError(Exception):
-    """A secret stored in 1Password was malformed.
-
-    The most common cause of this error is that the secret was marked as
-    encoded in base64 but couldn't be decoded.
-
-    Parameters
-    ----------
-    application
-        Name of the application.
-    key
-        Secret key.
-    error
-        Error message.
-    """
-
-    def __init__(self, application: str, key: str, error: str) -> None:
-        name = f"{application}/{key}"
-        msg = f"Value of secret {name} is malformed: {error}"
-        super().__init__(msg)
-
-
-class MissingOnepasswordSecretsError(Exception):
-    """Secrets are missing from 1Password.
-
-    Parameters
-    ----------
-    secrets
-        List of strings identifying missing secrets. These will either be a
-        bare application name, indicating the entire application item is
-        missing from 1Password, or the application name followed by a space,
-        indicating the 1Password item doesn't have that field.
-    """
-
-    def __init__(self, secrets: Iterable[str]) -> None:
-        self.secrets = list(secrets)
-        msg = f'Missing 1Password items or fields: {", ".join(self.secrets)}'
         super().__init__(msg)
 
 

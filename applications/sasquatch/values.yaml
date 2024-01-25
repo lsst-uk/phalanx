@@ -1,17 +1,7 @@
 # Default values for Sasquatch.
 
-# -- Override strimzi-kafka subchart configuration.
-strimzi-kafka:
-  kafka:
-    listeners:
-      tls:
-        enabled: true
-      plain:
-        enabled: true
-      external:
-        enabled: true
-  connect:
-    enabled: true
+# -- Override strimzi-kafka configuration.
+strimzi-kafka: {}
 
 # -- strimzi-registry-operator configuration.
 strimzi-registry-operator:
@@ -62,8 +52,8 @@ influxdb:
       max-row-limit: 0
     coordinator:
       write-timeout: "1h"
-      max-concurrent-queries: 1000
-      query-timeout: "30s"
+      max-concurrent-queries: 0
+      query-timeout: "0s"
       log-queries-after: "15s"
     continuous_queries:
       enabled: false
@@ -126,7 +116,7 @@ influxdb-staging:
     coordinator:
       write-timeout: "1h"
       max-concurrent-queries: 0
-      query-timeout: "60s"
+      query-timeout: "0s"
       log-queries-after: "15s"
     continuous_queries:
       enabled: false
@@ -188,8 +178,8 @@ source-influxdb:
       max-row-limit: 0
     coordinator:
       write-timeout: "1h"
-      max-concurrent-queries: 1000
-      query-timeout: "30s"
+      max-concurrent-queries: 0
+      query-timeout: "0s"
       log-queries-after: "15s"
     continuous_queries:
       enabled: false
@@ -209,9 +199,55 @@ source-influxdb:
       memory: 96Gi
       cpu: 8
 
-# -- Override influxdb-enterprise configuration.
-influxdb-enterprise:
+influxdb2:
   enabled: false
+  image:
+    tag: 2.7.1-alpine
+  adminUser:
+    # -- Admin default organization.
+    organization: "default"
+    # -- Admin default bucket.
+    bucket: "default"
+    # -- Get admin-password/admin-token keys from secret.
+    existingSecret: sasquatch
+  persistence:
+    # -- Enable persistent volume claim.
+    # By default storageClass is undefined choosing the default provisioner (standard on GKE).
+    enabled: true
+    # -- Persistent volume size.
+    # @default 1Ti for teststand deployments.
+    size: 1Ti
+  ingress:
+    # -- InfluxDB2 ingress configuration
+    enabled: false
+    hostname: ""
+    annotations:
+      nginx.ingress.kubernetes.io/rewrite-target: /api/v2/$2
+    className: "nginx"
+    path: /influxdb2(/|$)(.*)
+  env:
+    - name: INFLUXD_STORAGE_WAL_FSYNC_DELAY
+      value: "100ms"
+    - name: INFLUXD_HTTP_IDLE_TIMEOUT
+      value: "0"
+    - name: INFLUXD_FLUX_LOG_ENABLED
+      value: "true"
+    - name: INFLUXD_LOG_LEVEL
+      value: "debug"
+  initScripts:
+    # -- InfluxDB2 initialization scripts
+    enabled: true
+    scripts:
+      init.sh: |+
+        #!/bin/bash
+        influx bucket create --name telegraf-kafka-consumer --org default
+  resources:
+    requests:
+      memory: 16Gi
+      cpu: 8
+    limits:
+      memory: 96Gi
+      cpu: 8
 
 # -- Override kafka-connect-manager configuration.
 kafka-connect-manager: {}
@@ -221,10 +257,6 @@ source-kafka-connect-manager:
   enabled: false
   env:
     kafkaConnectUrl: "http://sasquatch-source-connect-api.sasquatch:8083"
-
-# -- Override kafka-connect-manager-enterprise configuration.
-kafka-connect-manager-enterprise:
-  enabled: false
 
 # -- Override telegraf-kafka-consumer configuration.
 telegraf-kafka-consumer: {}
@@ -239,7 +271,7 @@ chronograf:
   # -- Chronograf image tag.
   image:
     repository: "quay.io/influxdb/chronograf"
-    tag: 1.10.2
+    tag: 1.9.4
   # -- Chronograf data persistence configuration.
   persistence:
     enabled: true
@@ -256,6 +288,7 @@ chronograf:
   env:
     HOST_PAGE_DISABLED: true
     BASE_PATH: /chronograf
+    CUSTOM_AUTO_REFRESH: "1s=1000"
   # -- Chronograf secrets, expected keys generic_client_id, generic_client_secret and token_secret.
   envFromSecret: "sasquatch"
   resources:
@@ -272,7 +305,7 @@ source-kapacitor:
   # -- Kapacitor image tag.
   image:
     repository: kapacitor
-    tag: 1.7.1
+    tag: 1.7.0
   # -- Chronograf data persistence configuration.
   persistence:
     enabled: true
@@ -298,7 +331,7 @@ kapacitor:
   # -- Kapacitor image tag.
   image:
     repository: kapacitor
-    tag: 1.7.1
+    tag: 1.7.0
   # -- Chronograf data persistence configuration.
   persistence:
     enabled: true

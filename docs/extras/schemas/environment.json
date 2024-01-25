@@ -1,156 +1,16 @@
 {
   "$defs": {
-    "ControlSystemConfig": {
-      "description": "Configuration for the Control System.",
-      "properties": {
-        "appNamespace": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "Set the namespace for the control system components. Each control system application consists of many components that need to know what namespace to which they belong.",
-          "title": "Application Namespace"
-        },
-        "imageTag": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "The image tag to use for control system images.",
-          "title": "Image Tag"
-        },
-        "siteTag": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "The tag that tells the control system component where it is running.",
-          "title": "Site Tag"
-        },
-        "topicName": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "The Kafka identifier for control system topics.",
-          "title": "Topic Identifier"
-        },
-        "kafkaBrokerAddress": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "The Kafka broker address for the control system components.",
-          "title": "Kafka Broker Address"
-        },
-        "kafkaTopicReplicationFactor": {
-          "anyOf": [
-            {
-              "type": "integer"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "The Kafka topic replication factor for control system components.",
-          "title": "Kafka Topic Replication Factor"
-        },
-        "schemaRegistryUrl": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "The Schema Registry URL for the control system components.",
-          "title": "Schema Registry URL"
-        },
-        "s3EndpointUrl": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "The S3 URL for the environment specific LFA.",
-          "title": "S3 Endpoint URL"
-        }
-      },
-      "title": "ControlSystemConfig",
-      "type": "object"
-    },
-    "GCPMetadata": {
-      "description": "Google Cloud Platform hosting metadata.\n\nHolds information about where in Google Cloud Platform this Phalanx\nenvironment is hosted. This supports generating documentation that\nincludes this metadata, making it easier for administrators to know what\noptions to pass to :command:`gcloud` to do things such as get Kubernetes\ncredentials.",
-      "properties": {
-        "projectId": {
-          "description": "Project ID of GCP project hosting this environment",
-          "title": "GCP project ID",
-          "type": "string"
-        },
-        "region": {
-          "description": "GCP region in which this environment is hosted",
-          "title": "GCP region",
-          "type": "string"
-        },
-        "clusterName": {
-          "description": "Name of the GKE cluster hosting this environment",
-          "title": "Kubernetes cluster name",
-          "type": "string"
-        }
-      },
-      "required": [
-        "projectId",
-        "region",
-        "clusterName"
-      ],
-      "title": "GCPMetadata",
-      "type": "object"
-    },
     "OnepasswordConfig": {
       "description": "Configuration for 1Password static secrets source.",
       "properties": {
         "connectUrl": {
-          "description": "URL to the 1Password Connect API server",
           "format": "uri",
           "minLength": 1,
-          "title": "1Password Connect URL",
+          "title": "Connecturl",
           "type": "string"
         },
         "vaultTitle": {
-          "description": "Title of the 1Password vault from which to retrieve secrets",
-          "title": "1Password vault title",
+          "title": "Vaulttitle",
           "type": "string"
         }
       },
@@ -164,17 +24,41 @@
   },
   "$id": "https://phalanx.lsst.io/schemas/environment.json",
   "additionalProperties": false,
-  "description": "Configuration for a Phalanx environment.\n\nThis is a model for the :file:`values-{environment}.yaml` files for each\nenvironment and is also used to validate those files. For the complete\nconfiguration for an environment, initialize this model with the merger of\n:file:`values.yaml` and :file:`values-{environment}.yaml`.\n\nFields listed here are not available to application linting. If the field\nvalue has to be injected during linting, the field needs to be defined in\n`EnvironmentBaseConfig` instead.",
+  "description": "Configuration for a Phalanx environment.\n\nThis is a model for the :file:`values-{environment}.yaml` files for each\nenvironment and is also used to validate those files. For the complete\nconfiguration for an environment, initialize this model with the merger of\n:file:`values.yaml` and :file:`values-{environment}.yaml`.",
   "properties": {
     "name": {
-      "description": "Name of the environment",
       "title": "Name",
       "type": "string"
     },
     "fqdn": {
-      "description": "Fully-qualified domain name on which the environment listens",
-      "title": "Domain name",
+      "title": "Fqdn",
       "type": "string"
+    },
+    "onepassword": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/OnepasswordConfig"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "vaultUrl": {
+      "title": "Vaulturl",
+      "type": "string"
+    },
+    "vaultPathPrefix": {
+      "title": "Vaultpathprefix",
+      "type": "string"
+    },
+    "applications": {
+      "additionalProperties": {
+        "type": "boolean"
+      },
+      "title": "Applications",
+      "type": "object"
     },
     "butlerRepositoryIndex": {
       "anyOf": [
@@ -186,40 +70,11 @@
         }
       ],
       "default": null,
-      "description": "URL to Butler repository index",
-      "title": "Butler repository index URL"
+      "title": "Butlerrepositoryindex"
     },
-    "gcp": {
+    "onepasswordUuid": {
       "anyOf": [
         {
-          "$ref": "#/$defs/GCPMetadata"
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "default": null,
-      "description": "If this environment is hosted on Google Cloud Platform, metadata about the hosting project, location, and other details. Used to generate additional environment documentation.",
-      "title": "GCP hosting metadata"
-    },
-    "onepassword": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/OnepasswordConfig"
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "default": null,
-      "description": "Configuration for using 1Password as a static secrets source",
-      "title": "1Password configuration"
-    },
-    "vaultUrl": {
-      "anyOf": [
-        {
-          "format": "uri",
-          "minLength": 1,
           "type": "string"
         },
         {
@@ -227,32 +82,7 @@
         }
       ],
       "default": null,
-      "description": "URL of the Vault server. This is required in the merged values file that includes environment overrides, but the environment override file doesn't need to set it, so it's marked as optional for schema checking purposes to allow the override file to be schema-checked independently.",
-      "title": "Vault server URL"
-    },
-    "vaultPathPrefix": {
-      "description": "Prefix of Vault paths, including the KV v2 mount point",
-      "title": "Vault path prefix",
-      "type": "string"
-    },
-    "controlSystem": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/ControlSystemConfig"
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "default": null
-    },
-    "applications": {
-      "additionalProperties": {
-        "type": "boolean"
-      },
-      "description": "List of applications and whether they are enabled",
-      "title": "Enabled applications",
-      "type": "object"
+      "title": "Onepassworduuid"
     },
     "repoUrl": {
       "anyOf": [
@@ -264,8 +94,7 @@
         }
       ],
       "default": null,
-      "description": "URL of the Git repository holding Argo CD configuration. This is required in the merged values file that includes environment overrides, but the environment override file doesn't need to set it, so it's marked as optional for schema checking purposes to allow the override file to be schema-checked independently.",
-      "title": "URL of Git repository"
+      "title": "Repourl"
     },
     "targetRevision": {
       "anyOf": [
@@ -277,13 +106,13 @@
         }
       ],
       "default": null,
-      "description": "Branch of the Git repository holding Argo CD configuration. This is required in the merged values file that includes environment overrides, but the environment override file doesn't need to set it, so it's marked as optional for schema checking purposes to allow the override file to be schema-checked independently.",
-      "title": "Git repository branch"
+      "title": "Targetrevision"
     }
   },
   "required": [
     "name",
     "fqdn",
+    "vaultUrl",
     "vaultPathPrefix",
     "applications"
   ],

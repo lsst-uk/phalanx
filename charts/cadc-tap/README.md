@@ -14,7 +14,7 @@ IVOA TAP service
 |-----|------|---------|-------------|
 | affinity | object | `{}` | Affinity rules for the TAP pod |
 | config.backend | string | None, must be set to "pg" or "qserv" | What type of backend are we connecting to? |
-| config.datalinkPayloadUrl | string | `"https://github.com/lsst/sdm_schemas/releases/download/2.1.6/datalink-snippets.zip"` | Datalink payload URL |
+| config.datalinkPayloadUrl | string | `"https://github.com/lsst/sdm_schemas/releases/download/1.2.2/datalink-snippets.zip"` | Datalink payload URL |
 | config.gcsBucket | string | The common GCS bucket | Name of GCS bucket in which to store results |
 | config.gcsBucketType | string | GCS | GCS bucket type (GCS or S3) |
 | config.gcsBucketUrl | string | The common GCS bucket | Base URL for results stored in GCS bucket |
@@ -52,11 +52,11 @@ IVOA TAP service
 | nodeSelector | object | `{}` | Node selector rules for the TAP pod |
 | podAnnotations | object | `{}` | Annotations for the TAP pod |
 | replicaCount | int | `1` | Number of pods to start |
-| resources | object | `{"limits":{"cpu":8,"memory":"32Gi"},"requests":{"cpu":2,"memory":"2Gi"}}` | Resource limits and requests for the TAP pod |
+| resources | object | `{"limits":{"cpu":8,"memory":"32G"},"requests":{"cpu":2,"memory":"2G"}}` | Resource limits and requests for the TAP pod |
 | tapSchema.affinity | object | `{}` | Affinity rules for the TAP schema database pod |
 | tapSchema.image.pullPolicy | string | `"IfNotPresent"` | Pull policy for the TAP schema image |
 | tapSchema.image.repository | string | `"lsstsqre/tap-schema-mock"` | TAP schema image to ue. This must be overridden by each environment with the TAP schema for that environment. |
-| tapSchema.image.tag | string | `"2.1.6"` | Tag of TAP schema image |
+| tapSchema.image.tag | string | `"2.1.1"` | Tag of TAP schema image |
 | tapSchema.nodeSelector | object | `{}` | Node selection rules for the TAP schema database pod |
 | tapSchema.podAnnotations | object | `{}` | Annotations for the TAP schema database pod |
 | tapSchema.resources | object | `{}` | Resource limits and requests for the TAP schema database pod |
@@ -68,6 +68,6 @@ IVOA TAP service
 | uws.image.tag | string | Version of QServ TAP image | Tag of UWS database image to use |
 | uws.nodeSelector | object | `{}` | Node selection rules for the UWS database pod |
 | uws.podAnnotations | object | `{}` | Annotations for the UWS databse pod |
-| uws.resources | object | `{"limits":{"cpu":2,"memory":"4Gi"},"requests":{"cpu":0.25,"memory":"1Gi"}}` | Resource limits and requests for the UWS database pod |
+| uws.resources | object | `{"limits":{"cpu":2,"memory":"4G"},"requests":{"cpu":0.25,"memory":"1G"}}` | Resource limits and requests for the UWS database pod |
 | uws.tolerations | list | `[]` | Tolerations for the UWS database pod |
 | vaultSecretsPath | string | None, must be set | Path to the Vault secret (`secret/k8s_operator/<host>/tap`, for example) |

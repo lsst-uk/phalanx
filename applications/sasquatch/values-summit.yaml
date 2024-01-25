@@ -23,12 +23,6 @@ strimzi-kafka:
       enabled: true
     replicator:
       enabled: true
-    kafdrop:
-      enabled: true
-    telegraf:
-      enabled: true
-    kafkaConnectManager:
-      enabled: true
 
 influxdb:
   persistence:
@@ -37,13 +31,15 @@ influxdb:
   ingress:
     enabled: true
     hostname: summit-lsp.lsst.codes
-  resources:
-    requests:
-      memory: 128Gi
-      cpu: 16
-    limits:
-      memory: 128Gi
-      cpu: 16
+
+influxdb2:
+  enabled: true
+  persistence:
+    storageClass: rook-ceph-block
+    size: 5Ti
+  ingress:
+    enabled: true
+    hostname: summit-lsp.lsst.codes
 
 kafka-connect-manager:
   influxdbSink:
@@ -62,7 +58,6 @@ kafka-connect-manager:
         enabled: true
         repairerConnector: false
         topicsRegex: ".*MTMount"
-        tasksMax: "8"
       comcam:
         enabled: true
         repairerConnector: false
@@ -79,7 +74,6 @@ kafka-connect-manager:
         enabled: true
         repairerConnector: false
         topicsRegex: ".*MTM1M3"
-        tasksMax: "8"
       m2:
         enabled: true
         repairerConnector: false
@@ -125,7 +119,7 @@ kafka-connect-manager:
         topicsRegex: ".*LaserTracker"
 
 telegraf-kafka-consumer:
-  enabled: false
+  enabled: true
   kafkaConsumers:
     auxtel:
       enabled: true

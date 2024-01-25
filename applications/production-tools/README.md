@@ -11,7 +11,6 @@ A collection of utility pages for monitoring data processing.
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | affinity | object | `{}` | Affinity rules for the production-tools deployment pod |
-| config.separateSecrets | bool | `false` | Whether to use the new secrets management scheme |
 | environment | object | `{}` |  |
 | fullnameOverride | string | `""` | Override the full name for resources (includes the release name) |
 | global.baseUrl | string | Set by Argo CD | Base URL for the environment |
@@ -19,7 +18,7 @@ A collection of utility pages for monitoring data processing.
 | global.vaultSecretsPath | string | Set by Argo CD | Base path for Vault secrets |
 | image.pullPolicy | string | `"IfNotPresent"` | Pull policy for the production-tools image |
 | image.repository | string | `"lsstdm/production_tools"` | Image to use in the production-tools deployment |
-| image.tag | string | The appVersion of the chart | Tag of production-tools image to use |
+| image.tag | string | `""` | Overrides the image tag whose default is the chart appVersion. |
 | ingress.annotations | object | `{}` | Additional annotations for the ingress rule |
 | nameOverride | string | `""` | Override the base name for resources |
 | nodeSelector | object | `{}` | Node selection rules for the production-tools deployment pod |

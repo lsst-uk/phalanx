@@ -1,30 +1,24 @@
-name: "idfdev"
-fqdn: "data-dev.lsst.cloud"
 butlerRepositoryIndex: "s3://butler-us-central1-repo-locations/data-dev-repos.yaml"
-gcp:
-  projectId: "science-platform-dev-7696"
-  region: "us-central1"
-  clusterName: "science-platform-dev"
+fqdn: data-dev.lsst.cloud
+name: idfdev
 onepassword:
-  connectUrl: "https://roundtable-dev.lsst.cloud/1password"
+  connectUrl: "https://roundtable-dev.lsst.cloud/1password/idfdev"
   vaultTitle: "RSP data-dev.lsst.cloud"
-vaultPathPrefix: "secret/phalanx/idfdev"
+vaultUrl: "https://vault.lsst.codes"
+vaultPathPrefix: secret/phalanx/idfdev
 
 applications:
   argo-workflows: true
-  butler: true
   datalinker: true
-  filestore-backup: true
   hips: true
-  jira-data-proxy: true
   mobu: true
   noteburst: true
   nublado: true
   portal: true
+  postgres: true
   sasquatch: true
   semaphore: true
   sherlock: true
-  siav2: true
   ssotap: true
   squareone: true
   sqlproxy-cross-project: true

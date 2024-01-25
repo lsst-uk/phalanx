@@ -1,8 +1,0 @@
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: redis-conf
-data:
-  redis.conf: |
-{{ .Values.redis.config | indent 4 }}

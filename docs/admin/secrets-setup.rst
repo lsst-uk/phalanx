@@ -7,9 +7,6 @@ Phalanx does, however, come with tools to manage one specific approach to using 
 
 This document explains the basic structure of how secrets must be stored in Vault, describes the tools for managing that structure, and describes the optional tools for managing Vault authentication credentials and paths for one specific Vault design.
 
-If you are setting up an environment that will be running a 1Password Connect server for itself, you will need to take special bootstrapping steps.
-See :px-app-bootstrap:`onepassword-connect` for more information.
-
 .. note::
 
    We are in the middle of a migration from an old secrets management system that sometimes used multiple secrets per application and sometimes pointed multiple applications at the same secret, to a new system that always uses one secret per application.
@@ -32,7 +29,7 @@ The name of each secret other than ``pull-secret`` matches the name of the appli
 So, for example, all secrets for Gafaelfawr for a given environment may be stored as key/value pairs in the secret named :samp:`secrets/phalanx/{environment}/gafaelfawr`.
 
 This path is configured for each environment via the ``vaultPathPrefix`` setting in the environment :file:`values-{environment}.yaml` file.
-The URL to the Vault server is set via the ``vaultUrl`` setting in the same file and defaults to the SQuaRE-run Vault server.
+The URL to the Vault server is set via the ``vaultUrl`` setting in the same file.
 
 Vault credentials
 =================
@@ -42,6 +39,12 @@ Previously, this was done by creating a Vault read token with access to that pat
 This approach is being replaced with a `Vault AppRole`_ that has read access to that path.
 
 .. _Vault AppRole: https://developer.hashicorp.com/vault/docs/auth/approle
+
+.. warning::
+
+   The current Phalanx installer only supports Vault read tokens, not Vault AppRoles.
+   Support for Vault AppRoles will be added in the future.
+   In the meantime, the Vault bootstrapping process in `install.sh <https://github.com/lsst-sqre/phalanx/blob/main/installer/install.sh>`__ will need to be modified when installing environments that use Vault AppRoles.
 
 Phalanx does not strictly require either of those approaches; any authentication approach that `Vault Secrets Operator`_ supports may be used as long as :px-app:`vault-secrets-operator` is configured accordingly for that environment.
 However, the standard installation process only supports AppRoles, and tooling is provided to manage those roles.
@@ -75,7 +78,6 @@ This normally requires a Vault admin or provisioner token or some equivalent.
     The output includes the new Vault token, which you should save somewhere secure where you store other secrets.
     (The running Phalanx environment does not need and should not have access to this token.)
     You will later set the environment variable ``VAULT_TOKEN`` to this token when running other :command:`phalanx` commands.
-    For SQuaRE-managed environments, always update the ``Phalanx Vault write tokens`` 1Password item in the SQuaRE 1Password vault after running this command.
 
 :samp:`phalanx vault audit {environment}`
     Check the authentication credentials created by the previous two commands in the given environment for any misconfiguration.
@@ -137,9 +139,6 @@ Static secrets from 1Password
 Static secrets may be stored in a 1Password vault.
 In this case, each application with static secrets should have an entry in this 1Password vault.
 
-The 1Password vault must be served by a 1Password Connect server so that the Phalanx tooling can access the secrets.
-See :px-app:`onepassword-connect` for more details on how this is done.
-
 Application secrets
 ^^^^^^^^^^^^^^^^^^^
 
@@ -174,11 +173,13 @@ This will be transformed into a Vault entry in the correct format for generating
 Configuring 1Password support
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-For an environment to use 1Password as a static secrets source, there must be a 1Password Connect server that serves the secrets for that environment from a 1Password vault.
-See :doc:`/applications/onepassword-connect/add-new-environment` for details on how to enable a new 1Password Connect server for your environment using Phalanx.
+In :file:`values-{environment}.yaml` for your environment, in the Phalanx :file:`environments` directory, add the setting ``onePasswordConnectServer``, setting it to the URL of the `1Password Connect`_ server for that 1Password vault.
 
-When running :command:`phalanx secrets` to sync or audit secrets, you will need to set ``OP_CONNECT_TOKEN`` to the read token for that 1Password Connect server.
-For SQuaRE-run environments, you can get that secret from the 1Password item ``RSP 1Password tokens`` in the SQuaRE 1Password vault.
+When running :command:`phalanx secrets` to sync or audit secrets, you will need to set ``OP_CONNECT_TOKEN`` to a read token for that 1Password Connect server.
+
+Phalanx can manage your 1Password Connect server as well, but it should run in a separate cluster than the environment that it provides secrets for.
+SQuaRE-run environments use 1Password Connect servers running in the Roundtable clusters.
+See :px-app:`onepassword-connect-dev` for details on how to set up a new 1Password Connect server using Phalanx.
 
 Static secrets from Vault
 -------------------------

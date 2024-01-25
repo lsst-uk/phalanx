@@ -12,8 +12,7 @@ image:
   # -- Pull policy for the production-tools image
   pullPolicy: IfNotPresent
 
-  # -- Tag of production-tools image to use
-  # @default -- The appVersion of the chart
+  # -- Overrides the image tag whose default is the chart appVersion.
   tag: ""
 
 # -- Override the base name for resources
@@ -31,10 +30,6 @@ environment: {}
 ingress:
   # -- Additional annotations for the ingress rule
   annotations: {}
-
-config:
-  # -- Whether to use the new secrets management scheme
-  separateSecrets: false
 
 # -- Resource limits and requests for the production-tools deployment pod
 resources: {}

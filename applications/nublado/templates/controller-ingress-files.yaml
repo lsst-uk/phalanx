@@ -1,4 +1,3 @@
-{{- if .Values.controller.config.fileserver.enabled -}}
 apiVersion: gafaelfawr.lsst.io/v1alpha1
 kind: GafaelfawrIngress
 metadata:
@@ -22,11 +21,10 @@ template:
       - host: {{ .Values.global.host | quote }}
         http:
           paths:
-            - path: {{ .Values.controller.config.fileserver.pathPrefix | quote }}
+            - path: "/files"
               pathType: "Prefix"
               backend:
                 service:
                   name: "nublado-controller"
                   port:
                     number: 80
-{{- end }}

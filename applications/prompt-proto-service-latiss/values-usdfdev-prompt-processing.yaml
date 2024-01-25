@@ -5,22 +5,17 @@ prompt-proto-service:
     revision: "1"
 
   image:
-    repository: ghcr.io/lsst-dm/prompt-service
+    repository: ghcr.io/lsst-dm/prompt-proto-service
     pullPolicy: Always
     # Overrides the image tag whose default is the chart appVersion.
-    tag: latest
+    tag: AuxTel20230524-w_2023_20
 
   instrument:
-    pipelines: >-
-      (survey="SURVEY")=[${PROMPT_PROCESSING_DIR}/pipelines/LATISS/ApPipe.yaml,
-      ${PROMPT_PROCESSING_DIR}/pipelines/LATISS/Isr.yaml]
-    calibRepo: s3://rubin:rubin-pp-users/central_repo/
-    calibRepoPguser: latiss_prompt
+    calibRepo: s3://rubin-summit-users/
 
   s3:
-    imageBucket: rubin:rubin-pp
+    imageBucket: rubin-pp
     endpointUrl: https://s3dfrgw.slac.stanford.edu
-    disableBucketValidation: '1'
 
   imageNotifications:
     kafkaClusterAddress: prompt-processing-kafka-bootstrap.kafka:9092
@@ -28,5 +23,9 @@ prompt-proto-service:
 
   apdb:
     url: postgresql://rubin@usdf-prompt-processing-dev.slac.stanford.edu/lsst-devl
+    ip: usdf-prompt-processing-dev.slac.stanford.edu:5432  # TODO: remove on DM-40839
+
+  registry:  # TODO: remove on DM-40839
+    ip: usdf-butler.slac.stanford.edu:5432
 
   fullnameOverride: "prompt-proto-service-latiss"

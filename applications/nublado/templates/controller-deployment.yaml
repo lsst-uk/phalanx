@@ -36,6 +36,8 @@ spec:
           image: "{{ .Values.controller.image.repository }}:{{ .Values.controller.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.controller.image.pullPolicy | quote }}
           env:
+            - name: DOCKER_SECRET_NAME
+              value: "pull-secret"
             - name: EXTERNAL_INSTANCE_URL
               value: {{ .Values.global.baseUrl | quote }}
             {{- if .Values.controller.slackAlerts }}
@@ -68,6 +70,8 @@ spec:
             {{- end }}
             - name: "podinfo"
               mountPath: "/etc/podinfo"
+            - name: "tmp"
+              mountPath: "/tmp"
       {{- with .Values.controller.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -102,3 +106,5 @@ spec:
               - path: "uid"
                 fieldRef:
                   fieldPath: "metadata.uid"
+        - name: "tmp"
+          emptyDir: {}

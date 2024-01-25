@@ -3,15 +3,16 @@ name: nublado
 version: 1.0.0
 description: JupyterHub and custom spawner for the Rubin Science Platform
 sources:
-  - https://github.com/lsst-sqre/nublado
-home: https://nublado.lsst.io/
-appVersion: 4.0.2
+  - https://github.com/lsst-sqre/jupyterlab-controller
+  - https://github.com/lsst-sqre/rsp-restspawner
+home: https://github.com/lsst-sqre/jupyterlab-controller
+appVersion: 0.7.3
 
 dependencies:
   - name: jupyterhub
     # This is the Zero To Jupyterhub version, *not* the version of the
     # Jupyterhub package itself.
-    version: "3.2.1"
+    version: "2.0.0"
     repository: https://jupyterhub.github.io/helm-chart/
 
 annotations:

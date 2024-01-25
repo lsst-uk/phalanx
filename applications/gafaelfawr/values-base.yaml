@@ -3,28 +3,11 @@ redis:
     storageClass: "rook-ceph-block"
 
 config:
-  logLevel: "DEBUG"
   slackAlerts: true
   databaseUrl: "postgresql://gafaelfawr@postgresdb01.ls.lsst.org/gafaelfawr"
 
-  oidc:
-    clientId: "rsp-bts"
-    audience: "rsp-bts"
-    loginUrl: "https://keycloak.ls.lsst.org/realms/master/protocol/openid-connect/auth"
-    tokenUrl: "https://keycloak.ls.lsst.org/realms/master/protocol/openid-connect/token"
-    issuer: "https://keycloak.ls.lsst.org/realms/master"
-    scopes:
-      - "openid"
-    usernameClaim: "preferred_username"
-
-  ldap:
-    url: "ldap://ipa.lsst.org"
-    userDn: "uid=svc_rsp,cn=users,cn=accounts,dc=lsst,dc=cloud"
-    userBaseDn: "cn=users,cn=accounts,dc=lsst,dc=cloud"
-    uidAttr: "uidNumber"
-    gidAttr: "gidNumber"
-    groupBaseDn: "cn=groups,cn=accounts,dc=lsst,dc=cloud"
-    groupSearchByDn: true
+  github:
+    clientId: "ec88b9b897f302b620d1"
 
   # Support OpenID Connect clients like Chronograf.
   oidcServer:
@@ -33,22 +16,82 @@ config:
   # Allow access by GitHub team.
   groupMapping:
     "admin:provision":
-      - "sqre"
+      - github:
+          organization: "lsst-sqre"
+          team: "square"
     "exec:admin":
-      - "k8s-manke"
-      - "sqre"
+      - github:
+          organization: "lsst-sqre"
+          team: "square"
     "exec:internal-tools":
-      - "rsp-bts"
+      - github:
+          organization: "lsst-sqre"
+          team: "square"
+      - github:
+          organization: "lsst-sqre"
+          team: "friends"
+      - github:
+          organization: "lsst-ts"
+          team: "base-access"
+      - github:
+          organization: "rubin-summit"
+          team: "rsp-access"
     "exec:notebook":
-      - "rsp-bts"
+      - github:
+          organization: "lsst-sqre"
+          team: "square"
+      - github:
+          organization: "lsst-sqre"
+          team: "friends"
+      - github:
+          organization: "lsst-ts"
+          team: "base-access"
+      - github:
+          organization: "rubin-summit"
+          team: "rsp-access"
     "exec:portal":
-      - "rsp-bts"
+      - github:
+          organization: "lsst-sqre"
+          team: "square"
+      - github:
+          organization: "lsst-sqre"
+          team: "friends"
+      - github:
+          organization: "lsst-ts"
+          team: "base-access"
+      - github:
+          organization: "rubin-summit"
+          team: "rsp-access"
     "read:image":
-      - "rsp-bts"
+      - github:
+          organization: "lsst-sqre"
+          team: "square"
+      - github:
+          organization: "lsst-sqre"
+          team: "friends"
+      - github:
+          organization: "lsst-ts"
+          team: "base-access"
+      - github:
+          organization: "rubin-summit"
+          team: "rsp-access"
     "read:tap":
-      - "rsp-bts"
+      - github:
+          organization: "lsst-sqre"
+          team: "square"
+      - github:
+          organization: "lsst-sqre"
+          team: "friends"
+      - github:
+          organization: "lsst-ts"
+          team: "base-access"
+      - github:
+          organization: "rubin-summit"
+          team: "rsp-access"
     "write:sasquatch":
-      - "sqre"
+      - github:
+          organization: "lsst-sqre"
+          team: "square"
 
   initialAdmins:
     - "afausti"

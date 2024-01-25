@@ -1,28 +1,19 @@
 name: tucson-teststand
 fqdn: tucson-teststand.lsst.codes
+vaultUrl: "https://vault.lsst.codes"
 vaultPathPrefix: secret/k8s_operator/tucson-teststand.lsst.codes
 
 applications:
   argo-workflows: true
-  auxtel: true
-  calsys: true
-  control-system-test: true
-  eas: true
+  cachemachine: true
   exposurelog: true
-  love: true
+  moneypenny: true
   narrativelog: true
   nublado: true
-  obssys: true
+  nublado2: true
   portal: true
   sasquatch: true
-  simonyitel: true
   squareone: true
   strimzi: true
-  uws: true
   telegraf: true
   telegraf-ds: true
-
-controlSystem:
-  imageTag: k0001
-  siteTag: tucson
-  s3EndpointUrl: https://s3.tu.lsst.org

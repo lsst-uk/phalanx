@@ -1,4 +1,0 @@
-name: love-producer
-apiVersion: v2
-version: 1.0.0
-description: Helm chart for the LOVE producers.

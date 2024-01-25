@@ -1,8 +1,4 @@
 chronograf:
-  persistence:
-    enabled: true
-    size: 1Gi
-    storageClass: standard-rwo
   env:
     GH_CLIENT_ID: "e85fe410b0021a251180"
 cronjob:

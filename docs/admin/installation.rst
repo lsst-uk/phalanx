@@ -8,9 +8,6 @@ An environment has a hostname, Vault server and path to its secrets, and a set o
 Before starting this process, you should set up the required secrets for your new environment.
 See :doc:`secrets-setup` for details.
 
-If you are setting up an environment that will be running a 1Password Connect server for itself, you will need to take special bootstrapping steps.
-See :px-app-bootstrap:`onepassword-connect` for more information.
-
 Creating an environment
 =======================
 
@@ -23,9 +20,7 @@ To create a new Phalanx environment, take the following steps:
 #. Create a new :file:`values-{environment}.yaml` file in `environments <https://github.com/lsst-sqre/phalanx/tree/main/environments/>`__.
    Start with a template copied from an existing environment that's similar to the new environment.
    Edit it so that ``name``, ``fqdn``, ``vaultUrl``, and ``vaultPathPrefix`` at the top match your new environment.
-   You may omit ``vaultUrl`` for SQuaRE-managed environments.
    See :doc:`secrets-setup` for more information about the latter two settings and additional settings you may need.
-   If the environment will be hosted on Google Kubernetes Engine, also fill out ``gcp.projectId``, ``gcp.region``, and ``gcp.clusterName`` with metadata about where the environment will be hosted.
    Enable the applications this environment should include.
 
 #. Decide on your approach to TLS certificates.
@@ -46,8 +41,8 @@ To create a new Phalanx environment, take the following steps:
    The following applications have special bootstrapping considerations:
 
    - :px-app-bootstrap:`argocd`
+   - :px-app-bootstrap:`cachemachine`
    - :px-app-bootstrap:`gafaelfawr`
-   - :px-app-bootstrap:`nublado`
    - :px-app-bootstrap:`portal`
    - :px-app-bootstrap:`squareone`
 
@@ -60,25 +55,19 @@ Installing Phalanx
 Once you have defined a Phalanx environment, follow these steps to install it.
 These can be run repeatedly to reinstall Phalanx over an existing deployment.
 
-#. Create a Vault AppRole that will be used by Vault Secrets Operator.
+.. warning::
 
-   .. prompt:: bash
+   The installer has not been updated to work with the new secrets management system yet, and the way it initializes Vault Secrets Operator is incorrect for the new system and will not work.
+   This is currently being worked on, but in the meantime you will have to make changes to the installation script to use :command:`phalanx vault create-read-approle --as-secret vault-credentials` and skip the attempt to create a Vault read token secret obtained from 1Password.
+   Hopefully this will be fixed shortly.
 
-      phalanx vault create-read-approle <environment>
+.. rst-class:: open
 
-   Be aware that this will invalidate any existing AppRole for that environment.
+#. Create a virtual environment with the tools you will need from the installer's `requirements.txt <https://github.com/lsst-sqre/phalanx/blob/main/installer/requirements.txt>`__.
 
 #. Run the installer script at `installer/install.sh <https://github.com/lsst-sqre/phalanx/blob/main/installer/install.sh>`__.
-
-   .. prompt:: bash
-
-      installer/install.sh <enviornment> <vault-role-id> <vault-secret-id>
-
-   ``<vault-role-id>`` and ``<vault-secret-id>`` are the Role ID and Secret ID of the Vault AppRole created in the previous step.
-
    Debug any problems.
    The most common source of problems are errors or missing configuration in the :file:`values-{environment}.yaml` files you created for each application.
-   You can safely run the installer repeatedly as you debug and fix issues.
 
 #. If the installation is using a dynamically-assigned IP address, while the installer is running, wait until the ingress-nginx-controller service comes up and has an external IP address.
    Then, set the A record for your endpoint to that address (or set an A record with that IP address for the ingress and a CNAME from the endpoint to the A record).

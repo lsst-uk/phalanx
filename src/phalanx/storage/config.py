@@ -5,13 +5,10 @@ from __future__ import annotations
 import re
 from collections import defaultdict
 from contextlib import suppress
-from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Self
+from typing import Any
 
 import yaml
-from git import Diff
-from git.repo import Repo
 from pydantic import ValidationError
 
 from ..constants import HELM_DOCLINK_ANNOTATION
@@ -68,60 +65,6 @@ def _merge_overrides(
         else:
             new[key] = value
     return new
-
-
-@dataclass
-class _ApplicationChange:
-    """Holds the analysis of a diff affecting a Phalanx application chart."""
-
-    application: str
-    """Name of the affected application."""
-
-    path: str
-    """Path of changed file relative to the top of the chart."""
-
-    is_delete: bool
-    """Whether this change is a file deletion."""
-
-    @classmethod
-    def from_diff(cls, diff: Diff) -> Self:
-        """Create a change based on a Git diff.
-
-        Parameters
-        ----------
-        diff
-            One Git diff affecting a single file.
-
-        Returns
-        -------
-        _ApplicationChange
-            Corresponding parsed change.
-
-        Raises
-        ------
-        ValueError
-            Raised if this is not a change to an application chart.
-        """
-        full_path = diff.b_path or diff.a_path
-        if not full_path:
-            raise ValueError("Not a change to an application")
-        m = re.match("applications/([^/]+)/(.+)", full_path)
-        if not m:
-            raise ValueError("Not a change to an application")
-        return cls(
-            application=m.group(1),
-            path=m.group(2),
-            is_delete=diff.change_type == "D",
-        )
-
-    @property
-    def affects_all_envs(self) -> bool:
-        """Whether this change may affect any environment."""
-        if self.path in ("Chart.yaml", "values.yaml"):
-            return True
-        if self.path.startswith(("crds/", "templates/")):
-            return True
-        return False
 
 
 class ConfigStorage:
@@ -212,24 +155,6 @@ class ConfigStorage:
                 new.write(setting + "\n")
         path_new.rename(path)
 
-    def get_all_dependency_repositories(self) -> set[str]:
-        """List the URLs of all referenced third-party Helm repositories.
-
-        Returns
-        -------
-        set of str
-            URLs of third-party Helm repositories referenced by some
-            application chart.
-        """
-        repo_urls = set()
-        for app_path in (self._path / "applications").iterdir():
-            chart_path = app_path / "Chart.yaml"
-            if not chart_path.exists():
-                continue
-            urls = self.get_dependency_repositories(app_path.name)
-            repo_urls.update(urls)
-        return repo_urls
-
     def get_application_chart_path(self, application: str) -> Path:
         """Determine the path to an application Helm chart.
 
@@ -248,105 +173,6 @@ class ConfigStorage:
         """
         return self._path / "applications" / application
 
-    def get_application_environments(self, application: str) -> list[str]:
-        """List all environments for which an application is configured.
-
-        This is based entirely on the presence of
-        :file:`values-{environment}.yaml` configuration files in the
-        application directory, not on which environments enable the
-        application. This is intentional since this is used to constrain which
-        environments are linted, and we want to lint applications in
-        environments that aren't currently enabled to ensure they've not
-        bitrotted.
-
-        Parameters
-        ----------
-        application
-            Name of the application.
-
-        Returns
-        -------
-        list of str
-            List of environment names for which that application is
-            configured.
-        """
-        path = self.get_application_chart_path(application)
-        return [
-            v.stem.removeprefix("values-")
-            for v in sorted(path.glob("values-*.yaml"))
-        ]
-
-    def get_dependency_repositories(self, application: str) -> set[str]:
-        """Return URLs for dependency Helm repositories for this application.
-
-        Parameters
-        ----------
-        application
-            Name of the application.
-
-        Returns
-        -------
-        set of str
-            URLs of Helm repositories used by dependencies of this
-            application's chart.
-        """
-        path = self.get_application_chart_path(application) / "Chart.yaml"
-        chart = yaml.safe_load(path.read_text())
-        repo_urls = set()
-        for dependency in chart.get("dependencies", []):
-            if "repository" in dependency:
-                repository = dependency["repository"]
-                if not repository.startswith("file:"):
-                    repo_urls.add(repository)
-        return repo_urls
-
-    def get_environment_chart_path(self) -> Path:
-        """Determine the path to the top-level environment chart.
-
-        Returns
-        -------
-        pathlib.Path
-            Path to the top-level environment chart.
-        """
-        return self._path / "environments"
-
-    def get_modified_applications(self, branch: str) -> dict[str, list[str]]:
-        """Get all modified application and environment pairs.
-
-        Application and environment pairs that have been deleted do not count
-        as modified, since we don't want to attempt to lint deleted
-        configurations.
-
-        Parameters
-        ----------
-        branch
-            Git branch against which to compare to see what modifications
-            have been made.
-
-        Returns
-        -------
-        dict of list of str
-            Dictionary of all modified applications to the list of
-            environments configured for that application that may have been
-            affected.
-        """
-        result: defaultdict[str, list[str]] = defaultdict(list)
-        repo = Repo(str(self._path))
-        diffs = repo.head.commit.diff(branch, paths=["applications"], R=True)
-        for diff in diffs:
-            try:
-                change = _ApplicationChange.from_diff(diff)
-            except ValueError:
-                continue
-            if change.affects_all_envs:
-                envs = self.get_application_environments(change.application)
-                if envs:
-                    result[change.application] = envs
-            elif not change.is_delete:
-                if m := re.match("values-([^.]+).yaml$", change.path):
-                    result[change.application].append(m.group(1))
-        return result
-
     def get_starter_path(self, starter: HelmStarter) -> Path:
         """Determine the path to a Helm starter template.
 
@@ -361,45 +187,6 @@ class ConfigStorage:
             Path to that Helm starter template.
         """
         return self._path / "starters" / starter.value
-
-    def list_application_environments(self) -> dict[str, list[str]]:
-        """List all available applications and their environments.
-
-        Returns
-        -------
-        dict of list of str
-            Dictionary of all applications to lists of environments for which
-            that application has a configuration.
-        """
-        return {
-            a: self.get_application_environments(a)
-            for a in self.list_applications()
-        }
-
-    def list_applications(self) -> list[str]:
-        """List all available applications.
-
-        Returns
-        -------
-        list of str
-            Names of all applications.
-        """
-        path = self._path / "applications"
-        return sorted(v.name for v in path.iterdir() if v.is_dir())
-
-    def list_environments(self) -> list[str]:
-        """List all of the available environments.
-
-        Returns
-        -------
-        list of str
-            Names of all available environments.
-        """
-        path = self._path / "environments"
-        return [
-            v.stem.removeprefix("values-")
-            for v in sorted(path.glob("values-*.yaml"))
-        ]
 
     def load_environment(self, environment_name: str) -> Environment:
         """Load the configuration of a Phalanx environment from disk.
@@ -487,9 +274,11 @@ class ConfigStorage:
         InvalidEnvironmentConfigError
             Raised if the configuration for an environment is invalid.
         """
-        environments = [
-            self.load_environment_config(e) for e in self.list_environments()
-        ]
+        environments_path = self._path / "environments"
+        environments = []
+        for values_path in sorted(environments_path.glob("values-*.yaml")):
+            environment_name = values_path.stem.removeprefix("values-")
+            environments.append(self.load_environment_config(environment_name))
 
         # Load the configurations of all applications.
         all_applications: set[str] = set()
@@ -532,31 +321,6 @@ class ConfigStorage:
             environments=environment_details,
             applications=sorted(applications.values(), key=lambda a: a.name),
         )
-
-    def update_shared_chart_version(self, chart: str, version: str) -> None:
-        """Update the version of a shared chart across all applications.
-
-        Parameters
-        ----------
-        chart
-            The name of the chart for the version change.
-        version
-            The chart version to update.
-        """
-        for app in self.list_applications():
-            app_config = self._load_application_config(app)
-            is_modified = False
-            try:
-                for item in app_config.chart["dependencies"]:
-                    if item["name"] == chart:
-                        item["version"] = version
-                        is_modified = True
-            except KeyError:
-                pass
-            if is_modified:
-                chart_path = self._path / "applications" / app / "Chart.yaml"
-                with chart_path.open("w") as fh:
-                    yaml.safe_dump(app_config.chart, fh, sort_keys=False)
 
     def write_application_template(self, name: str, template: str) -> None:
         """Write the Argo CD application template for a new application.
@@ -769,7 +533,7 @@ class ConfigStorage:
         values_path = base_path / "values.yaml"
         if values_path.exists():
             with values_path.open("r") as fh:
-                values = yaml.safe_load(fh) or {}
+                values = yaml.safe_load(fh)
         else:
             values = {}
 

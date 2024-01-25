@@ -12,17 +12,17 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Set up go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v4
 
       - name: Install helm-docs
-        run: go install github.com/norwoodj/helm-docs/cmd/helm-docs@v1.11.3
+        run: go install github.com/norwoodj/helm-docs/cmd/helm-docs@v1.11.0
         env:
           GOBIN: /usr/local/bin/
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v4
         with:
-          python-version: "3.12"
+          python-version: "3.11"
 
       - name: Run pre-commit
         uses: pre-commit/action@v3.0.0
@@ -35,7 +35,6 @@ jobs:
       matrix:
         python:
           - "3.11"
-          - "3.12"
 
     steps:
       - uses: actions/checkout@v4
@@ -55,16 +54,22 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: azure/setup-helm@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
         with:
-          # Used to query GitHub for the latest Helm release.
-          token: ${{ secrets.GITHUB_TOKEN }}
+          python-version: "3.11"
 
-      - uses: lsst-sqre/run-tox@v1
-        with:
-          python-version: "3.12"
-          tox-envs: phalanx-lint-change
-          cache-key-prefix: test
+      - name: Install test dependencies
+        run: make init
+
+      - name: Expand modified charts
+        run: expand-charts
+
+      - name: Set up chart-testing
+        uses: helm/chart-testing-action@v2.4.0
+
+      - name: Run chart-testing (lint)
+        run: ct lint --all --config ct.yaml
 
   # The minikube job always runs, but it quickly does nothing if no files that
   # would affect minikube were changed.  This unfortunately requires a lot of
@@ -88,12 +93,12 @@ jobs:
           filters: |
             minikube:
               - ".github/workflows/ci.yaml"
-              - "applications/{argocd,gafaelfawr,ingress-nginx,mobu,postgres,squareone,vault-secrets-operator}/Chart.yaml"
-              - "applications/{argocd,gafaelfawr,ingress-nginx,mobu,postgres,squareone,vault-secrets-operator}/templates/**"
-              - "applications/{argocd,gafaelfawr,ingress-nginx,mobu,postgres,squareone,vault-secrets-operator}/values.yaml"
-              - "applications/{argocd,gafaelfawr,ingress-nginx,mobu,postgres,squareone,vault-secrets-operator}/values-minikube.yaml"
+              - "applications/*/Chart.yaml"
+              - "applications/*/templates/**"
+              - "applications/*/values.yaml"
+              - "applications/*/values-minikube.yaml"
               - "environments/Chart.yaml"
-              - "environments/templates/{argocd,gafaelfawr,ingress-nginx,mobu,postgres,squareone,vault-secrets-operator}*"
+              - "environments/templates/**"
               - "environments/values-minikube.yaml"
               - "installer/**"
 
@@ -112,20 +117,21 @@ jobs:
       - name: Download installer dependencies
         if: steps.filter.outputs.minikube == 'true'
         run: |
-          curl -sSL -o /tmp/vault.zip https://releases.hashicorp.com/vault/1.15.4/vault_1.15.4_linux_amd64.zip
+          curl -sSL -o /tmp/vault.zip https://releases.hashicorp.com/vault/1.14.0/vault_1.14.0_linux_amd64.zip
           unzip /tmp/vault.zip
           sudo mv vault /usr/local/bin/vault
           sudo chmod +x /usr/local/bin/vault
-          sudo curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/download/v2.8.6/argocd-linux-amd64
+          sudo curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/download/v2.7.10/argocd-linux-amd64
           sudo chmod +x /usr/local/bin/argocd
           sudo apt-get install socat
+          sudo pip install -r installer/requirements.txt
 
       - name: Run installer
         timeout-minutes: 15
         if: steps.filter.outputs.minikube == 'true'
         run: |
           cd installer
-          ./install.sh minikube "${{ secrets.MINIKUBE_VAULT_ROLE_ID }}" "${{ secrets.MINIKUBE_VAULT_SECRET_ID }}"
+          ./install.sh minikube ${{ secrets.MINIKUBE_VAULT_KEY }}
 
       - name: Get final list of resources
         if: steps.filter.outputs.minikube == 'true'
