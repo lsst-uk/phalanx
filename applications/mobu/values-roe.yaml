@@ -6,7 +6,7 @@ config:
         - username: "bot-mobu-tap"
       scopes: ["read:tap"]
       business:
-        type: "TAPQuerySetRunner"
+        type: "TAPQueryRunner"
         options:
           queries: 
             - "SELECT TOP 10 * FROM TAP_SCHEMA.tables"
