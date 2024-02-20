@@ -11,7 +11,7 @@ config:
         type: "TAPQueryRunner"
         options:
           queries: 
-            - "SELECT TOP 10 k FROM  video.hsc_g_f"
+            - "SELECT TOP 10 * FROM  video.hsc_g_f"
             - "SELECT TOP 10 * FROM  TAP_SCHEMA.tables"
             - "SELECT TOP 10 * FROM  viking.hsc_g_f"
         restart: true
