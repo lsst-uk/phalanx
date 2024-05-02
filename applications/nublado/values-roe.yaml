@@ -3,8 +3,8 @@ controller:
     images:
       source:
         type: "docker"
-        registry: "registry.hub.docker.com"
-        repository: "lsstsqre/sciplat-lab"
+        registry: "ghcr.io"
+        repository: "lsst-sqre/nublado-controller"
     lab:
       env:
         AUTO_REPO_URLS: "https://github.com/lsst-uk/rsp-uk-notebooks"
