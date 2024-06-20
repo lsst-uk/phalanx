@@ -416,7 +416,7 @@ redis:
   config:
     # -- Name of secret containing Redis password (may require changing if
     # fullnameOverride is set)
-    secretName: "gafaelfawr-secret"
+    secretName: "gafaelfawr"
 
     # -- Key inside secret from which to get the Redis password (do not
     # change)
