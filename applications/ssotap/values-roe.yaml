@@ -1,0 +1,4 @@
+cadc-tap:
+  tapSchema:
+    image:
+      repository: "lsstuk/tap-schema-roe-sso"
