@@ -2,3 +2,11 @@ cadc-tap:
   tapSchema:
     image:
       repository: "lsstuk/tap-schema-roe-sso"
+  
+  config:
+    pg:
+      host: "192.41.122.118:5432"
+      database: "dp03_catalogs_10yr"
+      username: "dp03_user"
+      
+    vaultSecretName: "ssotap"
