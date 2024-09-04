@@ -8,5 +8,5 @@ cadc-tap:
     gcsBucketType: "S3"
     jvmMaxHeapSize: "31G"
 
-  qserv:
-    host: "192.41.122.79:30040"
+    qserv:
+      host: "192.41.122.79:30040"
