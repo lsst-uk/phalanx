@@ -7,6 +7,8 @@ config:
   internalDatabase: true
   #databaseUrl: "postgresql://gafaelfawr@postgres.postgres/gafaelfawr"
 
+  cadcBaseUuid: "4cb5f948-aad9-466c-837b-5eae565b0a77"
+
   github:
     clientId: "c4a5727c5788cc2d346e"
 
