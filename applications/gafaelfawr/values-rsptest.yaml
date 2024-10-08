@@ -3,7 +3,7 @@ redis:
     enabled: false
 
 config:
-  updateSchema: false
+  updateSchema: true
   internalDatabase: true
   #databaseUrl: "postgresql://gafaelfawr@postgres.postgres/gafaelfawr"
 
