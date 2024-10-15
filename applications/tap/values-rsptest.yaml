@@ -1,7 +1,7 @@
 cadc-tap:
   tapSchema:
       image:
-        repository: "stvoutsin/tap-schema-roe"
+        repository: "lsstuk/tap-schema-rsptest"
   config:
     gcsBucket: "async-test"
     gcsBucketUrl: "https://somerville.ed.ac.uk:6780"
