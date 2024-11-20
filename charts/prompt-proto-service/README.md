@@ -19,6 +19,7 @@ Event-driven processing of camera images
 | alerts.username | string | `"kafka-admin"` | Username for sending alerts to the alert stream |
 | apdb.config | string | None, must be set | URL to a serialized APDB configuration, or the "label:" prefix followed by the indexed name of such a config. |
 | cache.baseSize | int | `3` | The default number of datasets of each type to keep. The pipeline only needs one of most dataset types (one bias, one flat, etc.), so this is roughly the number of visits that fit in the cache. |
+| cache.maxFilters | int | `20` | The maximum number of datasets of a given type the service might load if the filter is unknown. Should be greater than or equal to the number of filters that have e.g. flats or transmission curves. |
 | cache.patchesPerImage | int | `4` | A factor by which to multiply `baseSize` for templates and other patch-based datasets. |
 | cache.refcatsPerImage | int | `4` | A factor by which to multiply `baseSize` for refcat datasets. |
 | cacheCalibs | bool | `true` | Whether or not calibs should be cached between runs of a pod. This is a temporary flag that should only be unset in specific circumstances, and only in the development environment. |
@@ -35,6 +36,7 @@ Event-driven processing of camera images
 | instrument.name | string | None, must be set | The "short" name of the instrument |
 | instrument.pipelines.main | string | None, must be set | Machine-readable string describing which pipeline(s) should be run for which visits' raws. Notation is complex and still in flux; see [the source code](https://github.com/lsst-dm/prompt_processing/blob/main/python/activator/config.py) for examples. |
 | instrument.pipelines.preprocessing | string | None, must be set | Machine-readable string describing which pipeline(s) should be run before which visits' raw arrival. |
+| instrument.preloadPadding | int | `30` | Number of arcseconds to pad the spatial region in preloading. |
 | instrument.skymap | string | `""` | Skymap to use with the instrument |
 | knative.cpuLimit | int | `1` | The maximum cpu cores for the full pod (see `containerConcurrency`). |
 | knative.cpuRequest | int | `1` | The cpu cores requested for the full pod (see `containerConcurrency`). |

@@ -1,26 +1,33 @@
-{{- if (index .Values "applications" "sqlproxy-cross-project") -}}
+{{- if (index .Values "applications" "sia") -}}
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: "sqlproxy-cross-project"
+  name: "sia"
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: "sqlproxy-cross-project"
+  name: "sia"
   namespace: "argocd"
   finalizers:
     - "resources-finalizer.argocd.argoproj.io"
 spec:
   destination:
-    namespace: "sqlproxy-cross-project"
+    namespace: "sia"
     server: "https://kubernetes.default.svc"
   project: "rsp"
   source:
-    path: "applications/sqlproxy-cross-project"
+    path: "applications/sia"
     repoURL: {{ .Values.repoUrl | quote }}
     targetRevision: {{ .Values.targetRevision | quote }}
     helm:
+      parameters:
+        - name: "global.host"
+          value: {{ .Values.fqdn | quote }}
+        - name: "global.baseUrl"
+          value: "https://{{ .Values.fqdn }}"
+        - name: "global.vaultSecretsPath"
+          value: {{ .Values.vaultPathPrefix | quote }}
       valueFiles:
         - "values.yaml"
         - "values-{{ .Values.name }}.yaml"
