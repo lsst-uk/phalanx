@@ -2,7 +2,7 @@ cadc-tap:
   tapSchema:
     image:
       repository: "lsstuk/tap-schema-roe"
-      tag: "3.3.0"
+      tag: "2.3.0"
 
   config:
     gcsBucket: "async"
