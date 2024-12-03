@@ -14,11 +14,11 @@ Argo CD project: ``roundtable``
 
    checkerboard/index
    giftless/index
-   kubernetes-replicator/index
    onepassword-connect/index
    ook/index
    sqrbot-sr/index
    squarebot/index
+   templatebot/index
    unfurlbot/index
    vault/index
 

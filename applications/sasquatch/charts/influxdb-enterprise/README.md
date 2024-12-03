@@ -14,7 +14,7 @@ Run InfluxDB Enterprise on Kubernetes
 | bootstrap.ddldml.configMap | string | Do not run DDL or DML | A config map containing DDL and DML that define databases, retention policies, and inject some data.  The keys `ddl` and `dml` must exist, even if one of them is empty.  DDL is executed before DML to ensure databases and retention policies exist. |
 | bootstrap.ddldml.resources | object | `{}` | Kubernetes resources and limits for the bootstrap job |
 | data.affinity | object | See `values.yaml` | Affinity rules for data pods |
-| data.config.antiEntropy.enabled | bool | `true` | Enable the anti-entropy service, which copies and repairs shards |
+| data.config.antiEntropy.enabled | bool | `false` | Enable the anti-entropy service, which copies and repairs shards |
 | data.config.cluster.log-queries-after | string | `"15s"` | Maximum duration a query can run before InfluxDB logs it as a slow query |
 | data.config.cluster.max-concurrent-queries | int | `1000` | Maximum number of running queries allowed on the instance (0 is unlimited) |
 | data.config.cluster.query-timeout | string | `"300s"` | Maximum duration a query is allowed to run before it is killed |
@@ -92,7 +92,9 @@ Run InfluxDB Enterprise on Kubernetes
 | meta.service.loadBalancerIP | string | Do not allocate a load balancer IP | Load balancer IP for the meta service |
 | meta.service.nodePort | int | Do not allocate a node port | Node port for the meta service |
 | meta.service.type | string | `"ClusterIP"` | Service type for the meta service |
-| meta.sharedSecret.secretName | string | `"influxdb-enterprise-shared-secret"` | Shared secret used by the internal API for JWT authentication between InfluxDB nodes. Must have a key named `secret` that should be a long, random string See [documentation for shared-internal-secret](https://docs.influxdata.com/enterprise_influxdb/v1/administration/configure/config-data-nodes/#meta-internal-shared-secret). |
+| meta.sharedSecret.secret | object | `{"key":"secret","name":"influxdb-enterprise-shared-secret"}` | Shared secret used by the internal API for JWT authentication between InfluxDB nodes. Must have a key named `secret` that should be a long, random string See [documentation for shared-internal-secret](https://docs.influxdata.com/enterprise_influxdb/v1/administration/configure/config-data-nodes/#meta-internal-shared-secret). |
+| meta.sharedSecret.secret.key | string | `"secret"` | Key within that secret that contains the shared secret |
+| meta.sharedSecret.secret.name | string | `"influxdb-enterprise-shared-secret"` | Name of the secret containing the shared secret |
 | meta.tolerations | list | `[]` | Tolerations for meta pods |
 | nameOverride | string | `""` | Override the base name for resources |
 | serviceAccount.annotations | object | `{}` | Annotations to add to the service account |

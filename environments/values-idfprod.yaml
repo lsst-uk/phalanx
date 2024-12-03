@@ -17,13 +17,18 @@ applications:
   butler: true
   datalinker: true
   filestore-backup: true
+  ghostwriter: true
   hips: true
   mobu: true
   nublado: true
   portal: true
+  sasquatch: true
   semaphore: true
-  siav2: true
+  sia: true
+  siav2: false
   squareone: true
+  strimzi: true
+  strimzi-access-operator: true
   ssotap: true
   tap: true
   telegraf: true
