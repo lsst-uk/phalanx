@@ -1,23 +1,23 @@
-{{- if (index .Values "applications" "kubernetes-replicator") -}}
+{{- if (index .Values "applications" "s3proxy") -}}
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: "kubernetes-replicator"
+  name: "s3proxy"
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: "kubernetes-replicator"
+  name: "s3proxy"
   namespace: "argocd"
   finalizers:
     - "resources-finalizer.argocd.argoproj.io"
 spec:
   destination:
-    namespace: "kubernetes-replicator"
+    namespace: "s3proxy"
     server: "https://kubernetes.default.svc"
-  project: "support"
+  project: "rubin"
   source:
-    path: "applications/kubernetes-replicator"
+    path: "applications/s3proxy"
     repoURL: {{ .Values.repoUrl | quote }}
     targetRevision: {{ .Values.targetRevision | quote }}
     helm:
