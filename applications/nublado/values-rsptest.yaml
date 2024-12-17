@@ -20,9 +20,6 @@ controller:
           volumeMounts:
             - containerPath: "/home"
               volumeName: "home"
-      secrets:
-        - secretName: "nublado-lab-secret"
-          secretKey: "postgres-credentials.txt"
       pullSecret: "pull-secret"
       volumes:
         - name: "data"
