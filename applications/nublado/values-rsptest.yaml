@@ -21,6 +21,9 @@ controller:
             - containerPath: "/home"
               volumeName: "home"
       pullSecret: "pull-secret"
+      secrets:
+        - secretName: "nublado-lab-secret"
+          secretKey: "postgres-credentials.txt"
       volumes:
         - name: "data"
           source:
@@ -60,3 +63,5 @@ jupyterhub:
     timeout: 432000
     every: 300
     maxAge: 2160000
+secrets:
+  templateSecrets: true
