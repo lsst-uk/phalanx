@@ -10,6 +10,7 @@ controller:
         AUTO_REPO_URLS: "https://github.com/lsst-uk/rsp-uk-notebooks"
         AUTO_REPO_BRANCH: "main"
         AUTO_REPO_SPECS: "https://github.com/lsst-uk/rsp-uk-notebooks@main"
+        PGPASSFILE: "/opt/lsst/software/jupyterlab/secrets/postgres-credentials.txt"
       initContainers:
         - name: "inithome"
           image:
@@ -19,6 +20,9 @@ controller:
           volumeMounts:
             - containerPath: "/home"
               volumeName: "home"
+      secrets:
+        - secretName: "nublado-lab-secret"
+          secretKey: "postgres-credentials.txt"
       pullSecret: "pull-secret"
       volumes:
         - name: "data"
