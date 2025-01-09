@@ -45,6 +45,8 @@ argo-cd:
         g, rra@slac.stanford.edu, role:admin
         g, ytl@slac.stanford.edu, role:admin
         g, cslater@slac.stanford.edu, role:admin
+        g, svoutsin@slac.stanford.edu, role:admin
+        g, ebellm@slac.stanford.edu, role:admin
 
         g, dirving@slac.stanford.edu, role:developer
         g, fritzm@slac.stanford.edu, role:developer
@@ -61,6 +63,7 @@ argo-cd:
         g, vbecker@slac.stanford.edu, role:developer
         g, gmegias@slac.stanford.edu, role:developer
         g, salnikov@slac.stanford.edu, role:developer
+        g, kadrlica@slac.stanford.edu, role:developer
       scopes: "[email]"
 
   server:

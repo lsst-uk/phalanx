@@ -8,6 +8,17 @@ atqueue:
     RUN_ARG: 2 --state enabled
     USER_USERNAME: user
     IMAGE_SERVER_URL: http://lsstcam-mcm.ls.lsst.org
+  envSecrets:
+  - name: USER_USER_PASS
+    key: user-user-pass
+  - name: AWS_ACCESS_KEY_ID
+    key: aws-access-key-id
+  - name: AWS_SECRET_ACCESS_KEY
+    key: aws-secret-access-key
+  - name: MYS3_ACCESS_KEY
+    key: aws-access-key-id
+  - name: MYS3_SECRET_KEY
+    key: aws-secret-access-key
   butlerSecret:
     containerPath: &bS-cP /home/saluser/.lsst
     dbUser: &bS-dbU oods
@@ -40,6 +51,13 @@ atqueue:
           matchLabels:
             csc-class: scriptqueue
         topologyKey: "kubernetes.io/hostname"
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 1700Mi
+    requests:
+      cpu: 100m
+      memory: 580Mi
 
 atscheduler:
   classifier: scheduler2
@@ -75,6 +93,13 @@ atscheduler:
           matchLabels:
             csc-class: scheduler
         topologyKey: "kubernetes.io/hostname"
+  resources:
+    limits:
+      cpu: 2500m
+      memory: 10000Mi
+    requests:
+      cpu: 250m
+      memory: 3100Mi
 
 mtqueue:
   classifier: scriptqueue1
@@ -86,6 +111,17 @@ mtqueue:
     RUN_ARG: 1 --state enabled
     USER_USERNAME: user
     IMAGE_SERVER_URL: http://lsstcam-mcm.ls.lsst.org
+  envSecrets:
+  - name: USER_USER_PASS
+    key: user-user-pass
+  - name: AWS_ACCESS_KEY_ID
+    key: aws-access-key-id
+  - name: AWS_SECRET_ACCESS_KEY
+    key: aws-secret-access-key
+  - name: MYS3_ACCESS_KEY
+    key: aws-access-key-id
+  - name: MYS3_SECRET_KEY
+    key: aws-secret-access-key
   butlerSecret:
     containerPath: *bS-cP
     dbUser: *bS-dbU
@@ -118,6 +154,13 @@ mtqueue:
           matchLabels:
             csc-class: scriptqueue
         topologyKey: "kubernetes.io/hostname"
+  resources:
+    limits:
+      cpu: 300m
+      memory: 1500Mi
+    requests:
+      cpu: 30m
+      memory: 430Mi
 
 mtscheduler:
   classifier: scheduler1
@@ -153,6 +196,13 @@ mtscheduler:
           matchLabels:
             csc-class: scheduler
         topologyKey: "kubernetes.io/hostname"
+  resources:
+    limits:
+      cpu: 2700m
+      memory: 7000Mi
+    requests:
+      cpu: 270m
+      memory: 2100Mi
 
 ocsqueue:
   classifier: scriptqueue3
@@ -164,6 +214,17 @@ ocsqueue:
     RUN_ARG: 3 --state enabled
     USER_USERNAME: user
     IMAGE_SERVER_URL: http://lsstcam-mcm.ls.lsst.org
+  envSecrets:
+  - name: USER_USER_PASS
+    key: user-user-pass
+  - name: AWS_ACCESS_KEY_ID
+    key: aws-access-key-id
+  - name: AWS_SECRET_ACCESS_KEY
+    key: aws-secret-access-key
+  - name: MYS3_ACCESS_KEY
+    key: aws-access-key-id
+  - name: MYS3_SECRET_KEY
+    key: aws-secret-access-key
   butlerSecret:
     containerPath: *bS-cP
     dbUser: *bS-dbU
@@ -196,6 +257,13 @@ ocsqueue:
           matchLabels:
             csc-class: scriptqueue
         topologyKey: "kubernetes.io/hostname"
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1500Mi
+    requests:
+      cpu: 50m
+      memory: 430Mi
 
 ocsscheduler:
   classifier: scheduler3
@@ -231,8 +299,22 @@ ocsscheduler:
           matchLabels:
             csc-class: scheduler
         topologyKey: "kubernetes.io/hostname"
+  resources:
+    limits:
+      cpu: 2600m
+      memory: 7000Mi
+    requests:
+      cpu: 260m
+      memory: 2100Mi
 
 watcher:
   image:
     repository: ts-dockerhub.lsst.org/watcher
     pullPolicy: Always
+  resources:
+    limits:
+      cpu: 2400m
+      memory: 1500Mi
+    requests:
+      cpu: 240m
+      memory: 445Mi
