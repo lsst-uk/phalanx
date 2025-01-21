@@ -3,7 +3,7 @@ config:
     - name: "tap"
       count: 1
       users:
-        - username: "bot-mobu-tap"
+        - username: "bot-mobu-recommended"
           uidnumber: 74768
           gidnumber: 74768
       scopes: ["read:tap"]
