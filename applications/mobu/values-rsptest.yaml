@@ -50,7 +50,7 @@ config:
     - name: "notebooks"
       count: 1
       users:
-        - username: "bot-mobu-weekly"
+        - username: "bot-mobu-recommended"
           uidnumber: 74769
           gidnumber: 74769
       scopes: ["exec:notebook", "exec:portal", "read:image", "read:tap"]
