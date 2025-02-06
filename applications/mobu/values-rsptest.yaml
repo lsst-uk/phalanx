@@ -34,7 +34,7 @@ config:
     - name: "tap"
       count: 1
       users:
-        - username: "bot-mobu-tap"
+        - username: "bot-mobu-recommended"
           uidnumber: 74768
           gidnumber: 74768
       scopes: ["read:tap"]
@@ -45,4 +45,20 @@ config:
             - "SELECT TOP 10 * FROM  video.hsc_g_f"
             - "SELECT TOP 10 * FROM  TAP_SCHEMA.tables"
             - "SELECT TOP 10 * FROM  viking.hsc_g_f"
+        restart: true
+config:
+  autostart:
+    - name: "notebooks"
+      count: 1
+      users:
+        - username: "bot-mobu-weekly"
+          uidnumber: 74769
+          gidnumber: 74769
+      scopes: ["exec:notebook", "exec:portal", "read:image", "read:tap"]
+      business:
+        type: "NotebookRunner"
+        options:
+          repo_url: "https://github.com/lsst-uk/rsp-uk-notebooks.git"
+          repo_branch: "mobu"
+          max_executions: 1
         restart: true
