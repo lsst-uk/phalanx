@@ -35,7 +35,7 @@ config:
     - name: "tap"
       count: 1
       users:
-        - username: "bot-mobu-recommended"
+        - username: "bot-mobu-tap"
           uidnumber: 74768
           gidnumber: 74768
       scopes: ["read:tap"]
@@ -50,7 +50,7 @@ config:
     - name: "notebooks"
       count: 1
       users:
-        - username: "bot-mobu-recommended"
+        - username: "bot-mobu-tap"
           uidnumber: 74769
           gidnumber: 74769
       scopes: ["exec:notebook", "exec:portal", "read:image", "read:tap"]
