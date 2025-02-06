@@ -46,8 +46,6 @@ config:
             - "SELECT TOP 10 * FROM  TAP_SCHEMA.tables"
             - "SELECT TOP 10 * FROM  viking.hsc_g_f"
         restart: true
-config:
-  autostart:
     - name: "notebooks"
       count: 1
       users:
@@ -58,6 +56,8 @@ config:
       business:
         type: "NotebookRunner"
         options:
+          image:
+            image_class: "latest-weekly"
           repo_url: "https://github.com/lsst-uk/rsp-uk-notebooks.git"
           repo_branch: "mobu"
           max_executions: 1
