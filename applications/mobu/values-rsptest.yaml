@@ -50,15 +50,15 @@ config:
     - name: "notebooks"
       count: 1
       users:
-        - username: "bot-mobu-tap"
-          uidnumber: 74769
-          gidnumber: 74769
+        - username: "bot-mobu-recommended"
+          uidnumber: 74768
+          gidnumber: 74768
       scopes: ["exec:notebook", "exec:portal", "read:image", "read:tap"]
       business:
         type: "NotebookRunner"
         options:
           image:
-            image_class: "latest-weekly"
+            image_class: "recommended"
           repo_url: "https://github.com/lsst-uk/rsp-uk-notebooks.git"
           repo_ref: "mobu"
         restart: true
