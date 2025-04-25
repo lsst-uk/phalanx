@@ -1,9 +1,11 @@
+platform: keda
+
 knative:
-  maxMessages: 1000 # Kubernetes can't support more pods yet
+  maxMessages: 2000
 
 kafka:
-  schemaRegistryUrl: http://10.96.24.88:8081
-  sasquatchAddress: 10.96.121.181:9094
+  schemaRegistryUrl: http://10.104.61.102:8081
+  sasquatchAddress: 172.24.10.20:9094
   consumerGroup: next-visit-fan-out-1
   nextVisitTopic: lsst.sal.ScriptQueue.logevent_nextVisit
 
@@ -11,6 +13,16 @@ image:
   repository: ghcr.io/lsst-dm/next_visit_fan_out
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: 2.5.0
+  tag: 2.8.1
 
-instruments: "LATISS"
+instruments: "LSSTCam"
+
+detectorConfig:
+  LSSTCam:
+    # Detectors turned off in early Commissioning
+    78: False
+    79: False
+    80: False
+    120: False
+    121: False
+    122: False

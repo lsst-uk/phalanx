@@ -94,6 +94,10 @@ dsm2-sim:
   # -- Enable the DSM:2 simulator CSC
   enabled: false
 
+earthquake-ess302:
+  # -- Enable ESS:302 CSC
+  enabled: false
+
 eas:
   # -- Enable the EAS CSC
   enabled: false
@@ -102,12 +106,32 @@ eas-sim:
   # -- Enable the EAS simulator CSC
   enabled: false
 
-epm1:
-  # -- Enable the EPM:1 CSC
+epm-ess303:
+  # -- Enable the ESS:303 CSC
   enabled: false
 
-epm1-sim:
-  # -- Enable the EPM:1 simulator CSC
+epm-ess303-sim:
+  # -- Enable the ESS:303 simulator CSC
+  enabled: false
+
+epm-generator-ess305:
+  # -- Enable the ESS:305 CSC
+  enabled: false
+
+epm-generator-ess305-sim:
+  # -- Enable the ESS:305 simulator CSC
+  enabled: false
+
+epm-generator-ess306:
+  # -- Enable the ESS:306 CSC
+  enabled: false
+
+epm-generator-ess306-sim:
+  # -- Enable the ESS:303 simulator CSC
+  enabled: false
+
+hvac:
+  # -- Enable the HVAC CSC
   enabled: false
 
 m1m3-ess113:
@@ -150,6 +174,14 @@ mtdome-ess108-sim:
   # -- Enable the ESS:108 simulator CSC
   enabled: false
 
+ringss-ess304:
+  # -- Enable the ESS:304 CSC
+  enabled: false
+
+ringss-ess304-sim:
+  # -- Enable the ESS:304 simulator CSC
+  enabled: false
+
 tma-ess001:
   # -- Enable the ESS:1 CSC
   enabled: false
@@ -180,6 +212,10 @@ tma-ess110:
 
 tma-ess110-sim:
   # -- Enable the ESS:110 simulator CSC
+  enabled: false
+
+weatherforecast:
+  # -- Enable the WeatherForecast CSC
   enabled: false
 
 # The following will be set by parameters injected by Argo CD and should not

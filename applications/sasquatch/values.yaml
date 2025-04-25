@@ -38,6 +38,10 @@ influxdb:
     # -- InfluxDB image tag
     tag: "1.11.8"
 
+  livenessProbe:
+    # -- Liveness probe initial delay in seconds
+    initialDelaySeconds: 90
+
   persistence:
     # -- Whether to use persistent volume claims. By default, `storageClass`
     # is undefined, choosing the default provisioner (standard on GKE).
@@ -125,10 +129,10 @@ influxdb:
 
       # -- Maximum number of running queries allowed on the instance (0 is
       # unlimited)
-      max-concurrent-queries: 1000
+      max-concurrent-queries: 500
 
       # -- Maximum duration a query is allowed to run before it is killed
-      query-timeout: "30s"
+      query-timeout: "15s"
 
       # -- Maximum duration a query can run before InfluxDB logs it as a slow
       # query
@@ -160,26 +164,41 @@ influxdb:
       memory: 96Gi
       cpu: 8
 
+customInfluxDBIngress:
+  # -- Whether to enable the custom ingress for InfluxDB OSS
+  enabled: false
+
+  # -- Hostname of the ingress
+  # @default -- None, must be set if the ingress is enabled
+  hostname: ""
+
+  # -- Annotations to add to the ingress
+  # @default -- See `values.yaml`
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+
+  # -- Path for the ingress
+  # @default -- `"/influxdb(/\|$)(.*)"`
+  path: "/influxdb(/|$)(.*)"
+
 influxdb-enterprise:
   # -- Whether to use influxdb-enterprise
   enabled: false
 
-# -- Overrides for kafka-connect-manager configuration
-kafka-connect-manager: {}
-
-kafka-connect-manager-enterprise:
-  # -- Whether enterprise kafka-connect-manager is enabled
+kafka-connect-manager:
+  # -- Whether to enable the Kafka Connect Manager
   enabled: false
 
-# -- Overrides for telegraf-kafka-consumer configuration
-telegraf-kafka-consumer: {}
+telegraf:
+  # -- Whether to enable the telegraf subchart
+  enabled: false
 
 rest-proxy:
   # -- Whether to enable the REST proxy
   enabled: false
 
 chronograf:
-  # -- Whether Chronograf is enabled
+  # -- Whether to enable Chronograf
   enabled: true
 
   image:
@@ -215,14 +234,15 @@ chronograf:
     className: "nginx"
 
     # -- Path for the ingress
-    # @default -- `"/chronograf(/\|$)"`
-    path: "/chronograf(/|$)"
+    # @default -- `"/chronograf"`
+    path: "/chronograf"
 
   # -- Additional environment variables for Chronograf
   # @default -- See `values.yaml`
   env:
     HOST_PAGE_DISABLED: true
     BASE_PATH: /chronograf
+    INACTIVITY_DURATION: 1h
 
   # -- Name of secret to use. The keys `generic_client_id`,
   # `generic_client_secret`, and `token_secret` should be set.
@@ -239,7 +259,7 @@ chronograf:
       cpu: 4
 
 kapacitor:
-  # -- Whether Kapacitor is enabled
+  # -- Whether to enable Kapacitor
   enabled: true
 
   image:
@@ -283,7 +303,7 @@ kapacitor:
       cpu: 4
 
 kafdrop:
-  # -- Whether Kafdrop is enabled
+  # -- Whether to enable the kafdrop subchart
   enabled: true
 
 squareEvents:
@@ -291,7 +311,35 @@ squareEvents:
   enabled: false
 
 backup:
-  # -- Whether to enable Sasquatch backups
+  # -- Whether to enable the backups subchart
+  enabled: false
+
+tap:
+  # -- Whether to enable the tap subchart
+  enabled: false
+
+obsenv:
+  # -- Whether to enable the obsenv subchart
+  enabled: false
+
+backpack:
+  # -- Whether to enable the backpack subchart
+  enabled: false
+
+prompt-processing:
+  # -- Whether to enable the prompt-processing subchart
+  enabled: false
+
+control-system:
+  # -- Whether to enable the control-system subchart
+  enabled: false
+
+obsloctap:
+  # -- Whether to enable the obsloctap subchart
+  enabled: false
+
+consdb:
+  # -- Whether to enable the consdb subchart
   enabled: false
 
 global:

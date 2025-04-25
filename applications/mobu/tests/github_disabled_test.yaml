@@ -15,6 +15,7 @@ tests:
           value: |
             autostart: []
             availableServices: []
+            gafaelfawrTimeout: null
             githubCiApp: null
             githubRefreshApp: null
             logLevel: INFO
@@ -28,9 +29,11 @@ tests:
                 suffix: ""
             pathPrefix: /mobu
             profile: production
+            sentryEnvironment: null
+            sentryTracesSampleConfig: 0
             slackAlerts: true
-  - it: "Should not inject GitHub CI app secrets into the Deployment env"
-    template: "deployment.yaml"
+  - it: "Should not inject GitHub CI app secrets into the StatefulSet env"
+    template: "stateful-set.yaml"
     asserts:
       - notContains:
           path: "spec.template.spec.containers[0].env"
@@ -47,8 +50,8 @@ tests:
           any: true
           content:
             name: "MOBU_GITHUB_CI_APP_WEBHOOK_SECRET"
-  - it: "Should not inject GitHub refresh app secrets into the Deployment env"
-    template: "deployment.yaml"
+  - it: "Should not inject GitHub refresh app secrets into the StatefulSet env"
+    template: "stateful-set.yaml"
     asserts:
       - notContains:
           path: "spec.template.spec.containers[0].env"

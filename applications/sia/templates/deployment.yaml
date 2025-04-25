@@ -57,15 +57,21 @@ spec:
             - name: "http"
               containerPort: 8080
               protocol: "TCP"
+          livenessProbe:
+            httpGet:
+              path: /healthcheck
+              port: http
           readinessProbe:
             httpGet:
-              path: {{ .Values.config.pathPrefix }}
-              port: "http"
+              path: /healthcheck
+              port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           env:
             - name: "SIA_BUTLER_DATA_COLLECTIONS"
               value: {{ .Values.config.butlerDataCollections | toJson | quote }}
+            - name: "SIA_ENVIRONMENT_NAME"
+              value: {{ .Values.global.host }}
             {{- if .Values.config.slackAlerts }}
             - name: "SIA_SLACK_WEBHOOK"
               valueFrom:
@@ -83,12 +89,53 @@ spec:
             - name: "GOOGLE_APPLICATION_CREDENTIALS"
               value: "/tmp/secrets/butler-gcs-idf-creds.json"
             {{- end }}
-          {{- if .Values.config.directButlerEnabled }}
+            {{- if .Values.config.enableSentry }}
+            - name: "SIA_SENTRY_DSN"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "sia.fullname" . }}
+                  key: "sentry-dsn"
+            - name: "SIA_SENTRY_TRACES_SAMPLE_RATE"
+              value: {{ .Values.config.sentryTracesSampleRate | quote }}
+            {{- end }}
+            {{- if .Values.config.metrics.enabled }}
+            - name: "KAFKA_BOOTSTRAP_SERVERS"
+              valueFrom:
+                secretKeyRef:
+                  name: "sia-kafka"
+                  key: "bootstrapServers"
+            - name: "KAFKA_SECURITY_PROTOCOL"
+              valueFrom:
+                secretKeyRef:
+                  name: "sia-kafka"
+                  key: "securityProtocol"
+            - name: "KAFKA_CLIENT_CERT_PATH"
+              value: "/etc/sia-kafka/user.crt"
+            - name: "KAFKA_CLIENT_KEY_PATH"
+              value: "/etc/sia-kafka/user.key"
+            - name: "KAFKA_CLUSTER_CA_PATH"
+              value: "/etc/sia-kafka/ca.crt"
+            {{- end }}
           volumeMounts:
+            {{- if .Values.config.metrics.enabled }}
+            - name: "kafka"
+              mountPath: "/etc/sia-kafka/ca.crt"
+              readOnly: true
+              subPath: "ssl.truststore.crt"
+            - name: "kafka"
+              mountPath: "/etc/sia-kafka/user.crt"
+              readOnly: true
+              subPath: "ssl.keystore.crt"
+            - name: "kafka"
+              mountPath: "/etc/sia-kafka/user.key"
+              readOnly: true
+              subPath: "ssl.keystore.key"
+            {{- end }}
+            {{- if .Values.config.directButlerEnabled }}
             - name: "secrets"
               mountPath: "/etc/butler/secrets"
               readOnly: true
-          {{- end }}
+            {{- end }}
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
@@ -103,14 +150,19 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- if .Values.config.directButlerEnabled }}
       volumes:
+        {{- if .Values.config.metrics.enabled }}
+        - name: "kafka"
+          secret:
+            secretName: "sia-kafka"
+        {{- end }}
+        {{- if .Values.config.directButlerEnabled }}
         - name: "secrets-raw"
           secret:
             secretName: "sia"
         - name: "secrets"
           emptyDir: {}
-      {{- end }}
+        {{- end }}
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000

@@ -1,5 +1,6 @@
 rubintv:
   siteTag: "usdf-prod"
+  separateSecrets: false
 
   imagePullSecrets:
   - name: pull-secret
@@ -8,7 +9,7 @@ rubintv:
     debug: true
     env:
     - name: S3_ENDPOINT_URL
-      value: &s3E "https://s3dfrgw.slac.stanford.edu"
+      value: &s3E "https://sdfembs3.sdf.slac.stanford.edu"
     - name: RAPID_ANALYSIS_LOCATION
       value: "USDF"
     - name: DDV_DEPLOY_BRANCH
@@ -18,7 +19,7 @@ rubintv:
     - name: DDV_CLIENT_WS_ADDRESS
       value: "rubintv/ws/ddv"
     image:
-      tag: v2.6.0
+      tag: v2.6.5
       pullPolicy: Always
 
   workers:
@@ -33,7 +34,7 @@ rubintv:
     script: rubintv_worker.py -a rubintv -p 8080 -l usdf
     env:
     - name: S3_ENDPOINT_URL
-      value: "https://sdfembs3.sdf.slac.stanford.edu"
+      value: *s3E
     - name: DAF_BUTLER_REPOSITORY_INDEX
       value: "s3://rubin-summit-users/data-repos.yaml"
     - name: DEPLOY_BRANCH

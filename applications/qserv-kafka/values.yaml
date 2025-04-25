@@ -1,0 +1,122 @@
+# Default values for qserv-kafka.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+config:
+  # -- Kafka consumer group ID
+  consumerGroupId: "qserv"
+
+  # -- Kafka topic for query execution requests
+  jobRunTopic: "lsst.tap.job-run"
+
+  # -- Kafka topic for query status
+  jobStatusTopic: "lsst.tap.job-status"
+
+  # -- Logging level
+  logLevel: "INFO"
+
+  # -- Logging profile (`production` for JSON, `development` for
+  # human-friendly)
+  logProfile: "production"
+
+  # -- URL to the Qserv MySQL interface (must use a scheme of `mysql+asyncmy`)
+  # @default -- None, must be set
+  qservDatabaseUrl: null
+
+  # -- Interval at which Qserv is polled for query status in Safir
+  # `parse_timedelta` format
+  qservPollInterval: "1s"
+
+  # -- URL to the Qserv REST API
+  # @default -- None, must be set
+  qservRestUrl: null
+
+  # -- How long to wait for result processing (retrieval and upload) before
+  # timing out, in seconds. This doubles as the timeout forcibly terminating
+  # the pod.
+  # @default -- 3600 (1 hour)
+  resultTimeout: 3600
+
+image:
+  # -- Image to use in the qserv-kafka deployment
+  repository: "ghcr.io/lsst-sqre/qserv-kafka"
+
+  # -- Pull policy for the qserv-kafka image
+  pullPolicy: "IfNotPresent"
+
+  # -- Tag of image to use
+  # @default -- The appVersion of the chart
+  tag: null
+
+ingress:
+  # -- Additional annotations for the ingress rule
+  annotations: {}
+
+# -- Affinity rules for the qserv-kafka deployment pod
+affinity: {}
+
+# -- Node selection rules for the qserv-kafka deployment pod
+nodeSelector: {}
+
+# -- Annotations for the qserv-kafka deployment pod
+podAnnotations: {}
+
+# -- Resource limits and requests for the qserv-kafka deployment pod
+# @default -- See `values.yaml`
+resources: {}
+
+# -- Tolerations for the qserv-kafka deployment pod
+tolerations: []
+
+redis:
+  config:
+    # -- Name of secret containing Redis password
+    secretName: "qserv-kafka"
+
+    # -- Key inside secret from which to get the Redis password (do not
+    # change)
+    secretKey: "redis-password"
+
+  persistence:
+    # -- Whether to persist Redis storage. Setting this to false will use
+    # `emptyDir` and lose track of all queries on restart. Only use this for a
+    # test deployment.
+    enabled: true
+
+    # -- Access mode of storage to request
+    accessMode: "ReadWriteOnce"
+
+    # -- Amount of persistent storage to request
+    size: "100Mi"
+
+    # -- Class of storage to request
+    storageClass: null
+
+    # -- Use an existing PVC, not dynamic provisioning. If this is set, the
+    # size, storageClass, and accessMode settings are ignored.
+    volumeClaimName: null
+
+  # -- Resource limits and requests for the Redis pod
+  # @default -- See `values.yaml`
+  resources:
+    limits:
+      cpu: "0.5"
+      memory: "10Mi"
+    requests:
+      cpu: "10m"
+      memory: "5Mi"
+
+# The following will be set by parameters injected by Argo CD and should not
+# be set in the individual environment values files.
+global:
+  # -- Base URL for the environment
+  # @default -- Set by Argo CD
+  baseUrl: null
+
+  # -- Host name for ingress
+  # @default -- Set by Argo CD
+  host: null
+
+  # -- Base path for Vault secrets
+  # @default -- Set by Argo CD
+  vaultSecretsPath: null

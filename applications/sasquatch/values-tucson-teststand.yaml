@@ -41,15 +41,7 @@ strimzi-kafka:
         cpu: 500m
         memory: 128Mi
   users:
-    tsSalKafka:
-      enabled: true
-    kafdrop:
-      enabled: true
     telegraf:
-      enabled: true
-    kafkaConnectManager:
-      enabled: true
-    consdb:
       enabled: true
   registry:
     ingress:
@@ -74,10 +66,14 @@ influxdb:
   persistence:
     storageClass: rook-ceph-block
   ingress:
-    enabled: true
+    enabled: false
     hostname: tucson-teststand.lsst.codes
 
-telegraf-kafka-consumer:
+customInfluxDBIngress:
+  enabled: true
+  hostname: tucson-teststand.lsst.codes
+
+telegraf:
   enabled: true
   kafkaConsumers:
     auxtel:
@@ -98,7 +94,7 @@ telegraf-kafka-consumer:
       topicRegexps: |
         [ "lsst.sal.MTMount" ]
       debug: true
-    eas:
+    envsys:
       enabled: true
       database: "efd"
       metric_batch_size: 100
@@ -189,7 +185,6 @@ telegraf-kafka-consumer:
       memory: "1Gi"
 
 kafdrop:
-  cmdArgs: "--message.format=AVRO --message.keyFormat=DEFAULT --topic.deleteEnabled=false --topic.createEnabled=false"
   ingress:
     enabled: true
     hostname: tucson-teststand.lsst.codes
@@ -202,12 +197,8 @@ rest-proxy:
   configurationOverrides:
     "access.control.allow.origin": https://tucson-teststand.lsst.codes/love
   kafka:
-    topics:
-      - test.next-visit
     topicPrefixes:
-      - test
       - lsst.obsenv
-      - lsst.dm
 
 chronograf:
   persistence:
@@ -243,3 +234,12 @@ backup:
     - name: kapacitor
       enabled: true
       retentionDays: 7
+
+obsenv:
+  enabled: true
+
+control-system:
+  enabled: true
+
+consdb:
+  enabled: true

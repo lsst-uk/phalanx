@@ -7,6 +7,16 @@ dependencies:
   version: 1.0.0
   repository: file://../../charts/csc_shared
 - name: csc
+  alias: atmonochromator
+  version: 1.0.0
+  condition: atmonochromator.enabled
+  repository: file://../../charts/csc
+- name: csc
+  alias: atwhitelight
+  version: 1.0.0
+  condition: atwhitelight.enabled
+  repository: file://../../charts/csc
+- name: csc
   alias: cbp
   version: 1.0.0
   condition: cbp.enabled
@@ -35,6 +45,16 @@ dependencies:
   alias: electrometer102-sim
   version: 1.0.0
   condition: electrometer102-sim.enabled
+  repository: file://../../charts/csc
+- name: csc
+  alias: electrometer103
+  version: 1.0.0
+  condition: electrometer103.enabled
+  repository: file://../../charts/csc
+- name: csc
+  alias: electrometer103-sim
+  version: 1.0.0
+  condition: electrometer103-sim.enabled
   repository: file://../../charts/csc
 - name: csc
   alias: electrometer201

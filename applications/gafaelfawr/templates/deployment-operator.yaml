@@ -23,8 +23,8 @@ spec:
         {{- include "gafaelfawr.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: "operator"
         gafaelfawr-redis-client: "true"
+        gafaelfawr-redis-ephemeral-client: "true"
     spec:
-      serviceAccountName: "gafaelfawr-operator"
       containers:
         - name: "gafaelfawr"
           command:
@@ -105,10 +105,15 @@ spec:
             - name: "tmp"
               mountPath: "/tmp"
             {{- end }}
+      {{- if .Values.cloudsql.enabled }}
+      initContainers:
+        {{- include "gafaelfawr.cloudsqlSidecar" . | nindent 8 }}
+      {{- end }}
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000
         runAsGroup: 1000
+      serviceAccountName: "gafaelfawr-operator"
       volumes:
         - name: "config"
           configMap:

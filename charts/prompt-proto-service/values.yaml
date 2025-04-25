@@ -86,6 +86,10 @@ s3:
 # If empty, Prompt Processing does not use a microservice.
 raw_microservice: ""
 
+# -- The URI to the MPSky ephemerides service.
+# Empty value is allowed, but its handling is undefined.
+mpSky_service: ""
+
 imageNotifications:
   # -- Hostname and port of the Kafka provider
   # @default -- None, must be set
@@ -162,6 +166,42 @@ knative:
   # This is only useful if the container runs async workers.
   # If 0, startup timeout is ignored.
   responseStartTimeout: 0
+  # -- Maximum message age to process, in seconds.
+  expiration: 3600
+
+initializer:
+  image:
+    # -- Image to use for the PP initializer
+    repository: ghcr.io/lsst-dm/prompt-init
+    # Initializer and service must be consistent; pull policy and tag can't be set independently
+  resources:
+    # -- The cpu cores requested for the initializer.
+    cpuRequest: 1
+    # -- The maximum cpu cores for the initializer.
+    cpuLimit: 1
+    # -- The minimum memory to request for the initializer.
+    memoryRequest: "512Mi"
+    # -- The maximum memory limit for the initializer.
+    memoryLimit: "1Gi"
+  cron:
+    # -- Time zone in which day_obs is computed.
+    day_obs_tz: -12
+    # -- Whether or not to pause daily initializer runs.
+    # This makes it impossible to run Prompt Processing, but avoids repo clutter if the telescope is offline.
+    suspend: false
+
+  # -- Maximum time for a single attempt to initialize the central repo (seconds).
+  timeout: 120
+  # -- Maximum number of times to attempt initializing the central repo.
+  # If the initializer fails, the PP service cannot run!
+  retries: 6
+
+  # -- Time after which to remove old initializer pods (seconds).
+  cleanup_delay: 3600
+
+  # -- Pod annotations for the init-output Job
+  # @default -- See the `values.yaml` file.
+  podAnnotations: {}
 
 # -- Override the base name for resources
 nameOverride: ""
@@ -173,9 +213,6 @@ fullnameOverride: "prompt-proto-service"
 containerConcurrency: 1
 
 debug:
-  # -- Whether or not calibs should be cached between runs of a pod.
-  # This is a temporary flag that should only be unset in specific circumstances, and only in the development environment.
-  cacheCalibs: true
   # -- Whether or not pipeline outputs should be exported to the central repo.
   # This flag does not turn off APDB writes or alert generation; those must be handled at the pipeline level or by setting up an alternative destination.
   exportOutputs: true

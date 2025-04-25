@@ -29,6 +29,17 @@ Prompt Proto Service is an event driven service for processing camera images. Th
 | prompt-proto-service.imageNotifications.imageTimeout | int | `120` | Timeout to wait after expected script completion for raw image arrival (seconds). |
 | prompt-proto-service.imageNotifications.kafkaClusterAddress | string | None, must be set | Hostname and port of the Kafka provider |
 | prompt-proto-service.imageNotifications.topic | string | None, must be set | Topic where raw image arrival notifications appear |
+| prompt-proto-service.initializer.cleanup_delay | int | `3600` | Time after which to remove old initializer pods (seconds). |
+| prompt-proto-service.initializer.cron.day_obs_tz | int | `-12` | Time zone in which day_obs is computed. |
+| prompt-proto-service.initializer.cron.suspend | bool | `false` | Whether or not to pause daily initializer runs. This makes it impossible to run Prompt Processing, but avoids repo clutter if the telescope is offline. |
+| prompt-proto-service.initializer.image.repository | string | `"ghcr.io/lsst-dm/prompt-init"` | Image to use for the PP initializer |
+| prompt-proto-service.initializer.podAnnotations | object | See the `values.yaml` file. | Pod annotations for the init-output Job |
+| prompt-proto-service.initializer.resources.cpuLimit | int | `1` | The maximum cpu cores for the initializer. |
+| prompt-proto-service.initializer.resources.cpuRequest | int | `1` | The cpu cores requested for the initializer. |
+| prompt-proto-service.initializer.resources.memoryLimit | string | `"1Gi"` | The maximum memory limit for the initializer. |
+| prompt-proto-service.initializer.resources.memoryRequest | string | `"512Mi"` | The minimum memory to request for the initializer. |
+| prompt-proto-service.initializer.retries | int | `6` | Maximum number of times to attempt initializing the central repo. If the initializer fails, the PP service cannot run! |
+| prompt-proto-service.initializer.timeout | int | `120` | Maximum time for a single attempt to initialize the central repo (seconds). |
 | prompt-proto-service.instrument.calibRepo | string | None, must be set | URI to the shared repo used for calibrations, templates, and pipeline outputs. If `registry.centralRepoFile` is set, this URI points to a local redirect instead of the central repo itself. |
 | prompt-proto-service.instrument.name | string | `"LSSTComCamSim"` | The "short" name of the instrument |
 | prompt-proto-service.instrument.pipelines.main | string | None, must be set | YAML-formatted config describing which pipeline(s) should be run for which visits' raws. Fields are still in flux; see [the source code](https://github.com/lsst-dm/prompt_processing/blob/main/python/activator/config.py) for examples. |
@@ -39,6 +50,7 @@ Prompt Proto Service is an event driven service for processing camera images. Th
 | prompt-proto-service.knative.cpuRequest | int | `1` | The cpu cores requested for the full pod (see `containerConcurrency`). |
 | prompt-proto-service.knative.ephemeralStorageLimit | string | `"5Gi"` | The maximum storage space allowed for each container (mostly local Butler). This allocation is for the full pod (see `containerConcurrency`) |
 | prompt-proto-service.knative.ephemeralStorageRequest | string | `"5Gi"` | The storage space reserved for each container (mostly local Butler). This allocation is for the full pod (see `containerConcurrency`) |
+| prompt-proto-service.knative.expiration | int | `3600` | Maximum message age to process, in seconds. |
 | prompt-proto-service.knative.extraTimeout | int | `10` | To acommodate scheduling problems, Knative waits for a request for twice `worker.timeout`. This parameter adds extra time to that minimum (seconds). |
 | prompt-proto-service.knative.gpu | bool | `false` | GPUs enabled. |
 | prompt-proto-service.knative.gpuRequest | int | `0` | The number of GPUs to request for the full pod (see `containerConcurrency`). |
@@ -47,10 +59,12 @@ Prompt Proto Service is an event driven service for processing camera images. Th
 | prompt-proto-service.knative.memoryRequest | string | `"2Gi"` | The minimum memory to request for the full pod (see `containerConcurrency`). |
 | prompt-proto-service.knative.responseStartTimeout | int | `0` | Maximum time that a container can send nothing to Knative after initial submission (seconds). This is only useful if the container runs async workers. If 0, idle timeout is ignored. |
 | prompt-proto-service.logLevel | string | log prompt_processing at DEBUG, other LSST code at INFO, and third-party code at WARNING. | Requested logging levels in the format of [Middleware's \-\-log-level argument](https://pipelines.lsst.io/v/daily/modules/lsst.daf.butler/scripts/butler.html#cmdoption-butler-log-level). |
+| prompt-proto-service.mpSky_service | string | `""` | The URI to the MPSky ephemerides service. Empty value is allowed, but its handling is undefined. |
 | prompt-proto-service.podAnnotations | object | See the `values.yaml` file. | Annotations for the prompt-proto-service pod |
 | prompt-proto-service.raw_microservice | string | `""` | The URI to a microservice that maps image metadata to a file location. If empty, Prompt Processing does not use a microservice. |
 | prompt-proto-service.registry.centralRepoFile | bool | `false` | If set, this application's Vault secret must contain a `central_repo_file` key containing a remote Butler configuration, and `instrument.calibRepo` is the local path where this file is mounted. |
 | prompt-proto-service.s3.auth_env | bool | `true` | If set, get S3 credentials from this application's Vault secret. |
+| prompt-proto-service.s3.checksum | string | `"WHEN_REQUIRED"` | If set, configure S3 checksum options. |
 | prompt-proto-service.s3.disableBucketValidation | int | `0` | Set this to disable validation of S3 bucket names, allowing Ceph multi-tenant colon-separated names to be used. |
 | prompt-proto-service.s3.endpointUrl | string | `""` |  |
 | prompt-proto-service.s3.imageBucket | string | None, must be set | Bucket containing the incoming raw images |

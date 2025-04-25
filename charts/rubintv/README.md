@@ -12,6 +12,8 @@ Real-time display front end
 |-----|------|---------|-------------|
 | frontend.affinity | object | `{}` | Affinity rules for the rubintv frontend pod |
 | frontend.debug | bool | `false` | If set to true, enable more verbose logging. |
+| frontend.env | list | `[]` | This section holds a list of key, value pairs for environmental variables (name: key, value: value). |
+| frontend.envSecrets | list | See `values.yaml` | This section holds specifications for secret injection. |
 | frontend.image | object | `{"pullPolicy":"IfNotPresent","repository":"ghcr.io/lsst-ts/rubintv","tag":""}` | Settings for rubintv OCI image |
 | frontend.image.pullPolicy | string | `"IfNotPresent"` | Pull policy for the rubintv image |
 | frontend.image.repository | string | `"ghcr.io/lsst-ts/rubintv"` | rubintv frontend image to use |
@@ -24,7 +26,6 @@ Real-time display front end
 | fullnameOverride | string | `""` | Override the full name for resources (includes the release name) |
 | global.baseUrl | string | Set by Argo CD | Base URL for the environment |
 | global.host | string | Set by Argo CD | Host name for ingress |
-| global.tsVaultSecretsPath | string | `""` | Relative path for tsVault secrets |
 | global.vaultSecretsPath | string | Set by Argo CD | Base path for Vault secrets |
 | imagePullSecrets | list | See `values.yaml` | Image pull secrets. |
 | ingress.annotations | object | `{}` | Additional annotations to add to the ingress |
@@ -41,7 +42,7 @@ Real-time display front end
 | redis.podAnnotations | object | `{}` | Pod annotations for the Redis pod |
 | redis.resources | object | See `values.yaml` | Resource limits and requests for the Redis pod |
 | redis.tolerations | list | `[]` | Tolerations for the Redis pod |
-| separateSecrets | bool | `false` | Whether to use the new secrets management scheme |
+| separateSecrets | bool | `true` | Whether to use the new secrets management scheme |
 | siteTag | string | `""` | A special tag for letting the scripts know where they are running.  Must be overridden at each site |
 | workers.affinity | object | `{}` | Affinity rules for the rubintv worker pods |
 | workers.debug | bool | `false` | If set to true, enable more verbose logging. |
