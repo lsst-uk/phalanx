@@ -91,7 +91,6 @@ love-manager:
         ADMIN_USER_PASS: admin-user-pass
         USER_USER_PASS: user-user-pass
         CMD_USER_PASS: cmd-user-pass
-        AUTHLIST_USER_PASS: authlist-user-pass
         AUTH_LDAP_BIND_PASSWORD: auth-ldap-bind-password
         DB_PASS: db-pass
         REDIS_PASS: redis-pass
@@ -154,7 +153,6 @@ love-manager:
         ADMIN_USER_PASS: admin-user-pass
         USER_USER_PASS: user-user-pass
         CMD_USER_PASS: cmd-user-pass
-        AUTHLIST_USER_PASS: authlist-user-pass
         AUTH_LDAP_BIND_PASSWORD: auth-ldap-bind-password
         DB_PASS: db-pass
         REDIS_PASS: redis-pass
@@ -217,7 +215,6 @@ love-manager:
         ADMIN_USER_PASS: admin-user-pass
         USER_USER_PASS: user-user-pass
         CMD_USER_PASS: cmd-user-pass
-        AUTHLIST_USER_PASS: authlist-user-pass
         AUTH_LDAP_BIND_PASSWORD: auth-ldap-bind-password
         DB_PASS: db-pass
         REDIS_PASS: redis-pass
@@ -329,24 +326,64 @@ love-nginx:
           proxy_set_header Host $host/love;
       }
     }
-  loveConfig: |
-    {
-      "alarms": {
-        "minSeveritySound": "mute",
-        "minSeverityNotification": "mute"
-      },
-      "camFeeds": {
-        "simcam": "/love/simcam"
-      },
-      "efd": {
-        "defaultEfdInstance": "tucson_teststand_efd",
-        "urlStatus": "https://tucson-teststand.lsst.codes/influxdb/health"
-      },
-      "sal": {
+  loveConfigs:
+  - name: default
+    config: |
+      {
+        "alarms": {
+          "minSeveritySound": "warning",
+          "minSeverityNotification": "warning"
+        },
+        "camFeeds": {
+          "simcam": "/love/simcam"
+        },
+        "efd": {
+          "defaultEfdInstance": "tucson_teststand_efd",
+          "urlStatus": "https://tucson-teststand.lsst.codes/influxdb/health"
+        },
+        "sal": {
           "urlStatus": "https://tucson-teststand.lsst.codes/sasquatch-rest-proxy/brokers",
           "expectedBrokerList": [0, 1, 2]
+        }
       }
-    }
+  - name: serious-alarms
+    config: |
+      {
+        "alarms": {
+          "minSeveritySound": "serious",
+          "minSeverityNotification": "warning"
+        },
+        "camFeeds": {
+          "simcam": "/love/simcam"
+        },
+        "efd": {
+          "defaultEfdInstance": "tucson_teststand_efd",
+          "urlStatus": "https://tucson-teststand.lsst.codes/influxdb/health"
+        },
+        "sal": {
+          "urlStatus": "https://tucson-teststand.lsst.codes/sasquatch-rest-proxy/brokers",
+          "expectedBrokerList": [0, 1, 2]
+        }
+      }
+  - name: no-alarms
+    config: |
+      {
+        "alarms": {
+          "minSeveritySound": "mute",
+          "minSeverityNotification": "warning"
+        },
+        "camFeeds": {
+          "simcam": "/love/simcam"
+        },
+        "efd": {
+          "defaultEfdInstance": "tucson_teststand_efd",
+          "urlStatus": "https://tucson-teststand.lsst.codes/influxdb/health"
+        },
+        "sal": {
+          "urlStatus": "https://tucson-teststand.lsst.codes/sasquatch-rest-proxy/brokers",
+          "expectedBrokerList": [0, 1, 2]
+        }
+      }
 
 love-producer:
   image:

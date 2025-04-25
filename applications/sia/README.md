@@ -13,10 +13,17 @@ Simple Image Access (SIA) IVOA Service using Butler
 | affinity | object | `{}` | Affinity rules for the sia deployment pod |
 | config.butlerDataCollections | list | `[]` | List of data (Butler) Collections Expected attributes: `config`, `label`, `name`, `butler_type`, `repository` & `datalink_url` |
 | config.directButlerEnabled | bool | `false` | Whether direct butler access is enabled |
+| config.enableSentry | bool | `false` | Whether to send trace and telemetry information to Sentry. This traces every call and therefore should only be enabled in non-production environments. |
 | config.logLevel | string | `"INFO"` | Logging level |
 | config.logProfile | string | `"production"` | Logging profile (`production` for JSON, `development` for human-friendly) |
+| config.metrics.application | string | `"sia"` | Name under which to log metrics. Generally there is no reason to change this. |
+| config.metrics.enabled | bool | `false` | Whether to enable sending metrics |
+| config.metrics.events.topicPrefix | string | `"lsst.square.metrics.events"` | Topic prefix for events. It may sometimes be useful to change this in development environments. |
+| config.metrics.schemaManager.registryUrl | string | Sasquatch in the local cluster | URL of the Confluent-compatible schema registry server |
+| config.metrics.schemaManager.suffix | string | `""` | Suffix to add to all registered subjects. This is sometimes useful for experimentation during development. |
 | config.pathPrefix | string | `"/api/sia"` | URL path prefix |
 | config.pgUser | string | `"rubin"` | User to use from the PGPASSFILE if sia is using a direct Butler connection |
+| config.sentryTracesSampleRate | float | `0` |  |
 | config.slackAlerts | bool | `false` | Whether to send alerts and status to Slack. |
 | fullnameOverride | string | `""` | Override the full name for resources (includes the release name) |
 | global.baseUrl | string | Set by Argo CD | Base URL for the environment |

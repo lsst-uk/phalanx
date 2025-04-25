@@ -58,8 +58,20 @@ mtaos:
   image:
     repository: ts-dockerhub.lsst.org/mtaos
     pullPolicy: Always
+  env:
+    DAF_BUTLER_REPOSITORY_INDEX: /project/data-repos.yaml
+    LSST_RESOURCES_S3_PROFILE_butler: https://s3-butler.ls.lsst.org
+    AWS_SHARED_CREDENTIALS_FILE: /home/saluser/.lsst/aws-credentials.ini
+    AWS_REQUEST_CHECKSUM_CALCULATION: WHEN_REQUIRED
+  s3Credentials:
+  - butler-credentials.ini
   <<: *butler-secret
   nfsMountpoint:
+  - name: project-shared
+    containerPath: /project
+    readOnly: false
+    server: nfs-project.ls.lsst.org
+    serverPath: /project
   - name: scratch
     containerPath: /scratch
     readOnly: false
@@ -117,7 +129,7 @@ mtdometrajectory:
       memory: 115Mi
 
 mtheaderservice:
-  enabled: true
+  enabled: false
   image:
     repository: ts-dockerhub.lsst.org/headerservice
     pullPolicy: Always
@@ -125,15 +137,43 @@ mtheaderservice:
     URL_SPEC: --lfa_mode s3 --s3instance ls
     TSTAND_HEADERSERVICE: BASE
     CAMERA: mt
+    AWS_REQUEST_CHECKSUM_CALCULATION: WHEN_REQUIRED
   envSecrets:
   - name: AWS_ACCESS_KEY_ID
     key: aws-access-key-id
   - name: AWS_SECRET_ACCESS_KEY
     key: aws-secret-access-key
-  - name: MYS3_ACCESS_KEY
+  resources:
+    limits:
+      cpu: 2000m
+      memory: 2000Mi
+    requests:
+      cpu: 200m
+      memory: 500Mi
+
+mtheaderservice-sim:
+  enabled: true
+  image:
+    repository: ts-dockerhub.lsst.org/headerservice
+    pullPolicy: Always
+  env:
+    URL_SPEC: --lfa_mode s3 --s3instance ls
+    RUN_ARG: --playback
+    TSTAND_HEADERSERVICE: BASE
+    HEADERSERVICE_PLAYLIST_DIR: /project/headerservice
+    CAMERA: mt
+    AWS_REQUEST_CHECKSUM_CALCULATION: WHEN_REQUIRED
+  envSecrets:
+  - name: AWS_ACCESS_KEY_ID
     key: aws-access-key-id
-  - name: MYS3_SECRET_KEY
+  - name: AWS_SECRET_ACCESS_KEY
     key: aws-secret-access-key
+  nfsMountpoint:
+  - name: project-shared
+    containerPath: /project
+    readOnly: false
+    server: nfs-project.ls.lsst.org
+    serverPath: /project
   resources:
     limits:
       cpu: 2000m
@@ -150,6 +190,8 @@ mtm1m3-sim:
   env:
     LSST_KAFKA_TLM_FLUSH_MS: 0
     LSST_KAFKA_CMDEVT_FLUSH_MS: 0
+    LSST_KAFKA_MAX_QUEUE_MSG: 200
+    LSST_KAFKA_MAX_QUEUE_MS: 100
   resources:
     limits:
       cpu: 1000m
@@ -222,11 +264,12 @@ mtoods:
     pullPolicy: Always
   env:
     CTRL_OODS_CONFIG_FILE: /etc/mtoods.yaml
-    AWS_ACCESS_KEY_ID: oods-lsstcam
-    AWS_ENDPOINT_URL: https://s3-butler.ls.lsst.org
-  envSecrets:
-  - name: AWS_SECRET_ACCESS_KEY
-    key: oods-lsstcam-secret-key
+    LSST_RESOURCES_S3_PROFILE_butler: https://s3-butler.ls.lsst.org
+    AWS_SHARED_CREDENTIALS_FILE: /home/saluser/.lsst/aws-credentials.ini
+    AWS_REQUEST_CHECKSUM_CALCULATION: WHEN_REQUIRED
+  s3Credentials:
+  - lfa-credentials.ini
+  - oods-lsstcam-credentials.ini
   <<: *butler-secret
   resources:
     limits:
@@ -248,7 +291,7 @@ mtoods:
       ingester:
           kafka:
               brokers:
-                  - sasquatch-kafka-brokers.sasquatch:9092
+                  - sasquatch-kafka-bootstrap.sasquatch:9092
               topics:
                 - lsst.s3.raw.lsstcam
               group_id: MTOODS-S3
@@ -259,11 +302,16 @@ mtoods:
                   class:
                       import : lsst.ctrl.oods.messageAttendant
                       name : MessageAttendant
-                  repoDirectory : s3://rubinobs-butler-lsstcam
+                  repoDirectory : s3://butler@rubinobs-butler-lsstcam
+                  s3profile: butler
                   collections:
                       - LSSTCam/raw/all
                   cleanCollections:
                       - collection: LSSTCam/raw/all
+                        filesOlderThan:
+                            <<: *interval
+                            days: 5
+                      - collection: LSSTCam/raw/guider
                         filesOlderThan:
                             <<: *interval
                             days: 5

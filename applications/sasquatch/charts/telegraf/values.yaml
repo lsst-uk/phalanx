@@ -1,0 +1,207 @@
+## Default values.yaml for the Telegraf subchart.
+
+# -- Wether Telegraf is enabled
+enabled: false
+
+image:
+  # -- Telegraf image repository
+  repo: "docker.io/library/telegraf"
+
+  # -- Telegraf image tag
+  tag: "1.32.1-alpine"
+
+  # -- Image pull policy
+  pullPolicy: "IfNotPresent"
+
+# -- Annotations for the Telegraf pods
+podAnnotations: {}
+
+# -- Labels for the Telegraf pods
+podLabels: {}
+
+# -- Secret names to use for Docker pulls
+imagePullSecrets: []
+
+# -- Arguments passed to the Telegraf agent on startup
+args: []
+
+# -- Telegraf agent environment variables
+# @default -- See `values.yaml`
+env:
+  - name: TELEGRAF_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: sasquatch
+        # Telegraf KafkaUser password.
+        key: telegraf-password
+  - name: INFLUXDB_USER
+    valueFrom:
+      secretKeyRef:
+        name: sasquatch
+        # InfluxDB v1 user
+        key: influxdb-user
+  - name: INFLUXDB_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: sasquatch
+        # InfluxDB v1 password
+        key: influxdb-password
+
+# -- Name of the secret with values to be added to the environment.
+envFromSecret: ""
+
+# List of Telegraf Kafka consumers to deploy.
+kafkaConsumers:
+  test:
+    # -- Enable the Telegraf Kafka consumer.
+    enabled: false
+
+    # -- Number of Telegraf Kafka consumer replicas. Increase this value to
+    # increase the consumer throughput.
+    replicaCount: 1
+
+    # -- Sends metrics to the output in batches of at most metric_batch_size
+    # metrics.
+    # @default -- 1000
+    metric_batch_size: 1000
+
+    # -- Caches metric_buffer_limit metrics for each output, and flushes this
+    # buffer on a successful write. This should be a multiple of metric_batch_size
+    # and could not be less than 2 times metric_batch_size.
+    # @default -- 100000
+    metric_buffer_limit: 100000
+
+    # -- Data collection jitter. This is used to jitter the collection by a
+    # random amount. Each plugin will sleep for a random time within jitter
+    # before collecting.
+    # @default -- "0s"
+    collection_jitter: "0s"
+
+    # -- Data flushing interval for all outputs.
+    # Don’t set this below interval.
+    # Maximum flush_interval is flush_interval + flush_jitter
+    # @default -- "10s"
+    flush_interval: "10s"
+
+    # -- Jitter the flush interval by a random amount. This is primarily to
+    # avoid large write spikes for users running a large number of telegraf
+    # instances.
+    # @default -- "0s"
+    flush_jitter: "0s"
+
+    # -- Run Telegraf in debug mode.
+    # @default -- false
+    debug: false
+
+    # -- Timestamp format. Possible values are `unix` (the default if unset) a
+    # timestamp in seconds since the Unix epoch, `unix_ms` (milliseconds),
+    # `unix_us` (microsseconds), or `unix_ns` (nanoseconds).
+    timestamp_format: "unix"
+
+    # -- Avro field to be used as the InfluxDB timestamp (optional).  If
+    # unspecified or set to the empty string, Telegraf will use the time it
+    # received the measurement.
+    timestamp_field: "private_efdStamp"
+
+    # Union mode.
+    #
+    # If empty, the default is `flatten`.  When `flatten` is set, then if you
+    # have an Avro union type of `[ "int", "float" ]` for field `a`, and you
+    # have union_field_separator set to `_`, then measurements of `a` will go
+    # into Telegraf fields `a_int` and `a_float` depending on their type.
+    # This keeps InfluxDB happy with your data even when the same Avro field
+    # has multiple types (see below).
+
+    # One common use of Avro union types is to mark fields as optional by
+    # specifying `[ "null", "<type>" ]` as the union type.  If this is set to
+    # `nullable`, the plugin will not change the field name by adding the
+    # type, but will silently discard fields whose values are null.  However,
+    # the measurement will still contain any other fields.
+    #
+    # The last possible value is `any`.  With this value, the plugin will not
+    # change the field name and will just put in whatever value it receives.
+    #
+    # WARNING: if you use `nullable` with more than one non-null type, or if
+    # you use `any`, and Telegraf is feeding InfluxDB, InfluxDB will associate
+    # that field with the first type it sees for a given its value.  If it
+    # receives another measurement with a different type in that field, it
+    # will discard that entire measurement.  Be sure you know what you're
+    # doing if you use the `any` type, or `nullable` with more than one
+    # non-null type.
+    #
+    # For Rubin, `nullable` is usually the right choice.
+    #
+    # -- Union mode: this can be one of `flatten`, `nullable`, or `any`. See
+    # `values.yaml` for extensive discussion.
+    union_mode: "nullable"
+
+    # -- Union field separator: if a single Avro field is flattened into more
+    # than one InfluxDB field (e.g. an array `a`, with four members, would
+    # yield `a0`, `a1`, `a2`, `a3`; if the field separator were `_`, these
+    # would be `a_0`...`a_3`.
+    union_field_separator: ""
+
+    # -- List of Avro fields to be recorded as InfluxDB fields.  If not
+    # specified, any Avro field that is not marked as a tag will become an
+    # InfluxDB field.
+    fields: []
+
+    # -- List of Avro fields to be recorded as InfluxDB tags.  The Avro fields
+    # specified as tags will be converted to strings before ingestion into
+    # InfluxDB.
+    tags: []
+
+    # -- List of regular expressions to specify the Kafka topics consumed by
+    # this agent.
+    topicRegexps: |
+      [ ".*Test" ]
+
+    # -- Kafka consumer offset. Possible values are `oldest` and `newest`.
+    offset: "oldest"
+
+    # -- Data precision.
+    # @default -- "1us"
+    precision: "1us"
+
+    # -- Maximum processing time for a single message.
+    # @default -- "5s"
+    max_processing_time: "5s"
+
+    # -- Maximum amount of data the server should return for a fetch request.
+    # @default -- "20MB"
+    consumer_fetch_default: "20MB"
+
+    # -- Maximum number of undelivered messages.
+    # Should be a multiple of metric_batch_size, setting it too low may never
+    # flush the broker's messages.
+    # @default -- 10000
+    max_undelivered_messages: 10000
+
+    # -- Compression codec. 0 : None, 1 : Gzip, 2 : Snappy, 3 : LZ4, 4 : ZSTD
+    # @default -- 3
+    compression_codec: 3
+
+influxdb:
+  # -- URL of the InfluxDB v1 instance to write to
+  url: "http://sasquatch-influxdb.sasquatch:8086"
+  # -- Name of the InfluxDB v1 database to write to (required)
+  database: ""
+
+# -- Kubernetes resources requests and limits
+# @default -- See `values.yaml`
+resources:
+  limits:
+    cpu: "4"
+    memory: "8Gi"
+  requests:
+    cpu: "4"
+    memory: "8Gi"
+
+# -- Node labels for pod assignment
+nodeSelector: {}
+
+# -- Affinity for pod assignment
+affinity: {}
+
+# -- Tolerations for pod assignment
+tolerations: []

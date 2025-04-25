@@ -20,14 +20,11 @@ electrometer101-sim:
     pullPolicy: Always
   env:
     RUN_ARG: 101 --simulate 1
+    AWS_REQUEST_CHECKSUM_CALCULATION: WHEN_REQUIRED
   envSecrets:
   - name: AWS_ACCESS_KEY_ID
     key: aws-access-key-id
   - name: AWS_SECRET_ACCESS_KEY
-    key: aws-secret-access-key
-  - name: MYS3_ACCESS_KEY
-    key: aws-access-key-id
-  - name: MYS3_SECRET_KEY
     key: aws-secret-access-key
   resources:
     limits:
@@ -44,14 +41,32 @@ electrometer102-sim:
     pullPolicy: Always
   env:
     RUN_ARG: 102 --simulate 1
+    AWS_REQUEST_CHECKSUM_CALCULATION: WHEN_REQUIRED
   envSecrets:
   - name: AWS_ACCESS_KEY_ID
     key: aws-access-key-id
   - name: AWS_SECRET_ACCESS_KEY
     key: aws-secret-access-key
-  - name: MYS3_ACCESS_KEY
+  resources:
+    limits:
+      cpu: 100m
+      memory: 350Mi
+    requests:
+      cpu: 10m
+      memory: 115Mi
+
+electrometer103-sim:
+  enabled: true
+  image:
+    repository: ts-dockerhub.lsst.org/electrometer
+    pullPolicy: Always
+  env:
+    RUN_ARG: 103 --simulate 1
+    AWS_REQUEST_CHECKSUM_CALCULATION: WHEN_REQUIRED
+  envSecrets:
+  - name: AWS_ACCESS_KEY_ID
     key: aws-access-key-id
-  - name: MYS3_SECRET_KEY
+  - name: AWS_SECRET_ACCESS_KEY
     key: aws-secret-access-key
   resources:
     limits:
@@ -68,14 +83,11 @@ electrometer201-sim:
     pullPolicy: Always
   env:
     RUN_ARG: 201 --simulate 1
+    AWS_REQUEST_CHECKSUM_CALCULATION: WHEN_REQUIRED
   envSecrets:
   - name: AWS_ACCESS_KEY_ID
     key: aws-access-key-id
   - name: AWS_SECRET_ACCESS_KEY
-    key: aws-secret-access-key
-  - name: MYS3_ACCESS_KEY
-    key: aws-access-key-id
-  - name: MYS3_SECRET_KEY
     key: aws-secret-access-key
   resources:
     limits:
@@ -94,14 +106,11 @@ gcheaderservice1:
     CAMERA: gc1
     TSTAND_HEADERSERVICE: BASE
     URL_SPEC: --lfa_mode s3 --s3instance ls
+    AWS_REQUEST_CHECKSUM_CALCULATION: WHEN_REQUIRED
   envSecrets:
   - name: AWS_ACCESS_KEY_ID
     key: aws-access-key-id
   - name: AWS_SECRET_ACCESS_KEY
-    key: aws-secret-access-key
-  - name: MYS3_ACCESS_KEY
-    key: aws-access-key-id
-  - name: MYS3_SECRET_KEY
     key: aws-secret-access-key
   resources:
     limits:
@@ -194,14 +203,11 @@ simulation-gencam:
     pullPolicy: Always
   env:
     RUN_ARG: 1
+    AWS_REQUEST_CHECKSUM_CALCULATION: WHEN_REQUIRED
   envSecrets:
   - name: AWS_ACCESS_KEY_ID
     key: aws-access-key-id
   - name: AWS_SECRET_ACCESS_KEY
-    key: aws-secret-access-key
-  - name: MYS3_ACCESS_KEY
-    key: aws-access-key-id
-  - name: MYS3_SECRET_KEY
     key: aws-secret-access-key
   service:
     enabled: true
@@ -221,11 +227,11 @@ tunablelaser-sim:
     repository: ts-dockerhub.lsst.org/tunablelaser
     pullPolicy: Always
   env:
-    RUN_ARG: --simulate
+    RUN_ARG: --simulate 1
   resources:
     limits:
-      cpu: 120m
-      memory: 300Mi
+      cpu: "2"
+      memory: 1000Mi
     requests:
-      cpu: 12m
-      memory: 100Mi
+      cpu: 50m
+      memory: 200Mi

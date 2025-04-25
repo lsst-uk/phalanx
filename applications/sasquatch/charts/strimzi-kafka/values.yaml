@@ -181,13 +181,7 @@ kafkaExporter:
 
   # -- Kubernetes requests and limits for the Kafka exporter
   # @default -- See `values.yaml`
-  resources:
-    limits:
-      cpu: "1"
-      memory: "256Mi"
-    requests:
-      cpu: "375m"
-      memory: "100Mi"
+  resources: {}
 
 connect:
   # -- Enable Kafka Connect
@@ -255,37 +249,9 @@ users:
     # source and target clusters)
     enabled: false
 
-  camera:
-    # -- Enable user camera, used at the camera environments
-    enabled: false
-
-  tsSalKafka:
-    # -- Enable user ts-salkafka, used at the telescope environments
-    enabled: false
-
-    # -- Create lsst.s3.* related topics for the ts-salkafka user.
-    topics: []
-
-  kafdrop:
-    # -- Enable user Kafdrop (deployed by parent Sasquatch chart).
-    enabled: false
-
   telegraf:
     # -- Enable user telegraf (deployed by parent Sasquatch chart)
     enabled: false
-
-  promptProcessing:
-    # -- Enable user prompt-processing
-    enabled: false
-
-  kafkaConnectManager:
-    # -- Enable user kafka-connect-manager
-    enabled: false
-
-  consdb:
-    # -- Enable user consdb
-    enabled: false
-
 
 mirrormaker2:
   # -- Enable replication in the target (passive) cluster

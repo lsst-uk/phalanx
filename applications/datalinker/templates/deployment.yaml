@@ -1,13 +1,11 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "datalinker.fullname" . }}
+  name: "datalinker"
   labels:
     {{- include "datalinker.labels" . | nindent 4 }}
 spec:
-  {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
-  {{- end }}
   selector:
     matchLabels:
       {{- include "datalinker.selectorLabels" . | nindent 6 }}
@@ -27,17 +25,11 @@ spec:
       automountServiceAccountToken: false
       containers:
         - name: {{ .Chart.Name }}
-          securityContext:
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop:
-                - all
-            readOnlyRootFilesystem: true
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: "DATALINKER_CUTOUT_SYNC_URL"
               value: "{{ .Values.global.baseUrl }}/api/cutout/sync"
+            - name: "DATALINKER_LINKS_LIFETIME"
+              value: {{ .Values.config.linksLifetime | quote }}
             - name: "DATALINKER_HIPS_BASE_URL"
               value: "{{ .Values.global.baseUrl }}/api/hips"
             - name: "DATALINKER_LOG_LEVEL"
@@ -46,15 +38,11 @@ spec:
               value: {{ .Values.config.pathPrefix | quote }}
             - name: "DATALINKER_HIPS_PATH_PREFIX"
               value: {{ .Values.config.hipsPathPrefix | quote }}
-            - name: "DATALINKER_STORAGE_BACKEND"
-              value: {{ .Values.config.storageBackend | quote }}
-            - name: "DATALINKER_S3_ENDPOINT_URL"
-              value: {{ .Values.config.s3EndpointUrl | quote }}
             {{- if .Values.config.slackAlerts }}
             - name: "DATALINKER_SLACK_WEBHOOK"
               valueFrom:
                 secretKeyRef:
-                  name: {{ template "datalinker.fullname" . }}
+                  name: "datalinker"
                   key: "slack-webhook"
             {{- end }}
             {{- if .Values.config.tapMetadataUrl }}
@@ -66,20 +54,12 @@ spec:
             - name: "DATALINKER_TOKEN"
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "datalinker.fullname" . }}-gafaelfawr-token
+                  name: "datalinker-gafaelfawr-token"
                   key: "token"
-            # The following are used by Butler to retrieve its configuration
-            # and authenticate to its database.
-            - name: "AWS_SHARED_CREDENTIALS_FILE"
-              value: "/tmp/secrets/aws-credentials.ini"
             - name: "DAF_BUTLER_REPOSITORIES"
               value: {{ .Values.global.butlerServerRepositories | b64dec | quote }}
-            - name: "PGUSER"
-              value: {{ .Values.config.pgUser }}
-            - name: "PGPASSFILE"
-              value: "/tmp/secrets/postgres-credentials.txt"
-            - name: "GOOGLE_APPLICATION_CREDENTIALS"
-              value: "/tmp/secrets/butler-gcs-idf-creds.json"
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: "http"
               containerPort: 8080
@@ -92,11 +72,13 @@ spec:
           resources:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          resources:
-            {{- toYaml .Values.resources | nindent 12 }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - all
+            readOnlyRootFilesystem: true
           volumeMounts:
-            - name: "secrets"
-              mountPath: "/etc/butler/secrets"
             - name: "tmp"
               mountPath: "/tmp"
       {{- with .Values.nodeSelector }}
@@ -113,8 +95,5 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       volumes:
-        - name: "secrets"
-          secret:
-            secretName: {{ template "datalinker.fullname" . }}
         - name: "tmp"
           emptyDir: {}

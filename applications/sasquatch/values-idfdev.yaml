@@ -4,17 +4,17 @@ strimzi-kafka:
       tls:
         enabled: true
       bootstrap:
-        loadBalancerIP: ""
+        loadBalancerIP: "35.222.7.174"
         host: sasquatch-dev-kafka-bootstrap.lsst.cloud
       brokers:
         - broker: 0
-          loadBalancerIP: ""
+          loadBalancerIP: "35.193.196.189"
           host: sasquatch-dev-kafka-0.lsst.cloud
         - broker: 1
-          loadBalancerIP: ""
+          loadBalancerIP: "35.232.19.196"
           host: sasquatch-dev-kafka-1.lsst.cloud
         - broker: 2
-          loadBalancerIP: ""
+          loadBalancerIP: "34.172.163.125"
           host: sasquatch-dev-kafka-2.lsst.cloud
     resources:
       requests:
@@ -26,11 +26,7 @@ strimzi-kafka:
   users:
     replicator:
       enabled: true
-    kafdrop:
-      enabled: true
     telegraf:
-      enabled: true
-    kafkaConnectManager:
       enabled: true
   kraft:
     enabled: true
@@ -54,7 +50,7 @@ strimzi-kafka:
 
 influxdb:
   ingress:
-    enabled: true
+    enabled: false
     hostname: data-dev.lsst.cloud
   resources:
     requests:
@@ -63,6 +59,10 @@ influxdb:
     limits:
       memory: 16Gi
       cpu: 2
+
+customInfluxDBIngress:
+  enabled: true
+  hostname: data-dev.lsst.cloud
 
 influxdb-enterprise:
   enabled: true
@@ -109,7 +109,7 @@ influxdb-enterprise:
         memory: 16Gi
         cpu: 4
 
-telegraf-kafka-consumer:
+telegraf:
   enabled: true
   kafkaConsumers:
     test:
@@ -120,7 +120,7 @@ telegraf-kafka-consumer:
         [ "lsst.Test.*" ]
 
 kafdrop:
-  cmdArgs: "--message.format=AVRO --topic.deleteEnabled=true --topic.createEnabled=true"
+  cmdArgs: "--message.format=AVRO --message.keyFormat=DEFAULT --topic.deleteEnabled=true --topic.createEnabled=true"
   ingress:
     enabled: true
     hostname: data-dev.lsst.cloud
@@ -131,12 +131,11 @@ rest-proxy:
     enabled: true
     hostname: data-dev.lsst.cloud
   kafka:
-    topics:
-      - test.next-visit
     topicPrefixes:
       - test
       - lsst.dm
       - lsst.Test
+      - lsst.tap
 
 chronograf:
   ingress:
@@ -159,6 +158,9 @@ app-metrics:
   apps:
     - gafaelfawr
     - mobu
+    - noteburst
+    - nublado
+    - sia
     - wobbly
 
 backup:
@@ -182,3 +184,6 @@ backup:
     - name: "influxdb-oss-full"
       enabled: true
       backupTimestamp: "20250113T030120Z"
+
+tap:
+  enabled: true

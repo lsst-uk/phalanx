@@ -22,7 +22,6 @@ Event-driven processing of camera images
 | cache.patchesPerImage | int | `4` | A factor by which to multiply `baseSize` for templates and other patch-based datasets. |
 | cache.refcatsPerImage | int | `4` | A factor by which to multiply `baseSize` for refcat datasets. |
 | containerConcurrency | int | `1` | The number of Knative requests that can be handled simultaneously by one container |
-| debug.cacheCalibs | bool | `true` | Whether or not calibs should be cached between runs of a pod. This is a temporary flag that should only be unset in specific circumstances, and only in the development environment. |
 | debug.exportOutputs | bool | `true` | Whether or not pipeline outputs should be exported to the central repo. This flag does not turn off APDB writes or alert generation; those must be handled at the pipeline level or by setting up an alternative destination. |
 | fullnameOverride | string | `"prompt-proto-service"` | Override the full name for resources (includes the release name) |
 | image.pullPolicy | string | `IfNotPresent` in prod, `Always` in dev | Pull policy for the PP image |
@@ -33,6 +32,17 @@ Event-driven processing of camera images
 | imageNotifications.kafkaClusterAddress | string | None, must be set | Hostname and port of the Kafka provider |
 | imageNotifications.topic | string | None, must be set | Topic where raw image arrival notifications appear |
 | imagePullSecrets | list | `[]` |  |
+| initializer.cleanup_delay | int | `3600` | Time after which to remove old initializer pods (seconds). |
+| initializer.cron.day_obs_tz | int | `-12` | Time zone in which day_obs is computed. |
+| initializer.cron.suspend | bool | `false` | Whether or not to pause daily initializer runs. This makes it impossible to run Prompt Processing, but avoids repo clutter if the telescope is offline. |
+| initializer.image.repository | string | `"ghcr.io/lsst-dm/prompt-init"` | Image to use for the PP initializer |
+| initializer.podAnnotations | object | See the `values.yaml` file. | Pod annotations for the init-output Job |
+| initializer.resources.cpuLimit | int | `1` | The maximum cpu cores for the initializer. |
+| initializer.resources.cpuRequest | int | `1` | The cpu cores requested for the initializer. |
+| initializer.resources.memoryLimit | string | `"1Gi"` | The maximum memory limit for the initializer. |
+| initializer.resources.memoryRequest | string | `"512Mi"` | The minimum memory to request for the initializer. |
+| initializer.retries | int | `6` | Maximum number of times to attempt initializing the central repo. If the initializer fails, the PP service cannot run! |
+| initializer.timeout | int | `120` | Maximum time for a single attempt to initialize the central repo (seconds). |
 | instrument.calibRepo | string | None, must be set | URI to the shared repo used for calibrations, templates, and pipeline outputs. If `registry.centralRepoFile` is set, this URI points to a local redirect instead of the central repo itself. |
 | instrument.name | string | None, must be set | The "short" name of the instrument |
 | instrument.pipelines.main | string | None, must be set | YAML-formatted config describing which pipeline(s) should be run for which visits' raws. Fields are still in flux; see [the source code](https://github.com/lsst-dm/prompt_processing/blob/main/python/activator/config.py) for examples. |
@@ -43,6 +53,7 @@ Event-driven processing of camera images
 | knative.cpuRequest | int | `1` | The cpu cores requested for the full pod (see `containerConcurrency`). |
 | knative.ephemeralStorageLimit | string | `"5Gi"` | The maximum storage space allowed for each container (mostly local Butler). This allocation is for the full pod (see `containerConcurrency`) |
 | knative.ephemeralStorageRequest | string | `"5Gi"` | The storage space reserved for each container (mostly local Butler). This allocation is for the full pod (see `containerConcurrency`) |
+| knative.expiration | int | `3600` | Maximum message age to process, in seconds. |
 | knative.extraTimeout | int | `10` | To acommodate scheduling problems, Knative waits for a request for twice `worker.timeout`. This parameter adds extra time to that minimum (seconds). |
 | knative.gpu | bool | `false` | GPUs enabled. |
 | knative.gpuRequest | int | `0` | The number of GPUs to request for the full pod (see `containerConcurrency`). |
@@ -51,6 +62,7 @@ Event-driven processing of camera images
 | knative.memoryRequest | string | `"2Gi"` | The minimum memory to request for the full pod (see `containerConcurrency`). |
 | knative.responseStartTimeout | int | `0` | Maximum time that a container can send nothing to Knative after initial submission (seconds). This is only useful if the container runs async workers. If 0, startup timeout is ignored. |
 | logLevel | string | log prompt_processing at DEBUG, other LSST code at INFO, and third-party code at WARNING. | Requested logging levels in the format of [Middleware's \-\-log-level argument](https://pipelines.lsst.io/v/daily/modules/lsst.daf.butler/scripts/butler.html#cmdoption-butler-log-level). |
+| mpSky_service | string | `""` | The URI to the MPSky ephemerides service. Empty value is allowed, but its handling is undefined. |
 | nameOverride | string | `""` | Override the base name for resources |
 | nodeSelector | object | `{}` |  |
 | podAnnotations | object | See the `values.yaml` file. | Annotations for the prompt-proto-service pod |

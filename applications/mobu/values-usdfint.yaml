@@ -1,4 +1,5 @@
 config:
+  sentryTracesSampleConfig: errors
   githubRefreshApp:
     acceptedGithubOrgs:
       - lsst-sqre
@@ -15,7 +16,7 @@ config:
         - "read:image"
         - "read:tap"
       business:
-        type: "NotebookRunner"
+        type: "NotebookRunnerCounting"
         options:
           image:
             image_class: "latest-weekly"

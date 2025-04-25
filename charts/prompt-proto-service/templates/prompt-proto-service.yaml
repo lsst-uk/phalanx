@@ -3,6 +3,8 @@ apiVersion: serving.knative.dev/v1
 kind: Service
 metadata:
   name: {{ include "prompt-proto-service.fullname" . }}
+  annotations:
+    argocd.argoproj.io/hook: PostSync
 spec:
   template:
     metadata:
@@ -51,6 +53,8 @@ spec:
             {{- .Values.instrument.pipelines.main | nindent 12 }}
         - name: SKYMAP
           value: {{ .Values.instrument.skymap }}
+        - name: MESSAGE_EXPIRATION
+          value: {{ .Values.knative.expiration | toString | quote }}
         - name: PRELOAD_PADDING
           value: {{ .Values.instrument.preloadPadding | toString | quote }}
         - name: IMAGE_BUCKET
@@ -71,6 +75,11 @@ spec:
           value: {{ .Values.imageNotifications.kafkaClusterAddress }}
         - name: RAW_MICROSERVICE
           value: {{ .Values.raw_microservice }}
+        # MpSkyEphemerisQuery handles MP_SKY_URL being unset, but not empty
+        {{- with .Values.mpSky_service }}
+        - name: MP_SKY_URL
+          value: {{ . }}
+        {{- end }}
         - name: SASQUATCH_URL
           value: {{ .Values.sasquatch.endpointUrl }}
         {{- if and .Values.sasquatch.endpointUrl .Values.sasquatch.auth_env }}
@@ -100,6 +109,14 @@ spec:
         - name: AWS_SHARED_CREDENTIALS_FILE
           value: /app/s3/credentials
         {{- end }}
+        {{- if .Values.s3.aws_profile }}
+        - name: AWS_PROFILE
+          value: {{.Values.s3.aws_profile }}
+        {{- end }}
+        {{- if .Values.s3.checksum }}
+        - name: AWS_REQUEST_CHECKSUM_CALCULATION
+          value: {{.Values.s3.checksum}}
+        {{- end }}
         - name: LSST_DB_AUTH
           value: /app/lsst-credentials/db-auth.yaml
         - name: AP_KAFKA_PRODUCER_PASSWORD
@@ -123,8 +140,6 @@ spec:
           value: {{ .Values.cache.refcatsPerImage | toString | quote }}
         - name: PATCHES_PER_IMAGE
           value: {{ .Values.cache.patchesPerImage | toString | quote }}
-        - name: DEBUG_CACHE_CALIBS
-          value: {{ if .Values.debug.cacheCalibs }}'1'{{ else }}'0'{{ end }}
         - name: DEBUG_EXPORT_OUTPUTS
           value: {{ if .Values.debug.exportOutputs }}'1'{{ else }}'0'{{ end }}
         volumeMounts:
@@ -175,7 +190,9 @@ spec:
       - name: s3-credentials-file
         secret:
           secretName: {{ template "prompt-proto-service.fullname" . }}-secret
-          key: s3-credentials-file
+          items:
+          - key: s3_credentials_file
+            path: credentials
       {{- end }}
       {{- if .Values.registry.centralRepoFile }}
       - name: central-repo-file

@@ -16,7 +16,7 @@ imagePullSecrets: []
 # Each entry is of the form: { name: pull-secret-name }
 
 # -- Whether to use the new secrets management scheme
-separateSecrets: false
+separateSecrets: true
 
 frontend:
   # -- If set to true, enable more verbose logging.
@@ -36,6 +36,19 @@ frontend:
     # -- Tag of rubintv image to use
     # @default -- The appVersion of the chart
     tag: ""
+
+  # -- This section holds a list of key, value pairs for environmental
+  # variables (name: key, value: value).
+  env: []
+
+  # -- This section holds specifications for secret injection.
+  # @default -- See `values.yaml`
+  envSecrets: []
+  # Each object in envSecrets must look like:
+  # { name: name-of-environment-variable,
+  #   secretName: name-of-secret-to-consult,
+  #   secretKey: key within that secret to use
+  # }
 
   # -- Resource limits and requests for the rubintv frontend pod
   resources: {}
@@ -202,7 +215,6 @@ redis:
   # -- Affinity rules for the Redis pod
   affinity: {}
 
-
 # The following will be set by parameters injected by Argo CD and should not
 # be set in the individual environment values files.
 global:
@@ -217,6 +229,3 @@ global:
   # -- Base path for Vault secrets
   # @default -- Set by Argo CD
   vaultSecretsPath: ""
-
-  # -- Relative path for tsVault secrets
-  tsVaultSecretsPath: ""

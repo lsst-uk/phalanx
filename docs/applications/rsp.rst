@@ -10,17 +10,19 @@ Argo CD project: ``rsp``
    :maxdepth: 1
 
    butler/index
+   consdbtap/index
    datalinker/index
    filestore-backup/index
    hips/index
+   hoverdrive/index
    jira-data-proxy/index
    livetap/index
    noteburst/index
    nublado/index
    portal/index
+   qserv-kafka/index
    semaphore/index
    sia/index
-   siav2/index
    squareone/index
    ssotap/index
    tap/index

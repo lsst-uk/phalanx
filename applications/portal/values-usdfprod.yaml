@@ -1,2 +1,8 @@
 config:
   livetap: "live"
+  ssotap: "ssotap"
+
+redis:
+  persistence:
+    enabled: true
+    storageClass: "wekafs--sdf-k8s01"

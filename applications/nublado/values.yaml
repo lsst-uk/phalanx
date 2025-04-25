@@ -36,10 +36,10 @@ controller:
   resources:
     limits:
       cpu: "1"
-      memory: "200Mi"
+      memory: "1Gi"
     requests:
       cpu: "0.05"
-      memory: "120Mi"
+      memory: "200Mi"
 
   # -- Whether to enable Slack alerts. If set to true, `slack_webhook` must be
   # set in the corresponding Nublado Vault secret.
@@ -152,6 +152,10 @@ controller:
       aliasTags: []
 
     lab:
+      # -- How frequently the lab should report activity to JupyterHub in
+      # Safir `parse_timedelta` format
+      activityInterval: 1h
+
       # -- Affinity rules for user lab pods
       affinity: {}
 
@@ -175,6 +179,8 @@ controller:
         NO_ACTIVITY_TIMEOUT: "432000"  # 5 days
         RSP_SITE_TYPE: "science"
         TAP_ROUTE: "/api/tap"
+        TUTORIAL_NOTEBOOKS_URL: "https://github.com/lsst/tutorial-notebooks@main"
+        TUTORIAL_NOTEBOOKS_DIR: "/opt/lsst/software/notebooks-at-build-time/tutorial-notebooks"
 
       # -- Extra annotations to add to user lab pods
       extraAnnotations: {}
@@ -371,13 +377,35 @@ controller:
       #   readOnly: true
       #   volumeName: "project"
 
+    metrics:
+      # -- Whether to enable sending metrics
+      enabled: false
+
+      # -- Name under which to log metrics. Generally there is no reason to
+      # change this.
+      application: "nublado"
+
+      events:
+        # -- Topic prefix for events. It may sometimes be useful to change this
+        # in development environments.
+        topicPrefix: "lsst.square.metrics.events"
+
+      schemaManager:
+        # -- URL of the Confluent-compatible schema registry server
+        # @default -- Sasquatch in the local cluster
+        registryUrl: "http://sasquatch-schema-registry.sasquatch.svc.cluster.local:8081"
+
+        # -- Suffix to add to all registered subjects. This is sometimes useful
+        # for experimentation during development.
+        suffix: ""
+
 # JupyterHub configuration handled directly by this chart rather than by Zero
 # to JupyterHub.
 hub:
   # -- Whether to use the cluster-internal PostgreSQL server instead of an
   # external server. This is not used directly by the Nublado chart, but
   # controls how the database password is managed.
-  internalDatabase: true
+  internalDatabase: false
 
   # -- Minimum remaining token lifetime when spawning a lab. The token cannot
   # be renewed, so it should ideally live as long as the lab does. If the
@@ -401,6 +429,11 @@ hub:
     # takes over 60 seconds for reasons we don't understand.
     startup: 90
 
+  # -- Whether to put each user's lab in a separate domain. This is strongly
+  # recommended for security, but requires wildcard DNS and cert-manager
+  # support and requires subdomain support be enabled in Gafaelfawr.
+  useSubdomains: false
+
 # Configuration for the Zero to JupyterHub subchart.
 jupyterhub:
   cull:
@@ -413,8 +446,8 @@ jupyterhub:
     timeout: 432000
 
     # -- How frequently to check for idle labs in seconds
-    # @default -- 300 (5 minutes)
-    every: 300
+    # @default -- 3600 (1 hour)
+    every: 3600
 
     # -- Whether to log out the user (from JupyterHub) when culling their lab
     users: false
@@ -435,7 +468,7 @@ jupyterhub:
       name: "ghcr.io/lsst-sqre/nublado-jupyterhub"
 
       # -- Tag of image to use for JupyterHub
-      tag: "8.2.0"
+      tag: "8.8.0"
 
     # -- Resource limits and requests
     # @default -- See `values.yaml`
@@ -511,7 +544,11 @@ jupyterhub:
       server:
         # -- Default scopes for the user's lab, overridden to allow the lab to
         # delete itself (which we use for our added menu items)
-        scopes: ["self"]
+        # @default -- See `values.yaml`
+        scopes:
+          - "access:servers!user"
+          - "delete:servers!user"
+          - "users:activity!user"
 
   ingress:
     # -- Whether to enable the default ingress. Should always be disabled
@@ -546,8 +583,8 @@ jupyterhub:
       # @default -- See `values.yaml`
       resources:
         limits:
-          cpu: "150m"
-          memory: "200Mi"
+          cpu: "1"
+          memory: "400Mi"
         requests:
           cpu: "5m"
           memory: "30Mi"
@@ -588,7 +625,7 @@ cloudsql:
     pullPolicy: "IfNotPresent"
 
     # -- Cloud SQL Auth Proxy tag to use
-    tag: "1.37.3"
+    tag: "1.37.7"
 
   # -- Instance connection name for a Cloud SQL PostgreSQL instance
   # @default -- None, must be set if Cloud SQL Auth Proxy is enabled
@@ -636,7 +673,64 @@ secrets:
   # Vault nublado secret will be split into a nublado secret for JupyterHub
   # and a nublado-lab-secret secret used as a source for secret values for the
   # user's lab.
-  templateSecrets: false
+  templateSecrets: true
+
+# If we're installing tutorials at a given site, this cronjob controls
+# their refresh.
+cronjob:
+  # -- Enable tutorials refresh?
+  enabled: false
+
+  # -- Source for repository to clone
+  gitSource: "https://github.com/lsst/tutorial-notebooks"
+
+  # -- Target where repository should land
+  gitTarget: "/project/cst_repos/tutorial-notebooks"
+
+  # -- Branch of repository to clone
+  gitBranch: "main"
+
+  # -- Where repository volume should be mounted
+  targetVolumePath: "/project"
+
+  # -- Repository volume definition
+  # @default -- See `values.yaml`
+  targetVolume:
+    # -- Where volume will be mounted in the container
+    mountPath: "/project"   # Conventional
+    # -- IP address of NetApp server (different per environment)
+    server: null            # This must be changed
+    # -- Path on NetApp server
+    path: "/project-share"  # Assigned by Terraform
+
+  image:
+    # -- Repository cloner image to use
+    repository: "ghcr.io/lsst-sqre/repo-cloner"
+
+    # -- Pull policy for the controller image
+    pullPolicy: "IfNotPresent"
+
+    # -- Tag of Nublado controller image to use
+    # @default -- The appVersion of the chart
+    tag: null
+
+  # -- Resource limits and requests for the tutorials cronjob
+  # @default -- See `values.yaml`
+  resources:
+    limits:
+      cpu: "1"
+      memory: "1Gi"
+    requests:
+      cpu: "50m"
+      memory: "50Mi"
+
+  # -- Tolerations for the tutorials cronjob.
+  tolerations: []
+  # -- Affinity rules for the tutorials cronjob.
+  affinity: {}
+  # -- Schedule for the tutorials cronjob.
+  schedule: "43 * * * *"
+
 
 # The following will be set by parameters injected by Argo CD and should not
 # be set in the individual environment values files.

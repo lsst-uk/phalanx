@@ -60,6 +60,9 @@ applications:
   # -- Enable the cm-service application
   cm-service: false
 
+  # -- Enable the consdbtap application
+  consdbtap: false
+
   # -- Enable the control-system-test application
   control-system-test: false
 
@@ -71,6 +74,9 @@ applications:
 
   # -- Enable the exposurelog application
   exposurelog: false
+
+  # -- Enable the exposure-checker application
+  exposure-checker: false
 
   # -- Enable the fastapi-bootcamp application
   fastapi-bootcamp: false
@@ -84,6 +90,18 @@ applications:
   # -- Enable the Gafaelfawr application. This is required by Phalanx since
   # most other applications use `GafaelfawrIngress`
   gafaelfawr: true
+
+  # -- Enable the hoverdrive application
+  hoverdrive: false
+
+  # -- Enable the qserv-kafka application
+  qserv-kafka: false
+
+  # -- Enable the nvr-control application
+  nvr-control: false
+
+  # -- Enable the rubin-rag application
+  rubin-rag: false
 
   # -- Enable the ghostwriter application
   ghostwriter: false
@@ -102,6 +120,9 @@ applications:
 
   # -- Enable the jira-data-proxy application
   jira-data-proxy: false
+
+  # -- Enable the keda application
+  keda: false
 
   # -- Enable the livetap application
   livetap: false
@@ -156,6 +177,30 @@ applications:
   # -- Enable the ppdb-replication application
   ppdb-replication: false
 
+  # -- Enable the prompt-kafka application
+  prompt-kafka: false
+
+  # -- Enable the prompt-keda-hsc application
+  prompt-keda-hsc: false
+
+  # -- Enable the prompt-keda-latiss application
+  prompt-keda-latiss: false
+
+  # -- Enable the prompt-keda-lsstcam application
+  prompt-keda-lsstcam: false
+
+  # -- Enable the prompt-keda-lsstcamimsim application
+  prompt-keda-lsstcamimsim: false
+
+  # -- Enable the prompt-keda-lsstcomcam application
+  prompt-keda-lsstcomcam: false
+
+  # -- Enable the prompt-keda-lsstcomcamsim application
+  prompt-keda-lsstcomcamsim: false
+
+  # -- Enable the prompt-redis application
+  prompt-redis: false
+
   # -- Enable the rubintv application
   rubintv: false
 
@@ -176,9 +221,6 @@ applications:
 
   # -- Enable the sia over butler application
   sia: false
-
-  # -- Enable the siav2 application
-  siav2: false
 
   # -- Enable the simonyitel control system application
   simonyitel: false
@@ -204,6 +246,9 @@ applications:
   # -- Enable the prompt-proto-service-lsstcam application
   prompt-proto-service-lsstcam: false
 
+  # -- Enable the prompt-proto-service-lsstcamimsim application
+  prompt-proto-service-lsstcamimsim: false
+
   # -- Enable the prompt-proto-service-lsstcomcam application
   prompt-proto-service-lsstcomcam: false
 
@@ -212,9 +257,6 @@ applications:
 
   # -- Enable the semaphore application
   semaphore: false
-
-  # -- Enable the sqlproxy-cross-project application
-  sqlproxy-cross-project: false
 
   # -- Enable the squarebot application
   squarebot: false
@@ -290,7 +332,7 @@ controlSystem:
   topicName: sal
 
   # -- Kafka broker address for the control system deployment
-  kafkaBrokerAddress: sasquatch-kafka-brokers.sasquatch:9092
+  kafkaBrokerAddress: sasquatch-kafka-bootstrap.sasquatch:9092
 
   # -- Kafka topic replication factor for control system topics
   kafkaTopicReplicationFactor: 3
