@@ -23,7 +23,7 @@ config:
           gidnumber: 74768
       scopes: ["exec:notebook", "exec:portal", "read:image", "read:tap"]
       business:
-        type: "NotebookRunnerInfinite"
+        type: "NotebookRunnerList"
         options:
           image:
             image_class: "recommended"
