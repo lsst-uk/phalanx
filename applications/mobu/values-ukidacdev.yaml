@@ -4,8 +4,8 @@ config:
       count: 1
       users:
         - username: "bot-mobu-tap"
-          uidnumber: 74768
-          gidnumber: 74768
+          uidnumber: 74769
+          gidnumber: 74769
       scopes: ["read:tap"]
       business:
         type: "TAPQueryRunner"
