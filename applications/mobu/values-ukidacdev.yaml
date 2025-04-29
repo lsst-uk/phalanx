@@ -15,18 +15,18 @@ config:
             - "SELECT TOP 10 * FROM  TAP_SCHEMA.tables"
             - "SELECT TOP 10 * FROM  viking.hsc_g_f"
         restart: true
-    - name: "notebooks"
-      count: 1
-      users:
-        - username: "bot-mobu-recommended"
-          uidnumber: 74768
-          gidnumber: 74768
-      scopes: ["exec:notebook", "exec:portal", "read:image", "read:tap"]
-      business:
-        type: "NotebookRunnerList"
-        options:
-          image:
-            image_class: "recommended"
-          repo_url: "https://github.com/lsst-uk/rsp-uk-notebooks.git"
-          repo_ref: "mobu"
-        restart: true
+    # - name: "notebooks"
+    #   count: 1
+    #   users:
+    #     - username: "bot-mobu-recommended"
+    #       uidnumber: 74768
+    #       gidnumber: 74768
+    #   scopes: ["exec:notebook", "exec:portal", "read:image", "read:tap"]
+    #   business:
+    #     type: "NotebookRunnerList"
+    #     options:
+    #       image:
+    #         image_class: "recommended"
+    #       repo_url: "https://github.com/lsst-uk/rsp-uk-notebooks.git"
+    #       repo_ref: "mobu"
+    #     restart: true
