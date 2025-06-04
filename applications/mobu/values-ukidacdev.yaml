@@ -17,3 +17,4 @@ config:
             - "SELECT TOP 10 * FROM  TAP_SCHEMA.tables"
             - "SELECT TOP 10 * FROM  viking.hsc_g_f"
         restart: true
+  sentryTracesSampleConfig: null
