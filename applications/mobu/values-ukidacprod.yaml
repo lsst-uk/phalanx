@@ -1,3 +1,5 @@
+image:
+  tag: "13.2.0"
 config:
   autostart:
     - name: "tap"
@@ -15,3 +17,4 @@ config:
             - "SELECT TOP 10 * FROM  TAP_SCHEMA.tables"
             - "SELECT TOP 10 * FROM  viking.hsc_g_f"
         restart: true
+  sentryTracesSampleConfig: null
