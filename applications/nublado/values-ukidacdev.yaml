@@ -29,7 +29,8 @@ controller:
         - name: "home"
           source:
             serverPath: "/jhome"
-            server: "192.41.122.94"
+            #server: "192.41.122.94"
+            server: 192.41.122.247
             type: "nfs"
         - name: "datasets"
           source:
