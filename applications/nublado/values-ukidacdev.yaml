@@ -36,6 +36,11 @@ controller:
             serverPath: "/datasets"
             server: "192.41.122.94"
             type: "nfs"
+        - name: "lsdb_data"
+          source:
+            serverPath: "/data/butler/lsdb_data"
+            server: "192.41.122.94"
+            type: "nfs"
       volumeMounts:
         - containerPath: "/data"
           volumeName: "data"
@@ -43,6 +48,8 @@ controller:
           volumeName: "home"
         - containerPath: "/datasets"
           volumeName: "datasets"
+        - containerPath: "/rubin/lsdb_data"
+          volumeName: "lsdb_data"
 
 proxy:
   ingress:
