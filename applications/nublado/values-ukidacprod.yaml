@@ -49,7 +49,7 @@ controller:
           volumeName: "home"
         - containerPath: "/datasets"
           volumeName: "datasets"
-         - containerPath: "/rubin/lsdb_data"
+        - containerPath: "/rubin/lsdb_data"
           volumeName: "lsdb-data"
 
 proxy:
