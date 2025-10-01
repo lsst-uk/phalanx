@@ -7,6 +7,10 @@ rubintv:
   frontend:
     debug: true
     env:
+    - name: RA_PULL_DIRECTORIES
+      value: "rubintv_analysis_service"
+    - name: SCRIPTS_LOCATION
+      value: "/repos/rubintv_analysis_service/scripts"
     - name: S3_ENDPOINT_URL
       value: &s3E "https://s3.cp.lsst.org"
     - name: RAPID_ANALYSIS_LOCATION
@@ -24,14 +28,14 @@ rubintv:
       secretName: rubintv-secrets
       secretKey: ra-redis-password
     image:
-      tag: v2.6.8
+      tag: v2.6.9
       pullPolicy: Always
 
   workers:
     replicas: 1
     image:
-      repository: ts-dockerhub.lsst.org/rapid-analysis
-      tag: c0041
+      repository: ghcr.io/lsst-sitcom/rubintv_production
+      tag: w_2025_38
       pullPolicy: Always
     uid: 73006
     gid: 73006

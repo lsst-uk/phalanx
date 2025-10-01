@@ -425,6 +425,11 @@ Rubin Observatory's telemetry service
 | kafdrop.jmx.port | int | `8686` | Port to use for JMX. If unspecified, JMX will not be exposed. |
 | kafdrop.jvm.opts | string | `""` | JVM options |
 | kafdrop.kafka.broker | string | `"sasquatch-kafka-bootstrap.sasquatch:9092"` | Bootstrap list of Kafka host/port pairs |
+| kafdrop.logging.kafdrop.config.level | string | `"WARN"` | Log level for Kafdrop config package logger (TRACE, DEBUG, INFO, WARN, ERROR) |
+| kafdrop.logging.kafdrop.controller.level | string | `"INFO"` | Log level for Kafdrop controller package logger (TRACE, DEBUG, INFO, WARN, ERROR) |
+| kafdrop.logging.kafdrop.level | string | `"INFO"` | Log level for Kafdrop package logger (TRACE, DEBUG, INFO, WARN, ERROR) |
+| kafdrop.logging.kafdrop.service.level | string | `"INFO"` | Log level for Kafdrop service package logger (TRACE, DEBUG, INFO, WARN, ERROR) |
+| kafdrop.logging.root.level | string | `"WARN"` | Log level for Kafdrop root logger (TRACE, DEBUG, INFO, WARN, ERROR) |
 | kafdrop.nodeSelector | object | `{}` | Node selector configuration |
 | kafdrop.podAnnotations | object | `{}` | Pod annotations |
 | kafdrop.replicaCount | int | `1` | Number of kafdrop pods to run in the deployment. |
@@ -512,7 +517,7 @@ Rubin Observatory's telemetry service
 | rest-proxy.heapOptions | string | `"-Xms1024M -Xmx1024M"` | Kafka REST proxy JVM Heap Option |
 | rest-proxy.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
 | rest-proxy.image.repository | string | `"confluentinc/cp-kafka-rest"` | Kafka REST proxy image repository |
-| rest-proxy.image.tag | string | `"8.0.0"` | Kafka REST proxy image tag |
+| rest-proxy.image.tag | string | `"8.0.1"` | Kafka REST proxy image tag |
 | rest-proxy.ingress.annotations | object | See `values.yaml` | Additional annotations to add to the ingress |
 | rest-proxy.ingress.enabled | bool | `false` | Whether to enable the ingress |
 | rest-proxy.ingress.hostname | string | None, must be set if ingress is enabled | Ingress hostname |
@@ -531,7 +536,7 @@ Rubin Observatory's telemetry service
 | schema-registry.cluster.name | string | `"sasquatch"` | Name of the Strimzi cluster used by the Schema Registry. |
 | schema-registry.compatibilityLevel | string | `"none"` | Compatibility level for the Schema Registry. Options are: none, backward, backward_transitive, forward, forward_transitive, full, and full_transitive. |
 | schema-registry.image.repository | string | `"confluentinc/cp-schema-registry"` | Docker image for the Confluent Schema Registry. |
-| schema-registry.image.tag | string | `"8.0.0"` | Docker image tag for the Confluent Schema Registry. |
+| schema-registry.image.tag | string | `"8.0.1"` | Docker image tag for the Confluent Schema Registry. |
 | schema-registry.ingress.annotations | object | `{}` | Annotations that will be added to the Ingress resource |
 | schema-registry.ingress.enabled | bool | `false` | Whether to enable an ingress for the Schema Registry |
 | schema-registry.ingress.hostname | string | None, must be set if ingress is enabled | Hostname for the Schema Registry |
@@ -543,7 +548,7 @@ Rubin Observatory's telemetry service
 | schema-registry-remote.cluster.name | string | `"sasquatch"` | Name of the Strimzi cluster used by the Schema Registry. |
 | schema-registry-remote.compatibilityLevel | string | `"none"` | Compatibility level for the Schema Registry. Options are: none, backward, backward_transitive, forward, forward_transitive, full, and full_transitive. |
 | schema-registry-remote.image.repository | string | `"confluentinc/cp-schema-registry"` | Docker image for the Confluent Schema Registry. |
-| schema-registry-remote.image.tag | string | `"8.0.0"` | Docker image tag for the Confluent Schema Registry. |
+| schema-registry-remote.image.tag | string | `"8.0.1"` | Docker image tag for the Confluent Schema Registry. |
 | schema-registry-remote.ingress.annotations | object | `{}` | Annotations that will be added to the Ingress resource |
 | schema-registry-remote.ingress.enabled | bool | `false` | Whether to enable an ingress for the Schema Registry |
 | schema-registry-remote.ingress.hostname | string | None, must be set if ingress is enabled | Hostname for the Schema Registry |
@@ -613,7 +618,7 @@ Rubin Observatory's telemetry service
 | strimzi-kafka.kafka.metricsConfig.enabled | bool | `false` | Whether metric configuration is enabled |
 | strimzi-kafka.kafka.minInsyncReplicas | int | `2` | The minimum number of in-sync replicas that must be available for the producer to successfully send records Cannot be greater than the number of replicas. |
 | strimzi-kafka.kafka.replicas | int | `3` | Number of Kafka broker replicas to run |
-| strimzi-kafka.kafka.version | string | `"3.8.0"` | Version of Kafka to deploy |
+| strimzi-kafka.kafka.version | string | `"4.0.0"` | Version of Kafka to deploy |
 | strimzi-kafka.kafkaExporter.enableSaramaLogging | bool | `false` | Enable Sarama logging for pod |
 | strimzi-kafka.kafkaExporter.enabled | bool | `false` | Enable Kafka exporter |
 | strimzi-kafka.kafkaExporter.groupRegex | string | `".*"` | Consumer groups to monitor |
