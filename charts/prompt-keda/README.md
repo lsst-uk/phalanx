@@ -18,9 +18,11 @@ Event-driven processing of camera images
 | alerts.topic | string | `""` | Topic name where alerts will be sent |
 | alerts.username | string | `""` | Username for sending alerts to the alert stream |
 | apdb.config | string | None, must be set | URL to a serialized APDB configuration, or the "label:" prefix followed by the indexed name of such a config. |
+| butler_writer.enabled | bool | `false` | If false, pipeline outputs will be written directly to the central repo. If true, a Kafka message will be sent to a service to aggregate these writes instead. The init job writes directly to the central repo regardless of this setting. |
+| butler_writer.kafka_cluster | string | None, must be set | Address of Kafka broker where prompt processing output events will be written, for consumption by the Butler writer service. |
+| butler_writer.kafka_topic | string | None, must be set | Kafka topic that prompt processing output events will be written to, for consumption by the Butler writer service. |
+| butler_writer.kafka_username | string | None, must be set | Username for Kafka broker where prompt processing output events will be written, for consumption by the Butler writer service. |
 | cache.baseSize | int | `3` | The default number of datasets of each type to keep. The pipeline only needs one of most dataset types (one bias, one flat, etc.), so this is roughly the number of visits that fit in the cache. |
-| cache.patchesPerImage | int | `4` | A factor by which to multiply `baseSize` for templates and other patch-based datasets. |
-| cache.refcatsPerImage | int | `4` | A factor by which to multiply `baseSize` for refcat datasets. |
 | debug.exportOutputs | bool | `true` | Whether or not pipeline outputs should be exported to the central repo. This flag does not turn off APDB writes or alert generation; those must be handled at the pipeline level or by setting up an alternative destination. |
 | debug.monitorDaxApdb | bool | `false` | Whether `dax_apdb` should run in debug mode and log metrics. |
 | fullnameOverride | string | `"prompt-keda"` | Override the full name for resources (includes the release name) |
@@ -85,6 +87,7 @@ Event-driven processing of camera images
 | sasquatch.auth_env | bool | `true` | If set, this application's Vault secret must contain a `sasquatch_token` key containing the authentication token for `sasquatch.endpointUrl`. Leave unset to attempt anonymous access. |
 | sasquatch.endpointUrl | string | `""` | Url of the Sasquatch proxy server to upload metrics to. Leave blank to disable upload. This is a preliminary implementation of Sasquatch support, and this parameter may be deprecated if we instead support `SasquatchDatastore` in the future. |
 | sasquatch.namespace | string | `"lsst.prompt"` | Namespace in the Sasquatch system with which to associate metrics. |
+| sattle.uri_base | string | `""` | Base URI of the sattle service.  Leave blank if not used. |
 | tolerations | list | `[]` | Tolerations for the Prompt Processing pod |
 | worker.grace_period | int | `45` | When Kubernetes shuts down a pod, the time its workers have to abort processing and save intermediate results (seconds). |
 | worker.restart | int | `0` | The number of requests to process before rebooting a worker. If 0, workers process requests indefinitely. |

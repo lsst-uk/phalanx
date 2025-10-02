@@ -16,8 +16,7 @@ JupyterHub and custom spawner for the Rubin Science Platform
 | cloudsql.enabled | bool | `false` | Enable the Cloud SQL Auth Proxy, used with Cloud SQL databases on Google Cloud |
 | cloudsql.image.pullPolicy | string | `"IfNotPresent"` | Pull policy for Cloud SQL Auth Proxy images |
 | cloudsql.image.repository | string | `"gcr.io/cloudsql-docker/gce-proxy"` | Cloud SQL Auth Proxy image to use |
-| cloudsql.image.resources | object | See `values.yaml` | Resource requests and limits for Cloud SQL pod |
-| cloudsql.image.tag | string | `"1.37.8"` | Cloud SQL Auth Proxy tag to use |
+| cloudsql.image.tag | string | `"1.37.9"` | Cloud SQL Auth Proxy tag to use |
 | cloudsql.instanceConnectionName | string | None, must be set if Cloud SQL Auth Proxy is enabled | Instance connection name for a Cloud SQL PostgreSQL instance |
 | cloudsql.nodeSelector | object | `{}` | Node selection rules for the Cloud SQL Auth Proxy pod |
 | cloudsql.podAnnotations | object | `{}` | Annotations for the Cloud SQL Auth Proxy pod |
@@ -41,6 +40,18 @@ JupyterHub and custom spawner for the Rubin Science Platform
 | controller.config.fileserver.resources | object | See `values.yaml` | Resource requests and limits for user file servers |
 | controller.config.fileserver.tolerations | list | `[]` | Tolerations for user file server pods |
 | controller.config.fileserver.volumeMounts | list | `[]` | Volumes that should be made available via WebDAV |
+| controller.config.fsadmin.affinity | object | `{}` | Affinity rules for fsadmin pods |
+| controller.config.fsadmin.application | string | `"nublado-fileservers"` | Argo CD application in which to collect fsadmins |
+| controller.config.fsadmin.extraVolumeMounts | list | `[]` | Extra volumes that should be mounted to fsadmin |
+| controller.config.fsadmin.extraVolumes | list | `[]` | Extra volumes that should be made available to fsadmin |
+| controller.config.fsadmin.image.pullPolicy | string | `"IfNotPresent"` | Pull policy for fsadmin image |
+| controller.config.fsadmin.image.repository | string | `"ghcr.io/lsst-sqre/nublado-fsadmin"` | fsadmin image to use |
+| controller.config.fsadmin.image.tag | string | `"8.15.0"` | Tag of fsadmin image to use |
+| controller.config.fsadmin.mountPrefix | string | `nil` | Mount prefix, to be prepended to mountpoints in order to collect them in one place |
+| controller.config.fsadmin.nodeSelector | object | `{}` | Node selector rules for fsadmin pods |
+| controller.config.fsadmin.resources | object | See `values.yaml` | Resource requests and limits for fsadmin |
+| controller.config.fsadmin.timeout | string | `"2m"` | Timeout to wait for Kubernetes to create/destroy fsadmin, in Safir `parse_timedelta` format |
+| controller.config.fsadmin.tolerations | list | `[]` | Tolerations for fsadmin pod |
 | controller.config.images.aliasTags | list | `[]` | Additional tags besides `recommendedTag` that should be recognized as aliases. |
 | controller.config.images.cycle | string | `nil` | Restrict images to this SAL cycle, if given. |
 | controller.config.images.numDailies | int | `3` | Number of most-recent dailies to prepull. |
@@ -93,6 +104,7 @@ JupyterHub and custom spawner for the Rubin Science Platform
 | controller.nodeSelector | object | `{}` | Node selector rules for the Nublado controller |
 | controller.podAnnotations | object | `{}` | Annotations for the Nublado controller |
 | controller.resources | object | See `values.yaml` | Resource limits and requests for the Nublado controller |
+| controller.sentry.enabled | bool | `false` | Whether to report errors to Sentry |
 | controller.slackAlerts | bool | `false` | Whether to enable Slack alerts. If set to true, `slack_webhook` must be set in the corresponding Nublado Vault secret. |
 | controller.tolerations | list | `[]` | Tolerations for the Nublado controller |
 | cronjob.affinity | object | `{}` | Affinity rules for the cloning cronjob(s). |
@@ -124,6 +136,7 @@ JupyterHub and custom spawner for the Rubin Science Platform
 | cronjob.tutorials.targetVolumePath | string | `"/rubin"` | Where repository volume should be mounted |
 | cronjob.tutorials.uid | int | `1000` | UID for the cloning cronjob(s) |
 | global.baseUrl | string | Set by Argo CD | Base URL for the environment |
+| global.environmentName | string | Set by Argo CD Application | Name of the Phalanx environment |
 | global.host | string | Set by Argo CD | Host name for ingress |
 | global.vaultSecretsPath | string | Set by Argo CD | Base path for Vault secrets |
 | hub.internalDatabase | bool | `false` | Whether to use the cluster-internal PostgreSQL server instead of an external server. This is not used directly by the Nublado chart, but controls how the database password is managed. |
@@ -150,13 +163,14 @@ JupyterHub and custom spawner for the Rubin Science Platform
 | jupyterhub.hub.extraVolumeMounts | list | `hub-config` and the Gafaelfawr token | Additional volume mounts for JupyterHub |
 | jupyterhub.hub.extraVolumes | list | The `hub-config` `ConfigMap` and the Gafaelfawr token | Additional volumes to make available to JupyterHub |
 | jupyterhub.hub.image.name | string | `"ghcr.io/lsst-sqre/nublado-jupyterhub"` | Image to use for JupyterHub |
-| jupyterhub.hub.image.tag | string | `"8.9.2"` | Tag of image to use for JupyterHub |
+| jupyterhub.hub.image.tag | string | `"8.15.0"` | Tag of image to use for JupyterHub |
 | jupyterhub.hub.loadRoles.server.scopes | list | See `values.yaml` | Default scopes for the user's lab, overridden to allow the lab to delete itself (which we use for our added menu items) |
 | jupyterhub.hub.networkPolicy.enabled | bool | `false` | Whether to enable the default `NetworkPolicy` (currently, the upstream one does not work correctly) |
 | jupyterhub.hub.resources | object | See `values.yaml` | Resource limits and requests |
 | jupyterhub.ingress.enabled | bool | `false` | Whether to enable the default ingress. Should always be disabled since we install our own `GafaelfawrIngress` to avoid repeating the global hostname and manually configuring authentication |
 | jupyterhub.prePuller.continuous.enabled | bool | `false` | Whether to run the JupyterHub continuous prepuller (the Nublado controller does its own prepulling) |
 | jupyterhub.prePuller.hook.enabled | bool | `false` | Whether to run the JupyterHub hook prepuller (the Nublado controller does its own prepulling) |
+| jupyterhub.proxy.chp.extraCommandLineFlags | list | `["--keep-alive-timeout=61000"]` | Extra CLI options to pass to the proxy. The most up-to-date list is [here](https://github.com/jupyterhub/configurable-http-proxy/blob/main/bin/configurable-http-proxy) (not the docs, unfortunately) |
 | jupyterhub.proxy.chp.networkPolicy.interNamespaceAccessLabels | string | `"accept"` | Enable access to the proxy from other namespaces, since we put each user's lab environment in its own namespace |
 | jupyterhub.proxy.chp.resources | object | See `values.yaml` | Resource limits and requests for proxy pod |
 | jupyterhub.proxy.service.type | string | `"ClusterIP"` | Only expose the proxy to the cluster, overriding the default of exposing the proxy directly to the Internet |

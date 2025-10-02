@@ -6,6 +6,9 @@ redis:
     storageClass: "wekafs--sdf-k8s01"
 
 config:
+  sentry:
+    enabled: true
+
   internalDatabase: true
 
   oidcServer:
@@ -145,6 +148,9 @@ config:
       - "rubin_users-z"
       - "rubin_admin_datasets"
       - "rubin_admin_repos"
+      - "unix-admin"
+    "exec:portal-admin":
+      - "rubinmgr"
       - "unix-admin"
     "read:image":
       - "lsst"

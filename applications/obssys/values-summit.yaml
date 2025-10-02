@@ -60,11 +60,11 @@ atqueue:
         topologyKey: "kubernetes.io/hostname"
   resources:
     limits:
-      cpu: 5000m
-      memory: 10Gi
+      cpu: 5
+      memory: 48Gi
     requests:
-      cpu: 1000m
-      memory: 580Mi
+      cpu: 3
+      memory: 4Gi
 
 atscheduler:
   classifier: scheduler2

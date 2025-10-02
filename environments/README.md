@@ -11,6 +11,7 @@
 | applications.atlantis | bool | `false` | Enable the atlantis application |
 | applications.auxtel | bool | `false` | Enable the auxtel control system application |
 | applications.butler | bool | `false` | Enable the butler application |
+| applications.butler-writer-service | bool | `false` | Enable the Butler writer application |
 | applications.calsys | bool | `false` | Enable the calsys control system application |
 | applications.cert-manager | bool | `true` | Enable the cert-manager application, required unless the environment makes separate arrangements to inject a current TLS certificate |
 | applications.checkerboard | bool | `false` | Enable the checkerboard application |
@@ -25,6 +26,7 @@
 | applications.exposurelog | bool | `false` | Enable the exposurelog application |
 | applications.fastapi-bootcamp | bool | `false` | Enable the fastapi-bootcamp application |
 | applications.flink | bool | `false` | Enable the flink application |
+| applications.fov-quicklook | bool | `false` | Switch to enable the fov-quicklook application in specific environments (off by default) |
 | applications.gafaelfawr | bool | `true` | Enable the Gafaelfawr application. This is required by Phalanx since most other applications use `GafaelfawrIngress` |
 | applications.ghostwriter | bool | `false` | Enable the ghostwriter application |
 | applications.giftless | bool | `false` | Enable the giftless application |
@@ -58,15 +60,14 @@
 | applications.prompt-keda-hsc | bool | `false` | Enable the prompt-keda-hsc application |
 | applications.prompt-keda-latiss | bool | `false` | Enable the prompt-keda-latiss application |
 | applications.prompt-keda-lsstcam | bool | `false` | Enable the prompt-keda-lsstcam application |
-| applications.prompt-keda-lsstcamimsim | bool | `false` | Enable the prompt-keda-lsstcamimsim application |
-| applications.prompt-keda-lsstcomcam | bool | `false` | Enable the prompt-keda-lsstcomcam application |
-| applications.prompt-keda-lsstcomcamsim | bool | `false` | Enable the prompt-keda-lsstcomcamsim application |
 | applications.prompt-redis | bool | `false` | Enable the prompt-redis application |
 | applications.qserv-kafka | bool | `false` | Enable the qserv-kafka application |
+| applications.repertoire | bool | `false` | Enable the repertoire application |
 | applications.rubin-rag | bool | `false` | Enable the rubin-rag application |
 | applications.rubin-too-producer | bool | `false` | Enable the rubin-too-producer application |
 | applications.rubintv | bool | `false` | Enable the rubintv application |
 | applications.rubintv-dev | bool | `false` | Enable the rubintv-dev application |
+| applications.s3-file-notifications | bool | `false` | Enable the s3-file-notifications application |
 | applications.s3proxy | bool | `false` | Enable the s3proxy application |
 | applications.sasquatch | bool | `false` | Enable the sasquatch application |
 | applications.sasquatch-backpack | bool | `false` | Enable the sasquatch-backpack application |
@@ -80,6 +81,7 @@
 | applications.ssotap | bool | `false` | Enable the ssotap application |
 | applications.strimzi | bool | `false` | Enable the strimzi application |
 | applications.strimzi-access-operator | bool | `false` | Enable the strimzi-access-operator application |
+| applications.strimzi-registry-operator | bool | `false` | Enable the strimzi-registry-operator application |
 | applications.tap | bool | `false` | Enable the tap application |
 | applications.tasso | bool | `false` | Enable the tasso application |
 | applications.templatebot | bool | `false` | Enable the templatebot application |

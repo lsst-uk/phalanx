@@ -9,6 +9,15 @@ config:
   # -- Kafka topic for query cancellation requests
   jobCancelTopic: "lsst.tap.job-delete"
 
+  # -- Maximum batch size for query execution requests. This should generally
+  # be the same as `qservRestMaxConnections`.
+  jobRunBatchSize: 10
+
+  # -- Maximum size of a batch read from Kafka in bytes. Wide queries can be
+  # up to 500KiB in size, so this should be at least 500KiB * 10.
+  # @default -- 10MiB
+  jobRunMaxBytes: 10485760
+
   # -- Kafka topic for query execution requests
   jobRunTopic: "lsst.tap.job-run"
 
@@ -50,12 +59,12 @@ config:
   # -- Extra database connections that may be opened in excess of the pool
   # size to handle surges in load. This is used primarily by the frontend for
   # jobs that complete immediately.
-  qservDatabaseOverflow: 50
+  qservDatabaseOverflow: 20
 
   # -- Database pool size. This is the number of MySQL connections that will
   # be held open regardless of load. This should generally be set to the same
   # as `maxWorkerJobs`.
-  qservDatabasePoolSize: 2
+  qservDatabasePoolSize: 10
 
   # -- URL to the Qserv MySQL interface (must use a scheme of `mysql+asyncmy`)
   # @default -- None, must be set
@@ -65,8 +74,10 @@ config:
   # `parse_timedelta` format
   qservPollInterval: "1s"
 
-  # -- Maximum simultaneous connections to open to the REST API
-  qservRestMaxConnections: 20
+  # -- Maximum simultaneous connections to open to the REST API. This should
+  # be set to `jobRunBatchSize` plus some extra connections for the monitor
+  # and cancel jobs.
+  qservRestMaxConnections: 15
 
   # -- Whether to send the expected API version in REST API calls to Qserv
   qservRestSendApiVersion: true
@@ -95,6 +106,11 @@ config:
   # -- How long to wait between retries after a Qserv API network failure in
   # Safir `parse_timedelta` format
   qservRetryDelay: "1s"
+
+  # -- Size of the Redis connection pool. This should be set to
+  # `jobRunBatchSize` plus some extra connections for the monitor, cancel
+  # jobs.
+  redisMaxConnections: 15
 
   # -- How long to wait for result processing (retrieval and upload) before
   # timing out, in seconds. This doubles as the timeout forcibly terminating
@@ -126,9 +142,16 @@ frontend:
   # -- Affinity rules for the qserv-kafka frontend pod
   affinity: {}
 
-  # -- Whether to allow containers to run as root. Set to true to allow use of
-  # debug containers to diagnose issues such as memory leaks.
-  allowRootDebug: false
+  debug:
+    # -- Set to true to allow containers to run as root and to create and mount
+    # a debug PVC. Useful ro run debug containers to diagnose issues such as
+    # memory leaks.
+    enabled: false
+
+    # Set to true to disable the [pymalloc
+    # allocator](https://bloomberg.github.io/memray/python_allocators.html#how-does-this-affect-memory-profiling).
+    # You may want to do this when debugging memory leaks.
+    disablePymalloc: false
 
   # -- Node selection rules for the qserv-kafka frontend pod
   nodeSelector: {}
@@ -141,7 +164,7 @@ frontend:
   resources:
     limits:
       cpu: "1"
-      memory: "300Mi"
+      memory: "450Mi"
     requests:
       cpu: "100m"
       memory: "145Mi"
@@ -232,6 +255,20 @@ resultWorker:
 
   # -- Tolerations for the qserv-kafka worker pods
   tolerations: []
+
+periodicMetrics:
+  # -- How often to run the periodic metrics job
+  schedule: "* * * * *"
+
+  # -- Resource limits and requests for the qserv-kafka periodic metrics pods
+  # @default -- See `values.yaml`
+  resources:
+    limits:
+      cpu: "200m"
+      memory: "100Mi"
+    requests:
+      cpu: "100m"
+      memory: "50Mi"
 
 # The following will be set by parameters injected by Argo CD and should not
 # be set in the individual environment values files.

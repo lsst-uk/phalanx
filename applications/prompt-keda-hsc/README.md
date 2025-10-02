@@ -18,9 +18,11 @@ KEDA Prompt Processing instance for HSC
 | prompt-keda.alerts.topic | string | None, must be set | Topic name where alerts will be sent |
 | prompt-keda.alerts.username | string | `""` | Username for sending alerts to the alert stream |
 | prompt-keda.apdb.config | string | None, must be set | URL to a serialized APDB configuration, or the "label:" prefix followed by the indexed name of such a config. |
+| prompt-keda.butler_writer.enabled | bool | `false` | If false, pipeline outputs will be written directly to the central repo. If true, a Kafka message will be sent to a service to aggregate these writes instead. The init job writes directly to the central repo regardless of this setting. |
+| prompt-keda.butler_writer.kafka_cluster | string | None, must be set | Address of Kafka broker where prompt processing output events will be written, for consumption by the Butler writer service. |
+| prompt-keda.butler_writer.kafka_topic | string | None, must be set | Kafka topic that prompt processing output events will be written to, for consumption by the Butler writer service. |
+| prompt-keda.butler_writer.kafka_username | string | None, must be set | Username for Kafka broker where prompt processing output events will be written, for consumption by the Butler writer service. |
 | prompt-keda.cache.baseSize | int | `3` | The default number of datasets of each type to keep. The pipeline only needs one of most dataset types (one bias, one flat, etc.), so this is roughly the number of visits that fit in the cache. |
-| prompt-keda.cache.patchesPerImage | int | `6` | A factor by which to multiply `baseSize` for templates and other patch-based datasets. |
-| prompt-keda.cache.refcatsPerImage | int | `4` | A factor by which to multiply `baseSize` for refcat datasets. |
 | prompt-keda.debug.exportOutputs | bool | `true` | Whether or not pipeline outputs should be exported to the central repo. This flag does not turn off APDB writes or alert generation; those must be handled at the pipeline level or by setting up an alternative destination. |
 | prompt-keda.debug.monitorDaxApdb | bool | `false` | Whether `dax_apdb` should run in debug mode and log metrics. |
 | prompt-keda.fullnameOverride | string | `"prompt-keda-hsc"` | Override the full name for resources (includes the release name) |
@@ -85,6 +87,7 @@ KEDA Prompt Processing instance for HSC
 | prompt-keda.sasquatch.auth_env | bool | `true` | If set, this application's Vault secret must contain a `sasquatch_token` key containing the authentication token for `sasquatch.endpointUrl`. Leave unset to attempt anonymous access. |
 | prompt-keda.sasquatch.endpointUrl | string | `""` | Url of the Sasquatch proxy server to upload metrics to. Leave blank to disable upload. This is a preliminary implementation of Sasquatch support, and this parameter may be deprecated if we instead support `SasquatchDatastore` in the future. |
 | prompt-keda.sasquatch.namespace | string | `"lsst.prompt"` | Namespace in the Sasquatch system with which to associate metrics. |
+| prompt-keda.sattle.uri_base | string | `""` | Base URI of the sattle service.  Leave blank if not used. |
 | prompt-keda.tolerations | list | `[]` | Tolerations for the Prompt Processing pod |
 | prompt-keda.worker.grace_period | int | `45` | When Kubernetes shuts down a pod, the time its workers have to abort processing and save intermediate results (seconds). |
 | prompt-keda.worker.restart | int | `0` | The number of requests to process before rebooting a worker. If 0, workers process requests indefinitely. |

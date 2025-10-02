@@ -47,7 +47,12 @@ config:
       - "rsp-bts"
     "exec:portal":
       - "rsp-bts"
+    "exec:portal-admin":
+      - "k8s-manke-admins"
+      - "sqre"
     "read:image":
+      - "rsp-bts"
+    "read:sasquatch":
       - "rsp-bts"
     "read:tap":
       - "rsp-bts"

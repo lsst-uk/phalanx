@@ -9,6 +9,9 @@ config:
   allowSubdomains: true
   slackAlerts: true
 
+  sentry:
+    enabled: true
+
   cilogon:
     clientId: "cilogon:/client_id/22adcdc145791f85b4d1edbf3157e21b"
     enrollmentUrl: "https://id.lsst.cloud/registry/co_petitions/start/coef:6"
@@ -46,13 +49,15 @@ config:
   quota:
     default:
       api:
-        hips: 1000
-        sia: 1000
-        tap: 3000
-        vo-cutouts: 500
+        sia: 70
+        tap: 200
+        vo-cutouts: 35
       notebook:
         cpu: 4.0
         memory: 16
+      tap:
+        qserv:
+          concurrent: 12
 
   groupMapping:
     "admin:jupyterlab":
@@ -69,6 +74,9 @@ config:
     "exec:portal":
       - "g_rubin"
       - "g_users"
+    "exec:portal-admin":
+      - "g_admins"
+      - "g_portal_admins"
     "read:image":
       - "g_rubin"
       - "g_users"

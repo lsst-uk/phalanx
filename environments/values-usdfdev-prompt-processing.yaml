@@ -4,6 +4,7 @@ vaultUrl: "https://vault.slac.stanford.edu"
 vaultPathPrefix: secret/rubin/usdf-prompt-processing-dev
 
 applications:
+  butler-writer-service: true
   cert-manager: false
   gafaelfawr: false
   ingress-nginx: false
@@ -13,9 +14,7 @@ applications:
   prompt-keda-hsc: true
   prompt-keda-latiss: true
   prompt-keda-lsstcam: true
-  prompt-keda-lsstcamimsim: true
-  prompt-keda-lsstcomcam: true
-  prompt-keda-lsstcomcamsim: true
   prompt-redis: true
+  s3-file-notifications: true
   strimzi: true
   vault-secrets-operator: false
