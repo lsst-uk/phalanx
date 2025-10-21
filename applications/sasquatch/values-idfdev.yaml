@@ -118,7 +118,6 @@ kafdrop:
   cmdArgs: "--message.format=AVRO --message.keyFormat=DEFAULT --topic.deleteEnabled=true --topic.createEnabled=true"
   ingress:
     enabled: true
-    hostname: data-dev.lsst.cloud
 
 rest-proxy:
   enabled: true
@@ -156,6 +155,7 @@ app-metrics:
     - noteburst
     - nublado
     - qservkafka
+    - repertoire
     - sia
     - wobbly
 
@@ -173,9 +173,12 @@ backup:
       retentionDays: 3
     - name: "influxdb-enterprise-incremental"
       enabled: true
+      bind: sasquatch-influxdb-enterprise-meta
     - name: "influxdb-oss-full"
       enabled: true
       retentionDays: 3
+  restore:
+    enabled: false
 
 backpack:
   enabled: true

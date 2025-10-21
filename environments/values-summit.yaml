@@ -8,6 +8,7 @@ vaultPathPrefix: "secret/phalanx/summit"
 namespaceLabels:
   sasquatch:
     lsst.io/discover: 'true'
+    k8up-enabled: 'true'
 
 applications:
   auxtel: true
@@ -40,9 +41,6 @@ applications:
   uws: true
 
 controlSystem:
-  imageTag: "c0041"
+  imageTag: "c0042"
   siteTag: "summit"
   s3EndpointUrl: "https://s3.cp.lsst.org"
-
-revisions:
-  strimzi: strimzi-0.45.0

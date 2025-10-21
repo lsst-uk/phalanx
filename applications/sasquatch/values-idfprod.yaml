@@ -61,7 +61,6 @@ telegraf:
 kafdrop:
   ingress:
     enabled: true
-    hostname: data.lsst.cloud
 
 chronograf:
   ingress:
@@ -89,6 +88,7 @@ app-metrics:
     - noteburst
     - nublado
     - qservkafka
+    - repertoire
     - sia
     - wobbly
 
