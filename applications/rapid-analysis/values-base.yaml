@@ -1,6 +1,6 @@
 image:
   repository: ghcr.io/lsst-sitcom/rubintv_production
-  tag: w_2025_38
+  tag: w_2025_48
   pullPolicy: Always
 location: BTS
 siteTag: bts
@@ -9,9 +9,10 @@ env:
   DEPLOY_BRANCH: deploy-bts
   LSST_RESOURCES_S3_PROFILE_butler: https://s3-butler.ls.lsst.org
   AWS_REQUEST_CHECKSUM_CALCULATION: WHEN_REQUIRED
+  RAPID_ANALYSIS_DO_RAISE: True
   BUTLER_ROLLOUT_PAUSE: 1.0
-  RA_PULL_DIRECTORIES: "TARTS donut_viz drp_pipe ts_wep summit_utils summit_extras rubintv_production"
-  TARTS_DATA_DIR: /project/rubintv/TARTS
+  RA_PULL_DIRECTORIES: "TARTS donut_viz drp_pipe ts_wep ts_ofc summit_utils summit_extras rubintv_production"
+  TARTS_DATA_DIR: /project/rubintv/aos_data/TARTS
 securityContext:
   uid: 73006
   gid: 73006
@@ -109,6 +110,17 @@ scripts:
     limits:
       cpu: 1
       memory: 8G
+- name: LSSTCam/runZernikePredictionPlotting.py
+  mounts:
+  - lsstcam-data
+  - project-shared
+  resources:
+    requests:
+      cpu: .5
+      memory: 6G
+    limits:
+      cpu: 1
+      memory: 12G
 - name: LSSTCam/runCleanup.py
   mounts:
   - lsstcam-data

@@ -11,9 +11,6 @@ Common labels
 {{- define "qserv-kafka.labels" -}}
 helm.sh/chart: {{ include "qserv-kafka.chart" . }}
 {{ include "qserv-kafka.selectorLabels" . }}
-{{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-{{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 
@@ -34,12 +31,12 @@ Common environment variables
     secretKeyRef:
       name: "qserv-kafka-access"
       key: "bootstrapServers"
+- name: "KAFKA_CLUSTER_CA_PATH"
+  value: "/etc/qserv-kafka/ca.crt"
 - name: "KAFKA_CLIENT_CERT_PATH"
   value: "/etc/qserv-kafka/user.crt"
 - name: "KAFKA_CLIENT_KEY_PATH"
   value: "/etc/qserv-kafka/user.key"
-- name: "KAFKA_CLUSTER_CA_PATH"
-  value: "/etc/qserv-kafka/ca.crt"
 - name: "KAFKA_SECURITY_PROTOCOL"
   valueFrom:
     secretKeyRef:
@@ -66,6 +63,13 @@ Common environment variables
     secretKeyRef:
       name: "qserv-kafka"
       key: "qserv-password"
+{{- end }}
+{{- if .Values.config.slack.enabled }}
+- name: "QSERV_KAFKA_SLACK_WEBHOOK"
+  valueFrom:
+    secretKeyRef:
+      name: "qserv-kafka"
+      key: "slack-webhook"
 {{- end }}
 {{- if .Values.config.sentry.enabled }}
 - name: "SENTRY_DSN"

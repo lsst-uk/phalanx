@@ -26,6 +26,7 @@ strimzi-kafka:
   mirrormaker2:
     enabled: true
     source:
+      alias: "idfdev"
       bootstrapServer: sasquatch-dev-kafka-bootstrap.lsst.cloud:9094
       topicsPattern: "registry-schemas, lsst.sal.*, lsst.dm.*"
   users:
@@ -42,6 +43,8 @@ strimzi-kafka:
 
 schema-registry:
   enabled: true
+  ingress:
+    enabled: true
 
 influxdb:
   ingress:
@@ -54,7 +57,6 @@ customInfluxDBIngress:
 
 telegraf:
   enabled: true
-  kafkaVersion: "4.0.0"
   kafkaConsumers:
     example:
       enabled: true
@@ -83,7 +85,6 @@ rest-proxy:
   enabled: true
   ingress:
     enabled: true
-    hostname: data-int.lsst.cloud
   kafka:
     topicPrefixes:
       - lsst.example
@@ -108,7 +109,6 @@ chronograf:
 
 app-metrics:
   enabled: true
-  kafkaVersion: "4.0.0"
   apps:
     - gafaelfawr
     - mobu
@@ -121,6 +121,7 @@ app-metrics:
 
 backup:
   enabled: true
+  schedule: "0 5 * * *"
   persistence:
     size: 500Gi
     storageClass: standard

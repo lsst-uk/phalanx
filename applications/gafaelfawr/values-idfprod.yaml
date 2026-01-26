@@ -50,7 +50,7 @@ config:
     default:
       api:
         sia: 70
-        tap: 200
+        tap: 1000
         vo-cutouts: 35
       notebook:
         cpu: 4.0
@@ -88,8 +88,8 @@ config:
       - "g_users"
 
   initialAdmins:
+    - "adam"
     - "afausti"
-    - "athornton"
     - "danfuchs"
     - "frossie"
     - "jonathansick"

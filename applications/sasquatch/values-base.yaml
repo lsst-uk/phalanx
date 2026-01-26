@@ -108,10 +108,7 @@ schema-registry:
   enabled: true
   ingress:
     enabled: true
-    annotations:
-      nginx.ingress.kubernetes.io/rewrite-target: /$2
-    hostname: base-lsp.lsst.codes
-    path: /schema-registry(/|$)(.*)
+    anonymous: true
 
 influxdb:
   ingress:
@@ -133,6 +130,7 @@ customInfluxDBIngress:
 
 telegraf:
   enabled: true
+  kafkaVersion: "3.9.1"
   kafkaConsumers:
     auxtel:
       enabled: true
@@ -292,7 +290,7 @@ rest-proxy:
   enabled: true
   ingress:
     enabled: true
-    hostname: base-lsp.lsst.codes
+    anonymous: true
   configurationOverrides:
     "access.control.allow.origin": https://base-lsp.lsst.codes/love
   kafka:
@@ -350,4 +348,7 @@ control-system:
     - lsst.s3.raw.lsstcam
 
 consdb:
+  enabled: true
+
+obsloctap:
   enabled: true

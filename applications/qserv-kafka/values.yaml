@@ -64,6 +64,11 @@ config:
     # should be a float between 0 and 1
     tracesSampleRate: 0.0
 
+  slack:
+    # -- Set to true to enable the Slack integration. If true, the
+    # slack-webhook secret must be provided.
+    enabled: false
+
   # -- Extra database connections that may be opened in excess of the pool
   # size to handle surges in load. This is used primarily by the frontend for
   # jobs that complete immediately.
@@ -77,6 +82,10 @@ config:
   # -- URL to the Qserv MySQL interface (must use a scheme of `mysql+asyncmy`)
   # @default -- None, must be set
   qservDatabaseUrl: null
+
+  # -- Whether to delete queries after they complete. If this is set to false,
+  # rely on Qserv's internal garbage collection of old queries.
+  qservDeleteQueries: true
 
   # -- Interval at which Qserv is polled for query status in Safir
   # `parse_timedelta` format
@@ -178,7 +187,12 @@ frontend:
       memory: "145Mi"
 
   # -- Tolerations for the qserv-kafka frontend pod
-  tolerations: []
+  # @default -- Tolerate GKE arm64 taint
+  tolerations:
+    - key: "kubernetes.io/arch"
+      operator: "Equal"
+      value: "arm64"
+      effect: "NoSchedule"
 
 redis:
   config:
@@ -217,6 +231,14 @@ redis:
     requests:
       cpu: "10m"
       memory: "20Mi"
+
+  # -- Tolerations for the qserv-kafka Redis pod
+  # @default -- Tolerate GKE arm64 taint
+  tolerations:
+    - key: "kubernetes.io/arch"
+      operator: "Equal"
+      value: "arm64"
+      effect: "NoSchedule"
 
 resultWorker:
   # -- Affinity rules for the qserv-kafka worker pods
@@ -262,11 +284,16 @@ resultWorker:
       memory: "145Mi"
 
   # -- Tolerations for the qserv-kafka worker pods
-  tolerations: []
+  # @default -- Tolerate GKE arm64 taint
+  tolerations:
+    - key: "kubernetes.io/arch"
+      operator: "Equal"
+      value: "arm64"
+      effect: "NoSchedule"
 
 periodicMetrics:
-  # -- How often to run the periodic metrics job
-  schedule: "* * * * *"
+  # -- Affinity rules for the qserv-kafka metrics job
+  affinity: {}
 
   # -- Resource limits and requests for the qserv-kafka periodic metrics pods
   # @default -- See `values.yaml`
@@ -278,16 +305,37 @@ periodicMetrics:
       cpu: "100m"
       memory: "50Mi"
 
+  # -- Node selection rules for the qserv-kafka metrics job
+  nodeSelector: {}
+
+  # -- Annotations for the qserv-kafka metrics job
+  podAnnotations: {}
+
+  # -- How often to run the periodic metrics job
+  schedule: "* * * * *"
+
+  # -- Tolerations for the qserv-kafka metrics job
+  # @default -- Tolerate GKE arm64 taint
+  tolerations:
+    - key: "kubernetes.io/arch"
+      operator: "Equal"
+      value: "arm64"
+      effect: "NoSchedule"
+
 # The following will be set by parameters injected by Argo CD and should not
 # be set in the individual environment values files.
 global:
-  # -- Base URL for the environment
-  # @default -- Set by Argo CD
-  baseUrl: null
+  # -- Name of the Phalanx environment
+  # @default -- Set by Argo CD Application
+  environmentName: null
 
   # -- Host name for ingress
   # @default -- Set by Argo CD
   host: null
+
+  # -- Base URL for Repertoire discovery API
+  # @default -- Set by Argo CD
+  repertoireUrl: null
 
   # -- Base path for Vault secrets
   # @default -- Set by Argo CD
