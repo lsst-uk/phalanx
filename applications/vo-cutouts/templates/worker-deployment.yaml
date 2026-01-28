@@ -5,7 +5,7 @@ metadata:
   labels:
     {{- include "vo-cutouts.labels" . | nindent 4 }}
 spec:
-  replicas: {{ .Values.databaseWorker.replicaCount }}
+  replicas: {{ .Values.cutoutWorker.replicaCount }}
   selector:
     matchLabels:
       {{- include "vo-cutouts.selectorLabels" . | nindent 6 }}
@@ -28,7 +28,7 @@ spec:
       {{- end }}
       serviceAccountName: "vo-cutouts"
       containers:
-        - name: "worker"
+        - name: "vo-cutouts-worker"
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
@@ -52,6 +52,16 @@ spec:
             # Used by Butler to retrieve its configuration.
             - name: "DAF_BUTLER_REPOSITORIES"
               value: {{ .Values.global.butlerServerRepositories | b64dec | quote }}
+
+            # Not currently used since Sentry isn't necessarily available, but
+            # setting it keeps consistency and shouldn't do any harm.
+            {{- if .Values.config.sentry.enabled }}
+            - name: "SENTRY_DSN"
+              valueFrom:
+                secretKeyRef:
+                  name: "vo-cutouts"
+                  key: "sentry-dsn"
+            {{- end }}
 
             # lsst-resources writes temp files into the current working
             # directory unless you explicitly specify one.

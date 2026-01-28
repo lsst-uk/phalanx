@@ -17,6 +17,8 @@ data:
       flush_jitter = "0s"
       debug = {{ default false .Values.debug }}
       omit_hostname = true
+      skip_processors_after_aggregators = false
+      logformat = "structured"
 
     [[outputs.influxdb]]
       namedrop = ["telegraf_*"]
@@ -38,12 +40,13 @@ data:
 
     {{- range $index, $app := .Values.apps }}
     {{- $globalInfluxTags := $.Values.globalInfluxTags | default list }}
-    {{- $appInfluxTags := (index $.Values.globalAppConfig $app "influxTags") | default list }}
+    {{- $appInfluxTags := $.Values.globalAppConfig | dig $app "influxTags" list }}
     {{- $influxTags := concat $globalInfluxTags $appInfluxTags }}
     [[inputs.kafka_consumer]]
       brokers = [
         "sasquatch-kafka-brokers.sasquatch:9092"
       ]
+      kafka_version = {{ $.Values.kafkaVersion | quote }}
       consumer_group = "telegraf-kafka-consumer-app-metrics"
       sasl_mechanism = "SCRAM-SHA-512"
       sasl_password = "$TELEGRAF_PASSWORD"

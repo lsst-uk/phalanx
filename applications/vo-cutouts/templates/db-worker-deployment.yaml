@@ -28,7 +28,7 @@ spec:
       {{- end }}
       automountServiceAccountToken: false
       containers:
-        - name: "db-worker"
+        - name: "vo-cutouts-db-worker"
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
@@ -52,6 +52,13 @@ spec:
                 secretKeyRef:
                   name: "vo-cutouts"
                   key: "slack-webhook"
+            {{- end }}
+            {{- if .Values.config.sentry.enabled }}
+            - name: "SENTRY_DSN"
+              valueFrom:
+                secretKeyRef:
+                  name: "vo-cutouts"
+                  key: "sentry-dsn"
             {{- end }}
           envFrom:
             - configMapRef:

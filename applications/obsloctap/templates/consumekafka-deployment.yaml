@@ -1,0 +1,158 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "consumekafka"
+  labels:
+    {{- include "obsloctap.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "obsloctap.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "obsloctap.selectorLabels" . | nindent 8 }}
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - name: "consumekafka"
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - "all"
+            readOnlyRootFilesystem: true
+          image: "{{ .Values.consumekafka.image.repository }}:{{ .Values.consumekafka.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.consumekafka.image.pullPolicy }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          env:
+            - name: "database"
+              valueFrom:
+                secretKeyRef:
+                  name: obsloctap
+                  key: "database"
+            - name: "database_user"
+              valueFrom:
+                secretKeyRef:
+                  name: obsloctap
+                  key: "username"
+            - name: "database_url"
+              valueFrom:
+                secretKeyRef:
+                  name: obsloctap
+                  key: "url"
+            - name: "database_password"
+              valueFrom:
+                secretKeyRef:
+                  name: obsloctap
+                  key: "password"
+            - name: "database_schema"
+              value: "{{ .Values.config.database_schema }}"
+            - name: "INSTRUMENT"
+              value: "LSSTCam"
+            - name: "LOG_CONFIG"
+              value: "{{ .Values.consumekafka.logLevel }}"
+            - name: "KAFKA_BOOTSTRAP"
+              value: "{{ .Values.kafka.bootstrap }}"
+            - name: "KAFKA_USERNAME"
+              value: "{{ .Values.kafka.username }}"
+            - name: "KAFKA_PASSWORD"
+              valueFrom:
+                secretKeyRef:
+                  name: obsloctap
+                  key: "obsloctap-password"
+            - name: "KAFKA_GROUP_ID"
+              value: "{{ .Values.kafka.group_id }}"
+            - name: "SCHEMA_URL"
+              value: "{{ .Values.kafka.schema_url }}"
+            - name: "RUBIN_SIM_DATA_DIR"
+              value: "{{ .Values.rubinsim.dataDir }}"
+            - name: "LSST_DISABLE_BUCKET_VALIDATION"
+              value: "{{ .Values.rubinsim.bucketVal }}"
+            - name: "AWS_ACCESS_KEY_ID"
+              valueFrom:
+                secretKeyRef:
+                  name: obsloctap
+                  key: "default-key"
+            - name: "AWS_SECRET_ACCESS_KEY"
+              valueFrom:
+                secretKeyRef:
+                  name: obsloctap
+                  key: "default-password"
+            - name: "S3_ENDPOINT_URL"
+              value: "{{ .Values.rubinsim.S3_ENDPOINT_URL }}"
+            - name: "MPLCONFIGDIR"
+              value: "/tmp/.config/matplotlib"
+            - name: "consdb_database"
+              valueFrom:
+                secretKeyRef:
+                  name: obsloctap
+                  key: "consdb-database"
+            - name: "consdb_username"
+              valueFrom:
+                secretKeyRef:
+                  name: obsloctap
+                  key: "consdb-username"
+            - name: "consdb_url"
+              valueFrom:
+                secretKeyRef:
+                  name: obsloctap
+                  key: "consdb-url"
+            - name: "consdb_password"
+              valueFrom:
+                secretKeyRef:
+                  name: obsloctap
+                  key: "consdb-password"
+          volumeMounts:
+            - name: "tmp-volume"
+              mountPath: "/tmp"
+            {{- range $vol := .Values.consumekafka.pvcMountpoint }}
+            - name: {{ $vol.name }}
+              mountPath: {{ $vol.mountPath }}
+            {{- end }}
+            {{- range $vol := .Values.consumekafka.nfsMountpoint }}
+            - name: {{ $vol.name }}
+              mountPath: {{ $vol.containerPath }}
+              readOnly: {{ $vol.readOnly }}
+            {{- end }}
+
+      volumes:
+          {{- range $vol := .Values.consumekafka.pvcMountpoint }}
+          - name: {{ $vol.name | quote }}
+            persistentVolumeClaim:
+              claimName: {{ $vol.name | quote }}
+          {{- end }}
+          - name: tmp-volume
+            emptyDir:
+              sizeLimit: 500Mi
+          {{- range $vol := .Values.consumekafka.nfsMountpoint }}
+          - name: {{ $vol.name | quote }}
+            nfs:
+              path: {{ $vol.serverPath }}
+              readOnly: {{ $vol.readOnly }}
+              server: {{ $vol.server }}
+          {{- end }}
+
+# kt says for access ot sunset file in sim use uid=47726(rubins3) gid=4085(rubin_users)
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 47726
+        runAsGroup: 4085
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

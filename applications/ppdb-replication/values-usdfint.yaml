@@ -1,0 +1,40 @@
+config:
+
+  # -- Logging profile (`production` for JSON, `development` for
+  # human-friendly)
+  logProfile: "production"
+
+  # -- APDB config file resource
+  apdbConfig: "s3://embargo@rubin-summit-users/apdb_config/cassandra/pp_apdb_lsstcam.yaml"
+
+  # -- PPDB config file resource
+  # TODO: Use a group rather than user path for these configurations
+  ppdbConfig: "/sdf/data/rubin/user/jeremym/dev/DM-53599/ppdb-config/ppdb_lsstcam.yaml"
+
+  # -- Volumes specific to the environment
+  volumes:
+    - name: sdf-group-rubin
+      persistentVolumeClaim:
+        claimName: sdf-group-rubin
+    - name: sdf-data-rubin
+      persistentVolumeClaim:
+        claimName: sdf-data-rubin
+    - name: sdf-scratch
+      persistentVolumeClaim:
+        claimName: sdf-scratch
+  # -- Volume mounts
+  volumeMounts:
+    - name: sdf-group-rubin
+      mountPath: /sdf/group/rubin
+    - name: sdf-data-rubin
+      mountPath: /sdf/data/rubin
+    - name: sdf-scratch
+      mountPath: /sdf/scratch
+  # -- Persistent volume claims
+  persistentVolumeClaims:
+    - name: sdf-group-rubin
+      storageClassName: sdf-group-rubin
+    - name: sdf-data-rubin
+      storageClassName: sdf-data-rubin
+    - name: sdf-scratch
+      storageClassName: sdf-scratch

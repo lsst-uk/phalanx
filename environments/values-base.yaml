@@ -8,6 +8,9 @@ vaultPathPrefix: "secret/phalanx/base"
 namespaceLabels:
   sasquatch:
     lsst.io/discover: 'true'
+    k8up-enabled: 'true'
+  gafaelfawr:
+    k8up-enabled: 'true'
 
 applications:
   argo-workflows: true
@@ -15,6 +18,7 @@ applications:
   calsys: true
   consdb: true
   control-system-test: true
+  csc-versions: true
   envsys: true
   exposurelog: true
   love: true
@@ -24,20 +28,24 @@ applications:
   nightreport: true
   nublado: true
   nvr-control: true
-  obsenv-management: true
+  obsloctap: true
   obssys: true
   portal: true
   rapid-analysis: true
   rubintv: true
+  rubin-too-producer: true
   sasquatch: true
   simonyitel: true
   squareone: true
   strimzi: true
-  telegraf: true
-  telegraf-ds: true
+  strimzi-access-operator: true
+  strimzi-registry-operator: true
   uws: true
 
 controlSystem:
-  imageTag: "c0041"
+  imageTag: "c0042"
   siteTag: "base"
   s3EndpointUrl: "https://s3.ls.lsst.org"
+
+revisions:
+  strimzi: strimzi-0.47.0

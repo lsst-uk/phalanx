@@ -29,9 +29,9 @@ autoscaling:
   # -- Maximum number of butler deployment pods
   #
   # Each replica can have 40 database connections, so we need to make sure the
-  # combined connections are under the postgres connection limit. (Which is
-  # configurable, but currently set to 400 at the IDF.)
-  maxReplicas: 10
+  # combined connections are under the AlloyDB connection limit. (200 x num
+  # replicas as currently configured at IDF.)
+  maxReplicas: 20
 
   # -- Target CPU utilization of butler deployment pods
   #
@@ -66,7 +66,12 @@ resources:
 nodeSelector: {}
 
 # -- Tolerations for the butler deployment pod
-tolerations: []
+# @default -- Tolerate GKE arm64 taint
+tolerations:
+  - key: "kubernetes.io/arch"
+    operator: "Equal"
+    value: "arm64"
+    effect: "NoSchedule"
 
 # -- Affinity rules for the butler deployment pod
 affinity: {}
@@ -101,13 +106,10 @@ config:
   # @default -- No configuration file for DP1 will be generated.
   dp1PostgresUri: ""
 
-  # -- True if the 'dp02' Butler repository alias should use client/server
-  # Butler.  False if it should use DirectButler.
-  dp02ClientServerIsDefault: false
-
-  # -- True if the 'dp02' datastore files should be served from SLAC, false
-  # if they should be served from Google.
-  dp02UseSlacDatastore: false
+  # -- Postgres connection string pointing to the registry database hosting
+  # Prompt Data Products.
+  # @default -- No configuration file for prompt will be generated.
+  promptPostgresUri: ""
 
   # -- Postgres username used to connect to the Butler DB
   # @default -- Use values specified in per-repository Butler config files.

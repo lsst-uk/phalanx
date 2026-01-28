@@ -9,18 +9,18 @@ config:
   #github:
   #  clientId: "Ov23liKfYDkoJPekZaON"
 
-  databaseUrl: "postgresql://gafaelfawr@129.114.35.51/gafaelfawr01"
+  databaseUrl: "postgresql://gafaelfawr@192.168.115.125/gafaelfawr01"
   updateSchema: true
 
   oidcServer:
     enabled: true
 
   oidc:
-    clientId: "tacc-rsp-develop"
-    audience: "tacc-rsp-develop"
-    loginUrl: "https://tacc.develop.tapis.io/v3/oauth2/authorize"
-    tokenUrl: "https://tacc.develop.tapis.io/v3/oauth2/tokens/oidc"
-    issuer: "https://tacc.develop.tapis.io/v3/tokens"
+    clientId: "rsp-tacc"
+    audience: "rsp-tacc"
+    loginUrl: "https://tacc.tapis.io/v3/oauth2/authorize"
+    tokenUrl: "https://tacc.tapis.io/v3/oauth2/tokens/oidc"
+    issuer: "https://tacc.tapis.io/v3/tokens"
     usernameClaim: "tapis/username"
 
   ldap:
@@ -46,6 +46,15 @@ config:
   # Allow access by GitHub team.
   groupMapping:
     "admin:jupyterlab":
+      - "G-820288"
+      - "TACC-ACI-CIC"
+      #- githu:
+      #    organization: "lsst-sqre"
+      #    team: "square"
+      #- github:
+      #    organization: "lsst-sqre"
+      #    team: "tacc-spherex"
+    "admin:userinfo":
       - "G-820288"
       - "TACC-ACI-CIC"
       #- githu:
@@ -83,7 +92,7 @@ config:
       #- github:
       #    organization: "lsst-sqre"
       #    team: "tacc-spherex"
-    "read:image":
+    "exec:portal":
       - "G-827698"
       - "G-820288"
       - "TACC-ACI-CIC"
@@ -93,7 +102,16 @@ config:
       #- github:
       #    organization: "lsst-sqre"
       #    team: "tacc-spherex"
-    "exec:portal":
+    "exec:portal-admin":
+      - "G-820288"
+      - "TACC-ACI-CIC"
+      #- github:
+      #    organization: "lsst-sqre"
+      #    team: "square"
+      #- github:
+      #    organization: "lsst-sqre"
+      #    team: "tacc-spherex"
+    "read:image":
       - "G-827698"
       - "G-820288"
       - "TACC-ACI-CIC"

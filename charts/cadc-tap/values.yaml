@@ -40,7 +40,12 @@ podAnnotations: {}
 nodeSelector: {}
 
 # -- Tolerations for the TAP pod
-tolerations: []
+# @default -- Tolerate GKE arm64 taint
+tolerations:
+  - key: "kubernetes.io/arch"
+    operator: "Equal"
+    value: "arm64"
+    effect: "NoSchedule"
 
 # -- Affinity rules for the TAP pod
 affinity: {}
@@ -71,7 +76,7 @@ config:
       pullPolicy: "IfNotPresent"
 
       # -- Tag of TAP image to use
-      tag: "1.21.1"
+      tag: "1.24.0"
 
   qserv:
     # -- QServ hostname:port to connect to
@@ -89,7 +94,7 @@ config:
       pullPolicy: "IfNotPresent"
 
       # -- Tag of TAP image to use
-      tag: "2.13.1"
+      tag: "3.12.0"
 
     # -- Whether the Qserv database is password protected
     # @default -- false
@@ -99,16 +104,19 @@ config:
   tapSchemaAddress: "cadc-tap-schema-db:3306"
 
   # -- Datalink payload URL
-  datalinkPayloadUrl: "https://github.com/lsst/sdm_schemas/releases/download/w.2025.16/datalink-snippets.zip"
+  datalinkPayloadUrl: "https://github.com/lsst/sdm_schemas/releases/download/w.2026.01/datalink-snippets.zip"
 
   # -- Name of GCS bucket in which to store results
   gcsBucket: "async-results.lsst.codes"
 
   # -- Base URL for results stored in GCS bucket
-  gcsBucketUrl: "https://tap-files.lsst.codes"
+  gcsBucketUrl: "https://storage.googleapis.com"
 
   # -- GCS bucket type (GCS or S3)
   gcsBucketType: "GCS"
+
+  # -- Data Database name
+  database: "dp02"
 
   # -- Java heap size, which will set the maximum size of the heap. Otherwise
   # Java would determine it based on how much memory is available and black
@@ -126,6 +134,33 @@ config:
 
   # -- Whether Sentry is enabled in this environment
   sentryEnabled: false
+
+  # -- Kafka configuration
+  kafka:
+
+    # -- Kafka topics
+    topics:
+
+      # -- Job Run topic
+      jobRun: "lsst.tap.job-run"
+
+      # -- Job Status topic
+      jobStatus: "lsst.tap.job-status"
+
+      # -- Job Delete topic
+      jobDelete: "lsst.tap.job-delete"
+
+    # -- Whether kafka is enabled
+    enabled: false
+
+  # -- Rules for renaming Columns
+  urlRewrite:
+
+    # -- Whether it is enabled
+    enabled: true
+
+    # -- String with a comma-separated list of schema.table:column rules
+    rules: "ivoa.ObsCore:access_url"
 
 mockdb:
   # -- Spin up a container to pretend to be the database.
@@ -155,12 +190,56 @@ mockdb:
   nodeSelector: {}
 
   # -- Tolerations for the mock db pod
-  tolerations: []
+  # @default -- Tolerate GKE arm64 taint
+  tolerations:
+    - key: "kubernetes.io/arch"
+      operator: "Equal"
+      value: "arm64"
+      effect: "NoSchedule"
 
   # -- Affinity rules for the mock db pod
   affinity: {}
 
 tapSchema:
+  # -- Database backend type: "containerized", "cloudsql", or "external"
+  # @default -- "containerized"
+  type: "containerized"
+
+  # -- Database name
+  database: "TAP_SCHEMA"
+
+  # -- Database username
+  username: "TAP_SCHEMA"
+
+  # -- Database password (only used for containerized)
+  password: "TAP_SCHEMA"
+
+  # -- Secret key containing the database password
+  passwordKey: "tap-schema-password"
+
+  # -- Whether the TAP_SCHEMA database requires a password in Vault (true for cloudsql/external)
+  useVaultPassword: false
+
+  # -- Connection pool configuration for jdbc/tapadm
+  tapadm:
+    # -- Maximum active connections (maxIdle will be set to this value)
+    maxActive: 2
+
+  # -- Connection pool configuration for jdbc/tapuser (query planning and tap_upload)
+  tapuser:
+    # -- Maximum active connections (maxIdle will be set to this value)
+    maxActive: 3
+
+  # -- External PostgreSQL configuration (only used if type is "external")
+  external:
+
+    # -- Hostname of external PostgreSQL server
+    host: ""
+
+    # -- Port of external PostgreSQL server
+    port: 5432
+
+  # Legacy image config for containerized TAP_SCHEMA (when useCloudSQL=false)
   image:
     # -- TAP schema image to ue. This must be overridden by each environment
     # with the TAP schema for that environment.
@@ -170,7 +249,7 @@ tapSchema:
     pullPolicy: "IfNotPresent"
 
     # -- Tag of TAP schema image
-    tag: "tickets-DM-51064-dp03-ssotimefix"
+    tag: "DP1-v1.2.0"
 
   # -- Resource limits and requests for the TAP schema database pod
   # @default -- See `values.yaml`
@@ -189,12 +268,43 @@ tapSchema:
   nodeSelector: {}
 
   # -- Tolerations for the TAP schema database pod
-  tolerations: []
+  # @default -- Tolerate GKE arm64 taint
+  tolerations:
+    - key: "kubernetes.io/arch"
+      operator: "Equal"
+      value: "arm64"
+      effect: "NoSchedule"
 
   # -- Affinity rules for the TAP schema database pod
   affinity: {}
 
 uws:
+  # -- Database backend type: "containerized", "cloudsql", or "external"
+  # @default -- "containerized"
+  type: "containerized"
+
+  # -- Database name
+  database: "postgres"
+
+  # -- Database username
+  username: "postgres"
+
+  # -- Whether UWS database requires a password in Vault (true for cloudsql/external)
+  useVaultPassword: false
+
+  # -- Connection pool configuration
+  # -- Maximum active connections (maxIdle will be set to this value)
+  maxActive: 5
+
+  # -- External PostgreSQL configuration (only used if type is "external")
+  external:
+
+    # -- Hostname of external PostgreSQL server
+    host: ""
+
+    # -- Port of external PostgreSQL server
+    port: 5432
+
   image:
     # -- UWS database image to use
     repository: "ghcr.io/lsst-sqre/lsst-tap-uws-db"
@@ -203,7 +313,7 @@ uws:
     pullPolicy: "IfNotPresent"
 
     # -- Tag of UWS database image to use
-    tag: "2.13.1"
+    tag: "3.12.0"
 
   # -- Resource limits and requests for the UWS database pod
   # @default -- See `values.yaml`
@@ -222,7 +332,12 @@ uws:
   nodeSelector: {}
 
   # -- Tolerations for the UWS database pod
-  tolerations: []
+  # @default -- Tolerate GKE arm64 taint
+  tolerations:
+    - key: "kubernetes.io/arch"
+      operator: "Equal"
+      value: "arm64"
+      effect: "NoSchedule"
 
   # -- Affinity rules for the UWS database pod
   affinity: {}
@@ -237,7 +352,7 @@ cloudsql:
     repository: "gcr.io/cloudsql-docker/gce-proxy"
 
     # -- Cloud SQL Auth Proxy tag to use
-    tag: "1.37.7"
+    tag: "1.37.12"
 
     # -- Pull policy for Cloud SQL Auth Proxy images
     pullPolicy: "IfNotPresent"
@@ -259,10 +374,10 @@ cloudsql:
   resources:
     limits:
       cpu: "100m"
-      memory: "20Mi"
+      memory: "30Mi"
     requests:
       cpu: "5m"
-      memory: "7Mi"
+      memory: "15Mi"
 
 # -- The service account will allways be created when cloudsql.enabled is set to true
 # In this case the serviceAccount configuration here is required
@@ -282,12 +397,12 @@ serviceAccount:
 global:
   # -- Base URL for the environment
   # @default -- Set by Argo CD
-  baseUrl: ""
+  baseUrl: null
 
   # -- Host name for ingress
   # @default -- Set by Argo CD
-  host: ""
+  host: null
 
   # -- Base path for Vault secrets
   # @default -- Set by Argo CD
-  vaultSecretsPath: ""
+  vaultSecretsPath: null

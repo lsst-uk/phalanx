@@ -26,15 +26,9 @@ strimzi-kafka:
   mirrormaker2:
     enabled: true
     source:
+      alias: "idfdev"
       bootstrapServer: sasquatch-dev-kafka-bootstrap.lsst.cloud:9094
       topicsPattern: "registry-schemas, lsst.sal.*, lsst.dm.*"
-    resources:
-      requests:
-        cpu: "2"
-        memory: 4Gi
-      limits:
-        cpu: "4"
-        memory: 8Gi
   users:
     replicator:
       enabled: true
@@ -42,45 +36,20 @@ strimzi-kafka:
       enabled: true
   controller:
     enabled: true
-    resources:
-      requests:
-        memory: 8Gi
-        cpu: "1"
-      limits:
-        memory: 8Gi
-        cpu: "1"
   broker:
     enabled: true
     storage:
       size: 500Gi
-    resources:
-      requests:
-        memory: 16Gi
-        cpu: "2"
-      limits:
-        memory: 16Gi
-        cpu: "2"
-  connect:
+
+schema-registry:
+  enabled: true
+  ingress:
     enabled: true
-  registry:
-    ingress:
-      enabled: true
-      annotations:
-        nginx.ingress.kubernetes.io/rewrite-target: /$2
-      hostname: data-int.lsst.cloud
-      path: /schema-registry(/|$)(.*)
 
 influxdb:
   ingress:
     enabled: false
     hostname: data-int.lsst.cloud
-  resources:
-    requests:
-      memory: 16Gi
-      cpu: 2
-    limits:
-      memory: 16Gi
-      cpu: 2
 
 customInfluxDBIngress:
   enabled: true
@@ -111,13 +80,11 @@ telegraf:
 kafdrop:
   ingress:
     enabled: true
-    hostname: data-int.lsst.cloud
 
 rest-proxy:
   enabled: true
   ingress:
     enabled: true
-    hostname: data-int.lsst.cloud
   kafka:
     topicPrefixes:
       - lsst.example
@@ -148,11 +115,13 @@ app-metrics:
     - noteburst
     - nublado
     - qservkafka
+    - repertoire
     - sia
     - wobbly
 
 backup:
   enabled: true
+  schedule: "0 5 * * *"
   persistence:
     size: 500Gi
     storageClass: standard

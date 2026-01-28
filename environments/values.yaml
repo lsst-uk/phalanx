@@ -20,7 +20,8 @@ butlerServerRepositories: {}
 # -- URL of the repository for all applications
 repoUrl: https://github.com/lsst-sqre/phalanx.git
 
-# -- Revision of repository to use for all applications
+# -- Revision of repository to use for all applications unless overridden by
+# branches below
 targetRevision: "main"
 
 # -- URL of Vault server for this environment
@@ -50,6 +51,9 @@ applications:
   # -- Enable the butler application
   butler: false
 
+  # -- Enable the Butler writer application
+  butler-writer-service: false
+
   # -- Enable the calsys control system application
   calsys: false
 
@@ -69,6 +73,9 @@ applications:
   # -- Enable the control-system-test application
   control-system-test: false
 
+  # -- Enable the csc-versions application
+  csc-versions: false
+
   # -- Eanble the datalinker application
   datalinker: false
 
@@ -87,14 +94,8 @@ applications:
   # -- Enable the fastapi-bootcamp application
   fastapi-bootcamp: false
 
-  # -- Enable the filestore-backup application
-  filestore-backup: false
-
-  # -- Enable the flink application
-  flink: false
-
-  # -- Enable the fspurger application
-  fspurger: false
+  # -- Enable the fov-quicklook application
+  fov-quicklook: false
 
   # -- Enable the Gafaelfawr application. This is required by Phalanx since
   # most other applications use `GafaelfawrIngress`
@@ -109,11 +110,18 @@ applications:
   # -- Enable the hoverdrive application
   hoverdrive: false
 
+  # -- Enable the muster application
+  muster: false
+
   # -- Enable the qserv-kafka application
   qserv-kafka: false
 
   # -- Enable the nvr-control application
   nvr-control: false
+
+  # -- Enable the Repertoire application. This provides service discovery for
+  # many other Phalanx applications, all of which assume that it is running.
+  repertoire: true
 
   # -- Enable the rubin-rag application
   rubin-rag: false
@@ -148,8 +156,8 @@ applications:
   # -- Enable the mobu application
   mobu: false
 
-  # -- Enable the monitoring application
-  monitoring: false
+  # -- Enable the mpsky application
+  mpsky: false
 
   # -- Enable the narrativelog application
   narrativelog: false
@@ -162,9 +170,6 @@ applications:
 
   # -- Enable the nublado application (v3 of the Notebook Aspect)
   nublado: false
-
-  # -- Enable the obsenv-management application
-  obsenv-management: false
 
   # -- Enable the obssys control system application
   obssys: false
@@ -204,15 +209,6 @@ applications:
   # -- Enable the prompt-keda-lsstcam application
   prompt-keda-lsstcam: false
 
-  # -- Enable the prompt-keda-lsstcamimsim application
-  prompt-keda-lsstcamimsim: false
-
-  # -- Enable the prompt-keda-lsstcomcam application
-  prompt-keda-lsstcomcam: false
-
-  # -- Enable the prompt-keda-lsstcomcamsim application
-  prompt-keda-lsstcomcamsim: false
-
   # -- Enable the prompt-redis application
   prompt-redis: false
 
@@ -221,6 +217,12 @@ applications:
 
   # -- Enable the rubintv-dev application
   rubintv-dev: false
+
+  # -- Enable the rubin-too-producer application
+  rubin-too-producer: false
+
+  # -- Enable the s3-file-notifications application
+  s3-file-notifications: false
 
   # -- Enable the s3proxy application
   s3proxy: false
@@ -233,6 +235,9 @@ applications:
 
   # -- Enable the schedview-snapshot application
   schedview-snapshot: false
+
+  # -- Enable the schedview-static-pages application
+  schedview-static-pages: false
 
   # -- Enable the sia over butler application
   sia: false
@@ -261,23 +266,23 @@ applications:
   # -- Enable the strimzi-access-operator application
   strimzi-access-operator: false
 
+  # -- Enable the strimzi-registry-operator application
+  strimzi-registry-operator: false
+
   # -- Enable the tap application
   tap: false
 
   # -- Enable the tasso application
   tasso: false
 
-  # -- Enable the telegraf application
-  telegraf: false
-
-  # -- Enable the telegraf-ds application
-  telegraf-ds: false
-
   # -- Enable the templatebot application
   templatebot: false
 
   # -- Enable the times-square application
   times-square: false
+
+  # -- Enable the turborepo-cache application
+  turborepo-cache: false
 
   # -- Enable the unfurlbot application
   unfurlbot: false
@@ -302,7 +307,11 @@ applications:
   # running any Safir-based UWS services
   wobbly: false
 
-# -- Add labels for application namespaces.
+# -- Mapping of applications to branches to run some applications from
+# revisions other than main
+revisions: {}
+
+# -- Add labels for application namespaces
 namespaceLabels: {}
 
 # The following settings are used for the control system

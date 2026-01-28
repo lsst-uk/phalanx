@@ -49,7 +49,7 @@ bootstrap:
   auth:
     # -- Enable authentication of the data nodes using this secret, by
     # creating a username and password for an admin account. The secret
-    # must contain keys `username` and `password`.
+    # must contain keys `influxdb-user` and `influxdb-password`.
     secretName: sasquatch
 
   ddldml:
@@ -64,24 +64,17 @@ bootstrap:
     resources: {}
 
 image:
+  # -- Docker repository for InfluxDB Enterprise images
+  repository: "influxdb"
   # -- Tagged version of the Docker image that you want to run
   # @default -- `appVersion` from `Chart.yaml`
   tag: ""
-
-  # -- Set to true to add a suffix for the type of image to the Docker tag
-  # (for example, `-meta`, making an image name of `influxdb:1.8.0-meta`)
-  addsuffix: false
+  # -- Pull policy for images
+  pullPolicy: "IfNotPresent"
 
 meta:
   # -- Number of meta pods to run
   replicas: 3
-
-  image:
-    # -- Docker repository for meta images
-    repository: "influxdb"
-
-    # -- Pull policy for meta images
-    pullPolicy: "IfNotPresent"
 
   # -- Node selection rules for meta pods
   nodeSelector: {}
@@ -219,18 +212,31 @@ meta:
   env: {}
 
   # -- Kubernetes resources and limits for the meta container
-  resources: {}
+  resources:
+    requests:
+      memory: 128Mi
+      cpu: 100m
+    limits:
+      memory: 1Gi
+      cpu: 1
 
 data:
   # -- Number of data replicas to run
   replicas: 1
 
-  image:
-    # -- Docker repository for data images
-    repository: "influxdb"
+  startupProbe:
+    # -- Whether to enable a startup probe to check if the data node is ready
+    enabled: false
 
-    # -- Pull policy for data images
-    pullPolicy: "IfNotPresent"
+    # -- Number of failures before the pod is restarted
+    failureThreshold: 6
+
+    # -- Number of seconds after the container has started before
+    # liveness/startup probes are initiated
+    initialDelaySeconds: 60
+
+    # -- How often (in seconds) to perform the probe
+    periodSeconds: 60
 
   # -- Node selection rules for data pods
   nodeSelector: {}
@@ -374,16 +380,30 @@ data:
       auth-enabled: true
 
     cluster:
-      # -- Maximum number of running queries allowed on the instance (0 is
-      # unlimited)
-      max-concurrent-queries: 1000
+      # -- Maximum number of running queries allowed
+      max-concurrent-queries: 50
 
       # -- Maximum duration a query is allowed to run before it is killed
-      query-timeout: "300s"
+      query-timeout: "180s"
 
       # -- Maximum duration a query can run before InfluxDB logs it as a slow
       # query
-      log-queries-after: "15s"
+      log-queries-after: "10s"
+
+      # -- Whether to log timed out queries
+      log-timedout-queries: true
+
+      # -- Whether to log queries that are terminated due to resource limits
+      termination-query-log: true
+
+      # -- Maximum number of points a single select query can process before it is killed
+      max-select-point: 50000000
+
+      # -- Maximum number of series a single select query can process before it is killed
+      max-select-series: 200000
+
+      # -- Maximum number of GROUP BY time() buckets a single select query can retrieve
+      max-select-buckets: 20000
 
     hintedHandoff:
       # -- Maximum size of the hinted-handoff queue in bytes
@@ -395,7 +415,9 @@ data:
 
     logging:
       # -- Logging level
-      level: "debug"
+      level: "info"
+      # -- Format to use for log messages
+      format: "json"
 
   podDisruptionBudget:
     # -- Minimum available pods to maintain
@@ -405,4 +427,10 @@ data:
   env: {}
 
   # -- Kubernetes resources and limits for the meta container
-  resources: {}
+  resources:
+    requests:
+      memory: 4Gi
+      cpu: 1
+    limits:
+      memory: 8Gi
+      cpu: 2

@@ -33,6 +33,7 @@
 .. _Pods:
 .. _Pod: https://kubernetes.io/docs/concepts/workloads/pods/
 .. _pre-commit: https://pre-commit.com
+.. _Repertoire: https://repertoire.lsst.io/
 .. _Roundtable: https://roundtable.lsst.io/
 .. _Ruff: https://docs.astral.sh/ruff/
 .. _Safir: https://safir.lsst.io/
@@ -42,9 +43,13 @@
 .. _Service: https://kubernetes.io/docs/concepts/services-networking/service/
 .. _SODA: https://ivoa.net/documents/SODA/
 .. _Sphinx: https://www.sphinx-doc.org/en/master/
+.. _SQuaRE Bot: https://squarebot.lsst.io/
+.. _syrupy: https://syrupy-project.github.io
+.. _syrupy docs: https://syrupy-project.github.io/syrupy/#cli-options
 .. _TAP: https://www.ivoa.net/documents/TAP/
 .. _Telegraf: https://www.influxdata.com/time-series-platform/telegraf/
 .. _tox: https://tox.wiki/en/latest/
+.. _uv: https://docs.astral.sh/uv/
 .. _UWS: https://www.ivoa.net/documents/UWS/
 .. _Vault: https://developer.hashicorp.com/vault
 .. _Vault Secrets Operator: https://github.com/ricoberger/vault-secrets-operator

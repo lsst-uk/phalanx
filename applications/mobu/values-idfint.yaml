@@ -5,6 +5,7 @@ config:
   githubRefreshApp:
     acceptedGithubOrgs:
       - lsst-sqre
+      - lsst
   githubCiApp:
     acceptedGithubOrgs:
       - lsst-sqre
@@ -94,6 +95,7 @@ config:
       business:
         type: "TAPQuerySetRunner"
         options:
+          sync: false
           query_set: "dp0.2"
         restart: true
     - name: "sia"

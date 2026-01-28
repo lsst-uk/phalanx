@@ -19,13 +19,15 @@ spec:
   source:
     path: "applications/vo-cutouts"
     repoURL: {{ .Values.repoUrl | quote }}
-    targetRevision: {{ .Values.targetRevision | quote }}
+    targetRevision: {{ or (index .Values "revisions" "vo-cutouts") .Values.targetRevision | quote }}
     helm:
       parameters:
         - name: "global.baseUrl"
           value: "https://{{ .Values.fqdn }}"
         - name: "global.butlerServerRepositories"
           value: {{ .Values.butlerServerRepositories | toJson | b64enc }}
+        - name: "global.environmentName"
+          value: {{ .Values.name | quote }}
         - name: "global.host"
           value: {{ .Values.fqdn | quote }}
         - name: "global.vaultSecretsPath"

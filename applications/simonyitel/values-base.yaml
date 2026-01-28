@@ -19,10 +19,10 @@ lasertracker1-sim:
   resources:
     limits:
       cpu: 200m
-      memory: 360Mi
+      memory: 512Mi
     requests:
-      cpu: 20m
-      memory: 120Mi
+      cpu: 26m
+      memory: 256Mi
 
 mtaircompressor1-sim:
   enabled: true
@@ -34,10 +34,10 @@ mtaircompressor1-sim:
   resources:
     limits:
       cpu: 100m
-      memory: 300Mi
+      memory: 320Mi
     requests:
       cpu: 10m
-      memory: 100Mi
+      memory: 160Mi
 
 mtaircompressor2-sim:
   enabled: true
@@ -49,10 +49,10 @@ mtaircompressor2-sim:
   resources:
     limits:
       cpu: 100m
-      memory: 300Mi
+      memory: 320Mi
     requests:
       cpu: 10m
-      memory: 100Mi
+      memory: 160Mi
 
 mtaos:
   image:
@@ -77,13 +77,18 @@ mtaos:
     readOnly: false
     server: nfs-scratch.ls.lsst.org
     serverPath: /scratch
+  - name: obs-env
+    containerPath: /net/obs-env
+    readOnly: true
+    server: nfs-obsenv.ls.lsst.org
+    serverPath: /obs-env
   resources:
     limits:
       cpu: 1000m
-      memory: 1500Mi
+      memory: 1800Mi
     requests:
-      cpu: 30m
-      memory: 430Mi
+      cpu: 35m
+      memory: 900Mi
 
 mtcamhexapod-sim:
   enabled: true
@@ -91,15 +96,29 @@ mtcamhexapod-sim:
   image:
     repository: ts-dockerhub.lsst.org/mthexapod
     pullPolicy: Always
+  obsenv: true
+  obsenv_configfile:
+    filename: obs_env_config.json
+    content: |
+      {
+        "repositories": {
+          "ts_config_mttcs": "https://github.com/lsst-ts/"
+        },
+        "base_env_source_org": "https://github.com/lsst-ts/",
+        "base_env_source_repo": "ts_cycle_build",
+        "base_env_def_file": "cycle/cycle.env",
+        "destination": "/net/obs-env/auto_base_packages"
+      }
   env:
     RUN_ARG: --simulate 1
+    TS_CONFIG_MTTCS_DIR: "/net/obs-env/auto_base_packages/ts_config_mttcs"
   resources:
     limits:
       cpu: 500m
-      memory: 400Mi
+      memory: 840Mi
     requests:
-      cpu: 50m
-      memory: 125Mi
+      cpu: 60m
+      memory: 420Mi
 
 mtdome-sim:
   enabled: true
@@ -111,10 +130,10 @@ mtdome-sim:
   resources:
     limits:
       cpu: 900m
-      memory: 300Mi
+      memory: 320Mi
     requests:
-      cpu: 90m
-      memory: 100Mi
+      cpu: 220m
+      memory: 160Mi
 
 mtdometrajectory:
   image:
@@ -123,13 +142,13 @@ mtdometrajectory:
   resources:
     limits:
       cpu: 250m
-      memory: 400Mi
+      memory: 512Mi
     requests:
       cpu: 25m
-      memory: 115Mi
+      memory: 256Mi
 
 mtheaderservice:
-  enabled: false
+  enabled: true
   image:
     repository: ts-dockerhub.lsst.org/headerservice
     pullPolicy: Always
@@ -152,10 +171,9 @@ mtheaderservice:
       memory: 500Mi
 
 mtheaderservice-sim:
-  enabled: true
+  enabled: false
   image:
     repository: ts-dockerhub.lsst.org/headerservice
-    revision: 2
     pullPolicy: Always
   env:
     URL_SPEC: --lfa_mode s3 --s3instance ls
@@ -197,8 +215,8 @@ mtm1m3-sim:
     limits:
       cpu: 1000m
     requests:
-      cpu: 100m
-      memory: 1000Mi
+      cpu: 300m
+      memory: 300Mi
 
 mtm1m3ts-sim:
   enabled: true
@@ -210,10 +228,9 @@ mtm1m3ts-sim:
       cpu: 400m
     requests:
       cpu: 40m
-      memory: 32Mi
+      memory: 90Mi
 
 mtm2-sim:
-  enabled: true
   image:
     repository: ts-dockerhub.lsst.org/m2
     pullPolicy: Always
@@ -224,8 +241,8 @@ mtm2-sim:
       cpu: 850m
       memory: 1500Mi
     requests:
-      cpu: 85m
-      memory: 420Mi
+      cpu: 120m
+      memory: 500Mi
 
 mtm2hexapod-sim:
   enabled: true
@@ -233,15 +250,44 @@ mtm2hexapod-sim:
   image:
     repository: ts-dockerhub.lsst.org/mthexapod
     pullPolicy: Always
+  obsenv: true
+  obsenv_configfile:
+    filename: obs_env_config.json
+    content: |
+      {
+        "repositories": {
+          "ts_config_mttcs": "https://github.com/lsst-ts/"
+        },
+        "base_env_source_org": "https://github.com/lsst-ts/",
+        "base_env_source_repo": "ts_cycle_build",
+        "base_env_def_file": "cycle/cycle.env",
+        "destination": "/net/obs-env/auto_base_packages"
+      }
   env:
     RUN_ARG: --simulate 2
+    TS_CONFIG_MTTCS_DIR: "/net/obs-env/auto_base_packages/ts_config_mttcs"
   resources:
     limits:
       cpu: 400m
-      memory: 400Mi
+      memory: 800Mi
     requests:
       cpu: 40m
-      memory: 125Mi
+      memory: 400Mi
+
+mtm2-hwsim:
+  enabled: true
+  image:
+    repository: ts-dockerhub.lsst.org/m2
+    pullPolicy: Always
+  env:
+    RUN_ARG: --host m2-crio-simulator.ls.lsst.org
+  resources:
+    limits:
+      cpu: 850m
+      memory: 1500Mi
+    requests:
+      cpu: 120m
+      memory: 500Mi
 
 mtmount-sim:
   enabled: true
@@ -255,8 +301,8 @@ mtmount-sim:
       cpu: 500m
       memory: 1000Mi
     requests:
-      cpu: 50m
-      memory: 300Mi
+      cpu: 100m
+      memory: 512Mi
 
 mtoods:
   enabled: true
@@ -275,21 +321,21 @@ mtoods:
   resources:
     limits:
       cpu: 1000m
-      memory: 700Mi
+      memory: 1400Mi
     requests:
       cpu: 10m
-      memory: 345Mi
+      memory: 700Mi
   configfile:
     path: /etc
     filename: mtoods.yaml
     content: |
-      defaultInterval: &interval
+      default_interval: &interval
           days: 0
           hours: 0
           minutes: 0
           seconds: 0
 
-      ingester:
+      message_ingester:
           kafka:
               brokers:
                   - sasquatch-kafka-bootstrap.sasquatch:9092
@@ -297,30 +343,31 @@ mtoods:
                 - lsst.s3.raw.lsstcam
               group_id: MTOODS-S3
               max_messages: 250
-          butlers:
-              - butler:
-                  instrument: lsst.obs.lsst.LsstCam
-                  class:
-                      import : lsst.ctrl.oods.messageAttendant
-                      name : MessageAttendant
-                  repoDirectory : s3://butler@rubinobs-butler-lsstcam
-                  s3profile: butler
-                  collections:
-                      - LSSTCam/raw/all
-                  cleanCollections:
-                      - collection: LSSTCam/raw/all
-                        filesOlderThan:
+          butler:
+              guider_max_age_seconds: 90
+              instrument: lsst.obs.lsst.LsstCam
+              repo_directory : s3://butler@rubinobs-butler-lsstcam
+              s3profile: butler
+              collections:
+                  - LSSTCam/raw/all
+              collection_cleaner:
+                  collections_to_clean:
+                      - collections:
+                          - LSSTCam/raw/all
+                        files_older_than:
                             <<: *interval
                             days: 5
-                      - collection: LSSTCam/raw/guider
-                        filesOlderThan:
+                      - collections:
+                          - LSSTCam/raw/guider
+                        files_older_than:
                             <<: *interval
                             days: 5
-                      - collection: LSSTCam/quickLook
-                        filesOlderThan:
+                      - collections:
+                          - LSSTCam/runs/quickLook
+                        files_older_than:
                             <<: *interval
                             days: 2
-                  scanInterval:
+                  cleaning_interval:
                       <<: *interval
                       hours: 1
 
@@ -351,8 +398,8 @@ mtrotator-sim:
       cpu: 400m
       memory: 600Mi
     requests:
-      cpu: 40m
-      memory: 150Mi
+      cpu: 60m
+      memory: 280Mi
 
 mtvms-m1m3-sim:
   enabled: true
@@ -364,6 +411,7 @@ mtvms-m1m3-sim:
   resources:
     limits:
       cpu: 250m
+      memory: 180Mi
     requests:
       cpu: 25m
-      memory: 20Mi
+      memory: 60Mi

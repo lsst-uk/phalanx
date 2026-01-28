@@ -7,6 +7,10 @@ config:
   allowSubdomains: true
   logLevel: "DEBUG"
   slackAlerts: true
+  tokenLifetime: "2d"
+
+  sentry:
+    enabled: true
 
   cilogon:
     clientId: "cilogon:/client_id/46f9ae932fd30e9fb1b246972a3c0720"
@@ -47,6 +51,8 @@ config:
   groupMapping:
     "admin:jupyterlab":
       - "g_admins"
+    "admin:userinfo":
+      - "g_admins"
     "exec:admin":
       - "g_admins"
     "exec:internal-tools":
@@ -55,7 +61,12 @@ config:
       - "g_users"
     "exec:portal":
       - "g_users"
+    "exec:portal-admin":
+      - "g_admins"
+      - "g_developers"
     "read:image":
+      - "g_users"
+    "read:sasquatch":
       - "g_users"
     "read:tap":
       - "g_users"
@@ -72,6 +83,7 @@ config:
     - "jsick"
     - "rra"
     - "svoutsin"
+    - "kai"
 
 cloudsql:
   enabled: true

@@ -12,14 +12,14 @@ classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Intended Audience :: Developers",
     "Operating System :: POSIX",
     "Private :: Do Not Upload",
     "Typing :: Typed",
 ]
-requires-python = ">=3.12"
+requires-python = ">=3.13"
 dependencies = [
     "bcrypt",
     "click!=8.2.0",
@@ -29,7 +29,8 @@ dependencies = [
     "jinja2",
     "onepasswordconnectsdk",
     "pydantic>2",
-    "PyYAML",
+    "pyyaml",
+    "rubin-gafaelfawr",
     "safir>5",
 ]
 
@@ -44,6 +45,36 @@ Source = "https://github.com/lsst-sqre/phalanx"
 [build-system]
 requires = ["setuptools>=61", "setuptools_scm[toml]>=6.2"]
 build-backend = "setuptools.build_meta"
+
+[dependency-groups]
+dev = [
+    "coverage[toml]",
+    "pytest",
+    "pytest-cov",
+    "pytest-sugar",
+    "pytest-mock",
+    "syrupy",
+]
+docs = [
+    "autodoc-pydantic",
+    "documenteer[guide]>=2",
+    "sphinx-click",
+    "sphinx-diagrams",
+    "sphinx-jinja",
+]
+lint = [
+    "pre-commit",
+    "pre-commit-uv",
+    "ruff>=0.9",
+]
+tox = [
+    "tox>=4.24",
+    "tox-uv>=1.25",
+]
+typing = [
+    "mypy",
+    "types-PyYAML",
+]
 
 [tool.black]
 line-length = 79
@@ -72,12 +103,22 @@ exclude_lines = [
 ]
 
 [tool.mypy]
-disallow_untyped_defs = true
 disallow_incomplete_defs = true
+disallow_untyped_defs = true
+enable_error_code = [
+    "deprecated",
+    "exhaustive-match",
+    "explicit-override",
+    "ignore-without-code",
+    "redundant-expr",
+    "redundant-self",
+    "truthy-iterable",
+    "unused-awaitable",
+]
 ignore_missing_imports = true
 local_partial_types = true
-no_implicit_reexport = true
 plugins = ["pydantic.mypy"]
+no_implicit_reexport = true
 show_error_codes = true
 strict_equality = true
 warn_redundant_casts = true

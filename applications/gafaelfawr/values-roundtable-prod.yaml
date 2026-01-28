@@ -11,6 +11,9 @@ cloudsql:
 config:
   slackAlerts: false
 
+  sentry:
+    enabled: true
+
   github:
     clientId: "8ab507cd4b023d77a216"
 
@@ -23,8 +26,16 @@ config:
       Can write objects to Git LFS storage bucket
     "read:checkerboard": >-
       Can query Checkerboard for user mappings
+    "exec:internal-tools": >-
+      Can use internal APIs
+    "write:turborepo": >-
+      Can read and write to the Turborepo remote cache
 
   groupMapping:
+    "admin:userinfo":
+      - github:
+          organization: "lsst-sqre"
+          team: "square"
     "exec:admin":
       - github:
           organization: "lsst-sqre"
@@ -36,6 +47,9 @@ config:
       - github:
           organization: "lsst"
           team: "simulations"
+      - github:
+          organization: "lsst"
+          team: "cst"
     "read:checkerboard":
       - github:
           organization: "lsst-sqre"
@@ -43,7 +57,14 @@ config:
       - github:
           organization: "lsst-sqre"
           team: "friends"
-
+    "exec:internal-tools":
+      - github:
+          organization: "lsst-sqre"
+          team: "square"
+    "write:turborepo":
+      - github:
+          organization: "lsst-sqre"
+          team: "square"
 
   initialAdmins:
     - "afausti"
@@ -55,7 +76,8 @@ config:
     - "stvoutsin"
 
   errorFooter: |
-    To report problems or ask for help, contact #dm-square on the LSSTC Slack.
+    To report problems or ask for help, contact #square-team on the Rubin
+    Observatory Slack.
 
 ingress:
   additionalHosts:

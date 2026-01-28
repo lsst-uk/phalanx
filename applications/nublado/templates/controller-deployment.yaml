@@ -4,6 +4,15 @@ metadata:
   name: "nublado-controller"
   labels:
     {{- include "nublado.labels" . | nindent 4 }}
+  annotations:
+    # If the controller is unavailable when the hub comes up, the hub will
+    # think all of the labs are unresponsive and shut them them down. This puts
+    # the controller deployment in a later ArgoCD sync wave than the hub, which
+    # means it won't get synced until after the hub is synced:
+    #
+    # https://argo-cd.readthedocs.io/en/stable/user-guide/sync-waves/#how-do-i-configure-waves
+    # https://phalanx.lsst.io/applications/nublado/upgrade.html#routine-upgrades
+    argocd.argoproj.io/sync-wave: "1"
 spec:
   replicas: 1
   selector:
@@ -26,15 +35,14 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       containers:
-        - name: "controller"
-          securityContext:
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop:
-                - "all"
-            readOnlyRootFilesystem: true
-          image: "{{ .Values.controller.image.repository }}:{{ .Values.controller.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.controller.image.pullPolicy | quote }}
+        - name: "{{ .Chart.Name }}-controller"
+          command:
+            - "uvicorn"
+            - "nublado.controller.main:create_app"
+            - "--port"
+            - "8080"
+            - "--host"
+            - "0.0.0.0"
           env:
             - name: EXTERNAL_INSTANCE_URL
               value: {{ .Values.global.baseUrl | quote }}
@@ -56,6 +64,15 @@ spec:
             - name: "KAFKA_CLUSTER_CA_PATH"
               value: "/etc/nublado-kafka/ca.crt"
             {{- end }}
+            # We can't get these through the DownwardAPI; the point is to
+            # make our internal initContainers always use the same image
+            # as the running Controller.
+            - name: "NUBLADO_CONTROLLER_PULL_POLICY"
+              value: "{{ .Values.image.pullPolicy }}"
+            - name: "NUBLADO_CONTROLLER_REPOSITORY"
+              value: "{{ .Values.image.repository }}"
+            - name: "NUBLADO_CONTROLLER_TAG"
+              value: "{{ .Values.image.tag | default .Chart.AppVersion }}"
             {{- if .Values.controller.slackAlerts }}
             - name: "NUBLADO_SLACK_WEBHOOK"
               valueFrom:
@@ -63,6 +80,41 @@ spec:
                   name: "nublado-secret"
                   key: "slack-webhook"
             {{- end }}
+            - name: "REPERTOIRE_BASE_URL"
+              value: {{ .Values.global.repertoireUrl | quote }}
+            {{- if .Values.sentry.enabled }}
+            - name: "SENTRY_DSN"
+              valueFrom:
+                secretKeyRef:
+                  name: "nublado-secret"
+                  key: "sentry-dsn"
+            - name: "SENTRY_ENVIRONMENT"
+              value: {{ .Values.global.environmentName }}
+            {{- end }}
+            # Uvicorn keepalive timeout, in seconds. This should be longer
+            # than any keepalive timeouts on any downstream proxies. The
+            # keepalive timeout for ingress-nginx connections is 60s.
+            - name: "UVICORN_TIMEOUT_KEEP_ALIVE"
+              value: "61"
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
+          lifecycle:
+            # Number of seconds k8s should wait before sending SIGTERM on
+            # graceful restarts/deployments/shutdowns. We need this because it
+            # takes ingress-nginx some time to configure itself to stop
+            # sending traffic to the pods scheduled for termination. If
+            # Uvicorn gets the SIGTERM and starts closing connections, we
+            # could end up with a TCP race condition if ingress-nginx still
+            # tries to send data over those connections.
+            #
+            # Note that terminationGracePeriodSeconds includes the time that
+            # is spent in the preStop hook. If you’re adding a preStop hook
+            # and your terminationGracePeriodSeconds is super fine-tuned, then
+            # you should update your terminationGracePeriodSeconds to add the
+            # amount of time you’ll be spending in your preStop hook.
+            preStop:
+              sleep:
+                seconds: 10
           ports:
             - name: "http"
               containerPort: 8080
@@ -71,16 +123,22 @@ spec:
             httpGet:
               path: "/"
               port: "http"
+          {{- with .Values.controller.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - "all"
+            readOnlyRootFilesystem: true
           startupProbe:
             httpGet:
               path: "/"
               port: "http"
             failureThreshold: 30
             periodSeconds: 10
-          {{- with .Values.controller.resources }}
-          resources:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
           volumeMounts:
             - name: "config"
               mountPath: "/etc/nublado"

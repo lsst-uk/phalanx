@@ -20,14 +20,9 @@ spec:
     spec:
       serviceAccountName: eups-distributor
       volumes:
-        - name: "cache"
+        - name: tmp
           emptyDir: {}
-        - name: "eups"
-          csi:
-            driver: gcsfuse.csi.storage.gke.io
-            volumeAttributes:
-              bucketName: eups
-              mountOptions: "implicit-dirs"
+
       {{- with .Values.affinity }}
       affinity:
         {{- toYaml . | nindent 8 }}
@@ -38,16 +33,15 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           volumeMounts:
-            - name: "eups"
-              mountPath: "/eups"
-              readOnly: true
+            - name: "tmp"
+              mountPath: "/tmp"
           ports:
             - name: "http"
               containerPort: 8080
               protocol: "TCP"
           readinessProbe:
             httpGet:
-              path: "/stack"
+              path: "/stack/"
               port: "http"
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
@@ -66,6 +60,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       securityContext:
+        fsGroup: 1000
         runAsNonRoot: true
         runAsUser: 1000
         runAsGroup: 1000

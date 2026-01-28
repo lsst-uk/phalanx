@@ -16,7 +16,6 @@ vaultPathPrefix: "secret/phalanx/idfprod"
 applications:
   butler: true
   datalinker: true
-  filestore-backup: true
   ghostwriter: true
   google-cloud-observability: true
   hips: true
@@ -24,16 +23,16 @@ applications:
   noteburst: true
   nublado: true
   portal: true
+  qserv-kafka: true
   sasquatch: true
   semaphore: true
   sia: true
   squareone: true
-  strimzi: true
-  strimzi-access-operator: true
   ssotap: true
+  strimzi-access-operator: true
+  strimzi-registry-operator: true
+  strimzi: true
   tap: true
-  telegraf: true
-  telegraf-ds: true
   times-square: true
   vo-cutouts: true
   wobbly: true

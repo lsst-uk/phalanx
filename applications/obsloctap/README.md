@@ -16,11 +16,26 @@ Publish observing schedule
 | config.separateSecrets | bool | `true` | Whether to use the new secrets management scheme |
 | config.volume_mounts | list | `[]` | Mount points for additional volumes |
 | config.volumes | list | `[]` | Additional volumes to attach |
-| environment | object | `{}` | Environment variables (e.g. butler configuration/auth parms) for panel |
-| global.baseUrl | string | Set by Argo CD | Base URL for the environment |
+| consumekafka.image.pullPolicy | string | `"Always"` | Pull policy for the obsloctap image |
+| consumekafka.image.repository | string | `"ghcr.io/lsst-dm/consumekafka"` | obsloctap image to use |
+| consumekafka.image.tag | string | The appVersion of the chart | Tag of image to use |
+| consumekafka.logLevel | string | `"INFO"` |  |
+| consumekafka.nfsMountpoint | list | `[]` | NFS mountpoints for base since no PVC |
+| consumekafka.pvcMountpoint | list | `[]` | PVC claims for USDF in USDF values |
+| consumekafka.replicaCount | int | `1` |  |
+| environment | string | `nil` | Environment variables (e.g. butler configuration/auth parms) for panel |
 | global.host | string | Set by Argo CD | Host name for ingress |
 | global.vaultSecretsPath | string | Set by Argo CD | Base path for Vault secrets |
-| image.pullPolicy | string | `"IfNotPresent"` | Pull policy for the obsloctap image |
-| image.repository | string | `"ghcr.io/lsst-dm/obsloctap"` | obsloctap image to use |
-| image.tag | string | The appVersion of the chart | Tag of obsloctap image to use |
 | ingress.annotations | object | `{}` | Additional annotations to add to the ingress |
+| kafka.bootstrap | string | `"sasquatch-kafka-bootstrap.sasquatch:9092"` | Kafka bootstrap server |
+| kafka.group_id | string | `"obsloctap-consumer"` | Name of Kafka consumer group |
+| kafka.schema_url | string | `"http://sasquatch-schema-registry-remote.sasquatch:8081"` | Kafka Avro schema server URL |
+| kafka.username | string | `"obsloctap"` | Username for SASL_PLAIN authentication |
+| obsloctap.image.pullPolicy | string | `"IfNotPresent"` | Pull policy for the obsloctap image |
+| obsloctap.image.repository | string | `"ghcr.io/lsst-dm/obsloctap"` | obsloctap image to use |
+| obsloctap.image.tag | string | The appVersion of the chart | Tag of image to use |
+| obsloctap.logLevel | string | `"INFO"` |  |
+| rubinsim.AWS_SHARED_CREDENTIALS_FILE | string | `"/home/worker/.lsst/aws-credentials.ini"` |  |
+| rubinsim.S3_ENDPOINT_URL | string | `"https://s3dfrgw.slac.stanford.edu"` |  |
+| rubinsim.bucketVal | string | `"1"` |  |
+| rubinsim.dataDir | string | `"/sdf/data/rubin/shared/rubin_sim_data"` |  |

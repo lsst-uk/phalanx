@@ -20,6 +20,24 @@ image:
 ingress:
   # -- Additional annotations for the ingress rule
   hostname: ""
+  nginx.ingress.kubernetes.io/preserve-trailing-slash: "true"
+
+lsstDotCodes:
+  # Whether to additionally serve the app at an .lsst.code domain
+  enabled: false
+
+  # The .lsst.code hostname to serve the app at
+  hostname: null
+
+  # The access key id for an AWS IAM user with powers to create records in
+  # tls.lsst.codes
+  awsAccessKeyId: "AKIAQSJOS2SFBNRYNM4I"
+
+  # The ID of the AWS Route53 tls.lsst.codes
+  hostedZoneId: "Z06873202D7WVTZUFOQ42"
+
+  # -- Contact email address registered with Let's Encrypt
+  email: "sqre-admin@lists.lsst.org"
 
 # -- Affinity rules for the eups-distributor deployment pod
 affinity: {}
@@ -35,11 +53,11 @@ podAnnotations:
 # @default -- See `values.yaml`
 resources:
   limits:
-    cpu: "2"
-    memory: "2Gi"
+    cpu: "8"
+    memory: "8Gi"
   requests:
-    cpu: "500m"
-    memory: "250Mi"
+    cpu: "4"
+    memory: "4Gi"
 
 # -- Tolerations for the eups-distributor deployment pod
 tolerations: []
@@ -47,10 +65,6 @@ tolerations: []
 # The following will be set by parameters injected by Argo CD and should not
 # be set in the individual environment values files.
 global:
-  # -- Base URL for the environment
-  # @default -- Set by Argo CD
-  baseUrl: null
-
   # -- Host name for ingress
   # @default -- Set by Argo CD
   host: null

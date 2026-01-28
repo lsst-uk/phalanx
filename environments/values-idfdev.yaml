@@ -16,30 +16,28 @@ vaultPathPrefix: "secret/phalanx/idfdev"
 applications:
   butler: true
   datalinker: true
-  filestore-backup: true
-  flink: true
   ghostwriter: true
-  fspurger: true
   google-cloud-observability: true
   grafana: true
   hips: true
   hoverdrive: true
   jira-data-proxy: true
   mobu: true
+  muster: true
   noteburst: true
   nublado: true
   portal: true
   qserv-kafka: true
   sasquatch: true
+  sasquatch-backpack: true
   semaphore: true
   sia: true
   ssotap: true
   squareone: true
   strimzi: true
   strimzi-access-operator: true
+  strimzi-registry-operator: true
   tap: true
-  telegraf: true
-  telegraf-ds: true
   times-square: true
   vault-secrets-operator: true
   vo-cutouts: true

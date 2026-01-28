@@ -1,10 +1,8 @@
 """Pydantic models for Phalanx environments."""
 
-from __future__ import annotations
-
 from collections import defaultdict
 from enum import Enum
-from typing import Self
+from typing import Self, override
 
 from pydantic import (
     AnyHttpUrl,
@@ -24,6 +22,7 @@ from .secrets import Secret
 
 __all__ = [
     "ArgoCDDetails",
+    "ArgoCDRBAC",
     "ControlSystemConfig",
     "Environment",
     "EnvironmentBaseConfig",
@@ -196,6 +195,16 @@ class EnvironmentBaseConfig(BaseModel):
         ),
     )
 
+    revisions: dict[str, str] = Field(
+        {},
+        title="Revision overrides for applications",
+        description=(
+            "Mapping of application names to non-main revisions for the"
+            " environment. In that environment, the app-of-apps will point"
+            " these applications at the given revisions instead of at main."
+        ),
+    )
+
     butler_server_repositories: dict[str, AnyUrl] | None = Field(
         None,
         title="Butler repositories accessible via Butler server",
@@ -361,6 +370,7 @@ class EnvironmentConfig(EnvironmentBaseConfig):
         ),
     )
 
+    @override
     @classmethod
     def __get_pydantic_json_schema__(
         cls, core_schema: CoreSchema, handler: GetJsonSchemaHandler

@@ -3,6 +3,8 @@ strimzi-kafka:
     monitorLabel:
       lsst.io/monitor: "true"
   kafka:
+    version: 3.9.1
+    metadataVersion: "3.8-IV0"
     config:
       auto.create.topics.enable: false
       log.cleaner.min.compaction.lag.ms: 604800000
@@ -34,6 +36,8 @@ strimzi-kafka:
           host: sasquatch-summit-kafka-8.lsst.codes
     metricsConfig:
       enabled: true
+      interval: 30s
+      scrapeTimeout: 25s
   kafkaExporter:
     enabled: true
     logging: debug
@@ -41,19 +45,14 @@ strimzi-kafka:
     showAllOffsets: false
     resources:
       requests:
-        cpu: "4"
         memory: 512Mi
+        cpu: 2
       limits:
-        memory: 1024Mi
+        memory: 1Gi
+        cpu: 4
   controller:
     enabled: true
-    resources:
-      requests:
-        memory: 8Gi
-        cpu: "2"
-      limits:
-        memory: 8Gi
-        cpu: "2"
+    backup: true
   broker:
     enabled: true
     name: "kafka-local-storage"
@@ -61,6 +60,7 @@ strimzi-kafka:
     storage:
       size: 15Ti
       storageClassName: localdrive
+    backup: true
     affinity:
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
@@ -88,38 +88,21 @@ strimzi-kafka:
       enabled: true
     telegraf:
       enabled: true
-  registry:
-    ingress:
-      enabled: true
-      annotations:
-        nginx.ingress.kubernetes.io/rewrite-target: /$2
-      hostname: summit-lsp.lsst.codes
-      path: /schema-registry(/|$)(.*)
   connect:
     enabled: false
   cruiseControl:
     enabled: true
+    metricsConfig:
+      enabled: true
+
+schema-registry:
+  enabled: true
+  ingress:
+    enabled: true
+    anonymous: true
 
 influxdb:
-  image:
-    tag: "1.8.10"
-  persistence:
-    storageClass: rook-ceph-block
-    size: 5Ti
-  ingress:
-    enabled: false
-    hostname: summit-lsp.lsst.codes
-  resources:
-    requests:
-      memory: 128Gi
-      cpu: 16
-    limits:
-      memory: 128Gi
-      cpu: 16
-
-customInfluxDBIngress:
-  enabled: true
-  hostname: summit-lsp.lsst.codes
+  enabled: false
 
 influxdb-enterprise:
   enabled: true
@@ -139,18 +122,18 @@ influxdb-enterprise:
       secret:
         name: sasquatch
         key: influxdb-enterprise-shared-secret
-    resources:
-      requests:
-        memory: 2Gi
-        cpu: 2
-      limits:
-        memory: 4Gi
-        cpu: 4
   data:
     replicas: 2
+    startupProbe:
+      enabled: true
+    config:
+      cluster:
+        # Adjusted because of the query load from dashboards at the Summit
+        max-concurrent-queries: 300
     ingress:
       enabled: true
       hostname: summit-lsp.lsst.codes
+      path: "/influxdb(/|$)(.*)"
     persistence:
       enabled: true
       accessMode: ReadWriteOnce
@@ -166,213 +149,81 @@ influxdb-enterprise:
                   values:
                     - yagan15
                     - yagan16
-    # -- InfluxDB Enterprise data pod resources, 2x8 cores cluster license
     resources:
       requests:
         memory: 256Gi
+        # The InfluxDB Enterprise license is limited to 16 cpu, the
+        # active instance uses a 2 node x 8 cpu setup
         cpu: 8
       limits:
         memory: 256Gi
         cpu: 8
 
-# This set of connectors is used to write to the InfluxDB OSS instance,
-# they will go away once the InfluxDB Enterprise instance is fully operational
-telegraf-oss:
+influxdb-enterprise-standby:
   enabled: true
-  kafkaConsumers:
-    # CSC connectors
-    oss-maintel:
+  license:
+    secret:
+      name: sasquatch
+      key: influxdb-enterprise-standby-license
+  meta:
+    ingress:
       enabled: true
-      database: "efd"
-      topicRegexps: |
-        [ "lsst.sal.MTAOS", "lsst.sal.MTDome", "lsst.sal.MTDomeTrajectory", "lsst.sal.MTPtg" ]
-      debug: true
-    oss-mtmount:
+      hostname: summit-lsp.lsst.codes
+      path: "/influxdb-enterprise-standby-meta(/|$)(.*)"
+    persistence:
       enabled: true
-      database: "efd"
-      topicRegexps: |
-        [ "lsst.sal.MTMount" ]
-      debug: true
-    oss-comcam:
+      accessMode: ReadWriteOnce
+      size: 16Gi
+    sharedSecret:
+      secret:
+        name: sasquatch
+        key: influxdb-enterprise-standby-shared-secret
+  data:
+    replicas: 1
+    startupProbe:
       enabled: true
-      database: "efd"
-      topicRegexps: |
-        [ "lsst.sal.CCCamera", "lsst.sal.CCHeaderService", "lsst.sal.CCOODS" ]
-      debug: true
-    oss-envsys:
+    config:
+      cluster:
+        # Adjusted because of the query load from dashboards at the Summit
+        max-concurrent-queries: 300
+    affinity:
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                  - key: influxdb.influxdata.com/component
+                    operator: In
+                    values:
+                      - data
+              topologyKey: kubernetes.io/hostname
+    ingress:
       enabled: true
-      database: "efd"
-      topicRegexps: |
-         [ "lsst.sal.DIMM", "lsst.sal.DREAM", "lsst.sal.DSM", "lsst.sal.EAS", "lsst.sal.EPM", "lsst.sal.ESS", "lsst.sal.HVAC", "lsst.sal.WeatherForecast" ]
-      debug: true
-    oss-m1m3:
+      hostname: summit-lsp.lsst.codes
+      path: "/influxdb-enterprise-standby-data(/|$)(.*)"
+    persistence:
       enabled: true
-      metric_batch_size: 1500
-      max_undelivered_messages: 4000
-      database: "efd"
-      topicRegexps: |
-        [ "lsst.sal.MTM1M3([^T].*)" ]
-      debug: true
-    oss-m1m3ts:
-      enabled: true
-      metric_batch_size: 1500
-      max_undelivered_messages: 4000
-      database: "efd"
-      topicRegexps: |
-        [ "lsst.sal.MTM1M3TS" ]
-      debug: true
-    oss-m2:
-      enabled: true
-      database: "efd"
-      topicRegexps: |
-        [ "lsst.sal.MTHexapod", "lsst.sal.MTM2", "lsst.sal.MTRotator" ]
-      debug: true
-    oss-obssys:
-      enabled: true
-      database: "efd"
-      topicRegexps: |
-        [ "lsst.sal.Scheduler", "lsst.sal.Script", "lsst.sal.ScriptQueue", "lsst.sal.Watcher" ]
-      debug: true
-    oss-ocps:
-      enabled: true
-      database: "efd"
-      topicRegexps: |
-        [ "lsst.sal.OCPS" ]
-      debug: true
-    oss-pmd:
-      enabled: true
-      database: "efd"
-      topicRegexps: |
-        [ "lsst.sal.PMD" ]
-      debug: true
-    oss-calsys:
-      enabled: true
-      database: "efd"
-      topicRegexps: |
-        [ "lsst.sal.ATMonochromator", "lsst.sal.ATWhiteLight", "lsst.sal.CBP", "lsst.sal.Electrometer", "lsst.sal.FiberSpectrograph", "lsst.sal.LEDProjector", "lsst.sal.LinearStage", "lsst.sal.MTReflector", "lsst.sal.TunableLaser" ]
-      debug: true
-    oss-mtaircompressor:
-      enabled: true
-      database: "efd"
-      topicRegexps: |
-        [ "lsst.sal.MTAirCompressor" ]
-      debug: true
-    oss-genericcamera:
-      enabled: true
-      database: "efd"
-      topicRegexps: |
-        [ "lsst.sal.GCHeaderService", "lsst.sal.GenericCamera" ]
-      debug: true
-    oss-gis:
-      enabled: true
-      database: "efd"
-      topicRegexps: |
-        [ "lsst.sal.GIS" ]
-      debug: true
-    oss-mtvms:
-      enabled: true
-      database: "efd"
-      topicRegexps: |
-        [ "lsst.sal.MTVMS" ]
-      debug: true
-    oss-lsstcam:
-      enabled: true
-      metric_batch_size: 250
-      max_undelivered_messages: 5000
-      database: "efd"
-      topicRegexps: |
-        [ "lsst.sal.MTCamera", "lsst.sal.MTHeaderService", "lsst.sal.MTOODS" ]
-      debug: true
-    oss-auxtel:
-      enabled: true
-      database: "efd"
-      topicRegexps: |
-        [ "lsst.sal.ATAOS", "lsst.sal.ATBuilding", "lsst.sal.ATDome", "lsst.sal.ATDomeTrajectory", "lsst.sal.ATHexapod", "lsst.sal.ATPneumatics", "lsst.sal.ATPtg", "lsst.sal.ATMCS" ]
-      debug: true
-    oss-latiss:
-      enabled: true
-      database: "efd"
-      topicRegexps: |
-        [ "lsst.sal.ATCamera", "lsst.sal.ATHeaderService", "lsst.sal.ATOODS", "lsst.sal.ATSpectrograph" ]
-      debug: true
-    oss-test:
-      enabled: true
-      database: "efd"
-      topicRegexps: |
-        [ "lsst.sal.Test" ]
-      debug: true
-    oss-lasertracker:
-      enabled: true
-      database: "efd"
-      topicRegexps: |
-        [ "lsst.sal.LaserTracker" ]
-      debug: true
-    # CCS connectors (experimental) data is being written on separate databases for now
-    oss-atcamera:
-      enabled: true
-      replicaCount: 1
-      database: "lsst.ATCamera"
-      timestamp_format: "unix_ms"
-      timestamp_field: "timestamp"
-      tags: |
-        [ "Agent", "Aspic", "Location", "Raft", "Reb", "Sensor", "Source" ]
-      topicRegexps: |
-        [ "lsst.ATCamera" ]
-    oss-cccamera:
-      enabled: true
-      replicaCount: 1
-      database: "lsst.CCCamera"
-      timestamp_format: "unix_ms"
-      timestamp_field: "timestamp"
-      tags: |
-        [ "Agent", "Aspic", "Cold", "Cryo", "Hardware", "Location", "Ps", "RTD", "Raft", "Reb", "Segment", "Sensor", "Source" ]
-      topicRegexps: |
-        [ "lsst.CCCamera" ]
-    oss-mtcamera:
-      enabled: true
-      replicaCount: 1
-      database: "lsst.MTCamera"
-      timestamp_format: "unix_ms"
-      timestamp_field: "timestamp"
-      tags: |
-        [ "Agent", "Aspic", "Axis", "Canbus", "Cip", "Clamp", "Cold", "Controller", "Cryo", "Gateway", "Hardware", "Hip", "Hook", "Latch", "Location", "Ps", "RTD", "Raft", "Reb", "Segment", "Sensor", "Socket", "Source", "Truck" ]
-      topicRegexps: |
-        [ "lsst.MTCamera" ]
-    # Application connectors
-    oss-obsenv:
-      enabled: true
-      database: "lsst.obsenv"
-      timestamp_format: "unix_ms"
-      timestamp_field: "timestamp"
-      topicRegexps: |
-        [ "lsst.obsenv" ]
-      debug: true
-    oss-cp:
-      enabled: true
-      database: "lsst.cp"
-      timestamp_format: "unix"
-      timestamp_field: "timestamp"
-      topicRegexps: |
-        [ "lsst.cp" ]
-      tags: |
-        [ "dataset_tag", "band", "instrument", "skymap", "detector", "physical_filter", "tract", "exposure", "patch", "visit", "run", "pipeline" ]
-      debug: true
-    oss-backpack:
-      enabled: true
-      replicaCount: 1
-      database: "lsst.backpack"
-      timestamp_format: "unix"
-      timestamp_field: "timestamp"
-      topicRegexps: |
-        [ "lsst.backpack" ]
-      debug: true
+      accessMode: ReadWriteOnce
+      size: 5Ti
+    resources:
+      requests:
+        memory: 96Gi
+        # The InfluxDB Enterprise license is limited to 16 cpu, the
+        # standby instance uses a 1 node x 16 cpu setup
+        cpu: 16
+      limits:
+        memory: 96Gi
+        cpu: 16
 
-# This set of connectors is used to write to the InfluxDB Enterprise instance
+# Dual write to the InfluxDB Enterprise and InfluxDB OSS instances
 telegraf:
   enabled: true
   influxdb:
     urls:
       - "http://sasquatch-influxdb-enterprise-data.sasquatch:8086"
+      - "http://sasquatch-influxdb-enterprise-standby-data.sasquatch:8086"
+  kafkaVersion: "3.9.1"
   kafkaConsumers:
     # Application connectors
     obsenv:
@@ -382,8 +233,14 @@ telegraf:
       timestamp_field: "timestamp"
       topicRegexps: |
         [ "lsst.obsenv" ]
-      debug: true
-      offset: newest
+    scimma:
+      enabled: true
+      database: "lsst.scimma"
+      timestamp_format: "unix_ms"
+      timestamp_field: "timestamp"
+      topicRegexps: |
+        [ "lsst.scimma" ]
+      offset: oldest
     cp:
       enabled: true
       database: "lsst.cp"
@@ -393,8 +250,6 @@ telegraf:
         [ "lsst.cp" ]
       tags: |
         [ "dataset_tag", "band", "instrument", "skymap", "detector", "physical_filter", "tract", "exposure", "patch", "visit", "run", "pipeline" ]
-      debug: true
-      offset: newest
     backpack:
       enabled: true
       replicaCount: 1
@@ -403,45 +258,34 @@ telegraf:
       timestamp_field: "timestamp"
       topicRegexps: |
         [ "lsst.backpack" ]
-      debug: true
-      offset: newest
     # CSC connectors
     maintel:
       enabled: true
       database: "efd"
       topicRegexps: |
         [ "lsst.sal.MTAOS", "lsst.sal.MTDome", "lsst.sal.MTDomeTrajectory", "lsst.sal.MTPtg" ]
-      debug: true
-      offset: newest
     mtmount:
       enabled: true
       database: "efd"
       topicRegexps: |
         [ "lsst.sal.MTMount" ]
-      debug: true
-      offset: newest
     comcam:
       enabled: true
       database: "efd"
       topicRegexps: |
         [ "lsst.sal.CCCamera", "lsst.sal.CCHeaderService", "lsst.sal.CCOODS" ]
-      debug: true
-      offset: newest
     envsys:
       enabled: true
       database: "efd"
       topicRegexps: |
          [ "lsst.sal.DIMM", "lsst.sal.DREAM", "lsst.sal.DSM", "lsst.sal.EAS", "lsst.sal.EPM", "lsst.sal.ESS", "lsst.sal.HVAC", "lsst.sal.WeatherForecast" ]
-      debug: true
-      offset: newest
     m1m3:
       enabled: true
-      metric_batch_size: 2000
+      metric_batch_size: 1500
+      max_undelivered_messages: 4000
       database: "efd"
       topicRegexps: |
-        [ "lsst.sal.MTM1M3" ]
-      debug: true
-      offset: newest
+        [ "lsst.sal.MTM1M3([^T].*)" ]
       resources:
         limits:
           cpu: "5"
@@ -449,69 +293,65 @@ telegraf:
         requests:
           cpu: "5"
           memory: "8Gi"
+    m1m3ts:
+      enabled: true
+      metric_batch_size: 1000
+      max_undelivered_messages: 4000
+      database: "efd"
+      topicRegexps: |
+        [ "lsst.sal.MTM1M3TS" ]
     m2:
       enabled: true
       database: "efd"
       topicRegexps: |
         [ "lsst.sal.MTHexapod", "lsst.sal.MTM2", "lsst.sal.MTRotator" ]
-      debug: true
-      offset: newest
+      resources:
+        limits:
+          cpu: "5"
+          memory: "8Gi"
+        requests:
+          cpu: "2"
+          memory: "8Gi"
     obssys:
       enabled: true
       database: "efd"
       topicRegexps: |
         [ "lsst.sal.Scheduler", "lsst.sal.Script", "lsst.sal.ScriptQueue", "lsst.sal.Watcher" ]
-      debug: true
-      offset: newest
     ocps:
       enabled: true
       database: "efd"
       topicRegexps: |
         [ "lsst.sal.OCPS" ]
-      debug: true
-      offset: newest
     pmd:
       enabled: true
       database: "efd"
       topicRegexps: |
         [ "lsst.sal.PMD" ]
-      debug: true
-      offset: newest
     calsys:
       enabled: true
       database: "efd"
       topicRegexps: |
         [ "lsst.sal.ATMonochromator", "lsst.sal.ATWhiteLight", "lsst.sal.CBP", "lsst.sal.Electrometer", "lsst.sal.FiberSpectrograph", "lsst.sal.LEDProjector", "lsst.sal.LinearStage", "lsst.sal.MTReflector", "lsst.sal.TunableLaser" ]
-      debug: true
-      offset: newest
     mtaircompressor:
       enabled: true
       database: "efd"
       topicRegexps: |
         [ "lsst.sal.MTAirCompressor" ]
-      debug: true
-      offset: newest
     genericcamera:
       enabled: true
       database: "efd"
       topicRegexps: |
         [ "lsst.sal.GCHeaderService", "lsst.sal.GenericCamera" ]
-      debug: true
-      offset: newest
     gis:
       enabled: true
       database: "efd"
       topicRegexps: |
         [ "lsst.sal.GIS" ]
-      debug: true
-      offset: newest
     mtvms:
       enabled: true
       database: "efd"
       topicRegexps: |
         [ "lsst.sal.MTVMS" ]
-      debug: true
-      offset: newest
     lsstcam:
       enabled: true
       metric_batch_size: 250
@@ -519,36 +359,26 @@ telegraf:
       database: "efd"
       topicRegexps: |
         [ "lsst.sal.MTCamera", "lsst.sal.MTHeaderService", "lsst.sal.MTOODS" ]
-      debug: true
-      offset: newest
     auxtel:
       enabled: true
       database: "efd"
       topicRegexps: |
         [ "lsst.sal.ATAOS", "lsst.sal.ATBuilding", "lsst.sal.ATDome", "lsst.sal.ATDomeTrajectory", "lsst.sal.ATHexapod", "lsst.sal.ATPneumatics", "lsst.sal.ATPtg", "lsst.sal.ATMCS" ]
-      debug: true
-      offset: newest
     latiss:
       enabled: true
       database: "efd"
       topicRegexps: |
         [ "lsst.sal.ATCamera", "lsst.sal.ATHeaderService", "lsst.sal.ATOODS", "lsst.sal.ATSpectrograph" ]
-      debug: true
-      offset: newest
     test:
       enabled: true
       database: "efd"
       topicRegexps: |
         [ "lsst.sal.Test" ]
-      debug: true
-      offset: newest
     lasertracker:
       enabled: true
       database: "efd"
       topicRegexps: |
         [ "lsst.sal.LaserTracker" ]
-      debug: true
-      offset: newest
     # CCS connectors (experimental) data is being written on separate databases for now
     atcamera:
       enabled: true
@@ -559,8 +389,6 @@ telegraf:
         [ "Agent", "Aspic", "Location", "Raft", "Reb", "Sensor", "Source" ]
       topicRegexps: |
         [ "lsst.ATCamera" ]
-      debug: true
-      offset: newest
     cccamera:
       enabled: true
       database: "lsst.CCCamera"
@@ -570,30 +398,25 @@ telegraf:
         [ "Agent", "Aspic", "Cold", "Cryo", "Hardware", "Location", "Ps", "RTD", "Raft", "Reb", "Segment", "Sensor", "Source" ]
       topicRegexps: |
         [ "lsst.CCCamera" ]
-      debug: true
-      offset: newest
     mtcamera:
       enabled: true
       database: "lsst.MTCamera"
       timestamp_format: "unix_ms"
       timestamp_field: "timestamp"
       tags: |
-        [ "Agent", "Aspic", "Axis", "Canbus", "Cip", "Clamp", "Cold", "Controller", "Cryo", "Gateway", "Hardware", "Hip", "Hook", "Latch", "Location", "Ps", "RTD", "Raft", "Reb", "Segment", "Sensor", "Socket", "Source", "Truck" ]
+        [ "Agent", "Aspic", "Axis", "Bay", "Canbus", "Cip", "Clamp", "Cold", "Controller", "Cryo", "Gateway", "Hardware", "Hip", "Hook", "Latch", "Location", "Ps", "RTD", "Raft", "Reb", "Segment", "Sensor", "Socket", "Source", "Truck" ]
       topicRegexps: |
         [ "lsst.MTCamera" ]
-      debug: true
-      offset: newest
 
 kafdrop:
   ingress:
     enabled: true
-    hostname: summit-lsp.lsst.codes
 
 rest-proxy:
   enabled: true
   ingress:
     enabled: true
-    hostname: summit-lsp.lsst.codes
+    anonymous: true
   configurationOverrides:
     "access.control.allow.origin": https://summit-lsp.lsst.codes/love,http://love01.cp.lsst.org
   kafka:
@@ -601,6 +424,7 @@ rest-proxy:
       - lsst.dm
       - lsst.backpack
       - lsst.obsenv
+      - lsst.scimma
       - lsst.cp
 
 chronograf:
@@ -620,15 +444,23 @@ chronograf:
     GENERIC_API_KEY: sub
     PUBLIC_URL: https://summit-lsp.lsst.codes
     STATUS_FEED_URL: https://raw.githubusercontent.com/lsst-sqre/rsp_broadcast/main/jsonfeeds/summit.json
+  resources:
+    requests:
+      memory: 16Gi
+      cpu: 1
+    limits:
+      memory: 64Gi
+      cpu: 4
 
 kapacitor:
   persistence:
     storageClass: rook-ceph-block
+  influxURL: "http://sasquatch-influxdb-enterprise-data.sasquatch:8086"
 
 backup:
   enabled: true
   persistence:
-    size: 100Gi
+    size: 20Ti
     storageClass: rook-ceph-block
   backupItems:
     - name: chronograf
@@ -637,8 +469,17 @@ backup:
     - name: kapacitor
       enabled: true
       retentionDays: 7
+    - name: influxdb-enterprise-incremental
+      enabled: false
+      bind: sasquatch-influxdb-enterprise-meta
+  k8up:
+    enabled: true
+
 
 obsenv:
+  enabled: true
+
+scimma:
   enabled: true
 
 backpack:
@@ -650,6 +491,7 @@ control-system:
     - lsst.s3.raw.latiss
     - lsst.s3.raw.comcam
     - lsst.s3.raw.lsstcam
+    - lsst.s3.wf.lsstcam
 
 consdb:
   enabled: true

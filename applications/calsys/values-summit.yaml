@@ -1,45 +1,49 @@
 atmonochromator:
   enabled: true
   image:
+    revision: 0
     repository: ts-dockerhub.lsst.org/atmonochromator
     pullPolicy: Always
   resources:
     limits:
       cpu: 100m
-      memory: 300Mi
+      memory: 320Mi
     requests:
-      cpu: 10m
-      memory: 97Mi
+      cpu: 18m
+      memory: 160Mi
 
 atwhitelight:
   enabled: true
   image:
+    revision: 0
     repository: ts-dockerhub.lsst.org/atwhitelight
     pullPolicy: Always
   resources:
     limits:
       cpu: 80m
-      memory: 384Mi
+      memory: 350Mi
     requests:
-      cpu: 8m
-      memory: 128Mi
+      cpu: 13m
+      memory: 170Mi
 
 cbp:
   enabled: true
   image:
+    revision: 0
     repository: ts-dockerhub.lsst.org/cbp
     pullPolicy: Always
   resources:
     limits:
       cpu: 110m
-      memory: 300Mi
+      memory: 360Mi
     requests:
-      cpu: 11m
-      memory: 100Mi
+      cpu: 18m
+      memory: 180Mi
 
 electrometer101:
   enabled: true
   image:
+    revision: 11
     repository: ts-dockerhub.lsst.org/electrometer
     pullPolicy: Always
   env:
@@ -61,6 +65,7 @@ electrometer101:
 electrometer102:
   enabled: true
   image:
+    revision: 11
     repository: ts-dockerhub.lsst.org/electrometer
     pullPolicy: Always
   env:
@@ -74,14 +79,15 @@ electrometer102:
   resources:
     limits:
       cpu: 1
-      memory: 350Mi
+      memory: 360Mi
     requests:
       cpu: 100m
-      memory: 115Mi
+      memory: 180Mi
 
 electrometer103:
   enabled: true
   image:
+    revision: 11
     repository: ts-dockerhub.lsst.org/electrometer
     pullPolicy: Always
   env:
@@ -95,14 +101,15 @@ electrometer103:
   resources:
     limits:
       cpu: 1
-      memory: 350Mi
+      memory: 360Mi
     requests:
-      cpu: 100m
-      memory: 115Mi
+      cpu: 200m
+      memory: 180Mi
 
 electrometer201:
   enabled: true
   image:
+    revision: 11
     repository: ts-dockerhub.lsst.org/electrometer
     pullPolicy: Always
   env:
@@ -116,27 +123,29 @@ electrometer201:
   resources:
     limits:
       cpu: 1
-      memory: 330Mi
+      memory: 320Mi
     requests:
       cpu: 100m
-      memory: 110Mi
+      memory: 160Mi
 
 ledprojector:
   enabled: true
   image:
+    revision: 4
     repository: ts-dockerhub.lsst.org/ledprojector
     pullPolicy: Always
   resources:
     limits:
       cpu: 100m
-      memory: 330Mi
+      memory: 360Mi
     requests:
-      cpu: 10m
-      memory: 110Mi
+      cpu: 18m
+      memory: 180Mi
 
 linearstage101:
   enabled: true
   image:
+    revision: 4
     repository: ts-dockerhub.lsst.org/linearstage
     pullPolicy: Always
   env:
@@ -144,29 +153,31 @@ linearstage101:
   resources:
     limits:
       cpu: 100m
-      memory: 330Mi
+      memory: 512Mi
     requests:
-      cpu: 10m
-      memory: 130Mi
+      cpu: 18m
+      memory: 256Mi
 
 linearstage102:
   enabled: true
   image:
+    revision: 4
     repository: ts-dockerhub.lsst.org/linearstage
     pullPolicy: Always
   env:
     RUN_ARG: 102
   resources:
     limits:
-      cpu: 150m
-      memory: 330Mi
+      cpu: 100m
+      memory: 512Mi
     requests:
-      cpu: 15m
-      memory: 130Mi
+      cpu: 16m
+      memory: 256Mi
 
 linearstage103:
   enabled: true
   image:
+    revision: 4
     repository: ts-dockerhub.lsst.org/linearstage
     pullPolicy: Always
   env:
@@ -174,14 +185,15 @@ linearstage103:
   resources:
     limits:
       cpu: 100m
-      memory: 330Mi
+      memory: 512Mi
     requests:
-      cpu: 10m
-      memory: 130Mi
+      cpu: 16m
+      memory: 256Mi
 
 linearstage104:
   enabled: true
   image:
+    revision: 4
     repository: ts-dockerhub.lsst.org/linearstage
     pullPolicy: Always
   env:
@@ -189,28 +201,30 @@ linearstage104:
   resources:
     limits:
       cpu: 100m
-      memory: 330Mi
+      memory: 400Mi
     requests:
-      cpu: 10m
-      memory: 130Mi
+      cpu: 18m
+      memory: 200Mi
 
 mtreflector:
   enabled: true
   image:
+    revision: 0
     repository: ts-dockerhub.lsst.org/mtreflector
     pullPolicy: Always
   resources:
     limits:
       cpu: 100m
-      memory: 330Mi
+      memory: 512Mi
     requests:
-      cpu: 10m
-      memory: 130Mi
+      cpu: 14m
+      memory: 256Mi
 
 simulation-gencam:
   enabled: true
   classifier: genericcamera1
   image:
+    revision: 6
     repository: ts-dockerhub.lsst.org/genericcamera
     pullPolicy: Always
   env:
@@ -228,20 +242,21 @@ simulation-gencam:
   resources:
     limits:
       cpu: 120m
-      memory: 360Mi
+      memory: 512Mi
     requests:
-      cpu: 12m
-      memory: 120Mi
+      cpu: 25m
+      memory: 256Mi
 
 tunablelaser:
   enabled: true
   image:
+    revision: 6
     repository: ts-dockerhub.lsst.org/tunablelaser
     pullPolicy: Always
   resources:
     limits:
       cpu: 120m
-      memory: 300Mi
+      memory: 350Mi
     requests:
-      cpu: 12m
-      memory: 100Mi
+      cpu: 15m
+      memory: 170Mi

@@ -1,0 +1,370 @@
+{
+  "properties": {
+    "image": {
+      "$ref": "#/definitions/image_config"
+    },
+    "config": {
+      "$ref": "#/definitions/config"
+    },
+    "s3_tile": {
+      "$ref": "#/definitions/s3_config"
+    },
+    "use_vault": {
+      "type": "boolean"
+    },
+    "use_gafaelfawr": {
+      "type": "boolean"
+    },
+    "db_storage_class": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "default": null
+    },
+    "log_level": {
+      "type": "string",
+      "enum": [
+        "debug",
+        "info",
+        "warning",
+        "error",
+        "critical"
+      ],
+      "default": "info"
+    },
+    "debug": {
+      "$ref": "#/definitions/debug"
+    },
+    "butler_settings": {
+      "type": "object",
+      "properties": {
+        "envs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/envvar"
+          }
+        },
+        "volumes": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "volume_mounts": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "data_repos": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "envs",
+        "volumes",
+        "volume_mounts",
+        "data_repos"
+      ],
+      "additionalProperties": false,
+      "default": {}
+    },
+    "admin_page": {
+      "type": "boolean",
+      "default": false
+    },
+    "global": {},
+    "coordinator": {
+      "type": "object",
+      "properties": {
+        "resources": {
+          "$ref": "#/definitions/resources"
+        }
+      },
+      "required": [
+        "resources"
+      ]
+    },
+    "frontend": {
+      "type": "object",
+      "properties": {
+        "replicas": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 1
+        },
+        "resources": {
+          "$ref": "#/definitions/resources"
+        }
+      },
+      "required": [
+        "resources"
+      ]
+    },
+    "db": {
+      "type": "object",
+      "properties": {
+        "resources": {
+          "$ref": "#/definitions/resources"
+        }
+      },
+      "required": [
+        "resources"
+      ]
+    },
+    "generator": {
+      "type": "object",
+      "properties": {
+        "resources": {
+          "$ref": "#/definitions/resources"
+        },
+        "replicas": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "concurrency": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "local_storage": {
+          "type": "object",
+          "properties": {
+            "sizeLimit": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "sizeLimit"
+          ]
+        }
+      },
+      "required": [
+        "resources",
+        "concurrency",
+        "local_storage",
+        "replicas"
+      ]
+    },
+    "context_menu_templates": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/context_menu_template"
+      },
+      "default": []
+    },
+    "ccd_data_types": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/ccd_data_type_config"
+      },
+      "default": []
+    }
+  },
+  "required": [
+    "image",
+    "use_vault",
+    "use_gafaelfawr",
+    "coordinator",
+    "frontend",
+    "db",
+    "generator",
+    "context_menu_templates"
+  ],
+  "additionalProperties": false,
+  "definitions": {
+    "ccd_data_type_config": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the data type (used in URLs, cache paths)"
+        },
+        "name": {
+          "type": "string",
+          "description": "Butler dataset type name for queries (e.g., 'raw', 'post_isr_image')"
+        },
+        "display_name": {
+          "type": "string",
+          "description": "Display name for the UI (e.g., 'Raw', 'Post-ISR')"
+        },
+        "collections": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Butler collection names"
+        },
+        "data_id_dimension": {
+          "type": "string",
+          "default": "exposure",
+          "description": "Data identifier dimension for Butler queries"
+        },
+        "order_by": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": ["-exposure"],
+          "description": "Order by clauses for queries"
+        },
+        "partial": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether to use partial loading for this data type"
+        },
+        "repository_name": {
+          "type": "string",
+          "default": "embargo",
+          "description": "Butler repository name (e.g., 'embargo', 'main')"
+        },
+        "instrument": {
+          "type": "string",
+          "default": "LSSTCam",
+          "description": "Butler instrument name"
+        }
+      },
+      "required": ["id", "name", "display_name", "collections"],
+      "additionalProperties": false
+    },
+    "image_config": {
+      "type": "object",
+      "properties": {
+        "repository": {
+          "type": "string"
+        },
+        "tag": {
+          "type": "string"
+        },
+        "pullPolicy": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "repository",
+        "tag",
+        "pullPolicy"
+      ],
+      "additionalProperties": false
+    },
+    "config": {
+      "properties": {
+        "pathPrefix": {
+          "type": "string"
+        },
+        "s3_tile_path_prefix": {
+          "type": "string"
+        },
+        "max_object_storage_usage": {
+          "type": "number",
+          "$comment": "Maximum allowed storage usage for object storage in bytes"
+        }
+      },
+      "required": [
+        "pathPrefix",
+        "s3_tile_path_prefix",
+        "max_object_storage_usage"
+      ],
+      "additionalProperties": false
+    },
+    "s3_config": {
+      "properties": {
+        "endpoint": {
+          "type": "string"
+        },
+        "bucket": {
+          "type": "string"
+        },
+        "secure": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "endpoint",
+        "bucket",
+        "secure"
+      ],
+      "additionalProperties": false
+    },
+    "resources": {
+      "type": "object",
+      "properties": {
+        "requests": {
+          "type": "object",
+          "properties": {
+            "cpu": {
+              "type": "string"
+            },
+            "memory": {
+              "type": "string"
+            }
+          }
+        },
+        "limits": {
+          "type": "object",
+          "properties": {
+            "cpu": {
+              "type": "string"
+            },
+            "memory": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "cpu",
+            "memory"
+          ]
+        }
+      }
+    },
+    "debug": {
+      "type": "object",
+      "properties": {
+        "jupyter": {
+          "type": "boolean"
+        },
+        "username": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "jupyter",
+        "username"
+      ]
+    },
+    "context_menu_template": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "template": {
+          "type": "string"
+        },
+        "is_url": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "name",
+        "template",
+        "is_url"
+      ]
+    },
+    "envvar": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "value"
+      ]
+    }
+  }
+}

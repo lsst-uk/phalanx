@@ -19,8 +19,13 @@ spec:
   source:
     path: "applications/strimzi"
     repoURL: {{ .Values.repoUrl | quote }}
-    targetRevision: {{ .Values.targetRevision | quote }}
+    targetRevision: {{ or (index .Values "revisions" "strimzi") .Values.targetRevision | quote }}
     helm:
       valueFiles:
         - "values-{{ .Values.name }}.yaml"
+  ignoreDifferences:
+    - group: apiextensions.k8s.io
+      kind: CustomResourceDefinition
+      jsonPointers:
+        - /spec/versions
 {{- end -}}

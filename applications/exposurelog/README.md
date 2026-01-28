@@ -34,7 +34,6 @@ Log messages related to an exposure
 | db.user | string | `"exposurelog"` | database user |
 | env | list | `[]` | Environment variables to set in the exposurelog pod |
 | fullnameOverride | string | `""` | Override the full name for resources (includes the release name) |
-| global.baseUrl | string | Set by Argo CD | Base URL for the environment |
 | global.host | string | Set by Argo CD | Host name for ingress |
 | global.vaultSecretsPath | string | Set by Argo CD | Base path for Vault secrets |
 | image.pullPolicy | string | `"Always"` | Pull policy for the exposurelog image |
@@ -46,7 +45,7 @@ Log messages related to an exposure
 | podAnnotations | object | `{}` | Annotations for the exposurelog pod |
 | podSecurityContext | object | `{}` | Security context for the exposurelog pod |
 | replicaCount | int | `1` | How many exposurelog pods to run |
-| resources | object | `{}` | Resource limits and requests for the exposurelog pod |
+| resources | object | `{"limits":{"cpu":1,"memory":"900Mi"},"requests":{"cpu":"300m","memory":"300Mi"}}` | Resource limits and requests for the exposurelog pod |
 | secretEnv | list | `[]` | Additional secret environment variables to set in the exposurelog pod |
 | securityContext | object | `{}` | Security context for the exposurelog deployment |
 | tolerations | list | `[]` | Tolerations for the exposurelog pod |

@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "datalinker"
+  labels:
+    {{- include "datalinker.labels" . | nindent 4 }}
+data:
+  DATALINKER_LINKS_LIFETIME: {{ .Values.config.linksLifetime | quote }}
+  DATALINKER_LOG_LEVEL: {{ .Values.config.logLevel | quote }}
+  DATALINKER_PATH_PREFIX: {{ .Values.config.pathPrefix | quote }}
+  {{- if .Values.config.tapMetadataUrl }}
+  DATALINKER_TAP_METADATA_DIR: "/tmp/tap-metadata"
+  DATALINKER_TAP_METADATA_URL: {{ .Values.config.tapMetadataUrl | quote }}
+  {{- end }}
+  REPERTOIRE_BASE_URL: {{ .Values.global.repertoireUrl | quote }}

@@ -8,35 +8,44 @@ vaultPathPrefix: "secret/phalanx/summit"
 namespaceLabels:
   sasquatch:
     lsst.io/discover: 'true'
+    k8up-enabled: 'true'
+  gafaelfawr:
+    k8up-enabled: 'true'
 
 applications:
   auxtel: true
   calsys: true
   consdb: true
   control-system-test: true
+  csc-versions: true
   envsys: true
   exposurelog: true
   love: true
   mobu: true
   narrativelog: true
+  nightlydigest: true
   nightreport: true
   nublado: true
-  obsenv-management: true
+  nvr-control: true
   obssys: true
   portal: true
   rapid-analysis: true
   rubintv: true
   rubintv-dev: true
+  rubin-too-producer: true
   sasquatch: true
   sasquatch-backpack: true
   simonyitel: true
   squareone: true
   strimzi: true
-  telegraf: true
-  telegraf-ds: true
+  strimzi-access-operator: true
+  strimzi-registry-operator: true
   uws: true
 
 controlSystem:
-  imageTag: "c0041"
+  imageTag: "c0042"
   siteTag: "summit"
   s3EndpointUrl: "https://s3.cp.lsst.org"
+
+revisions:
+  strimzi: strimzi-0.47.0

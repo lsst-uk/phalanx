@@ -8,7 +8,6 @@ Deployment for the Simonyi Survey Telescope CSCs
 |-----|------|---------|-------------|
 | ccheaderservice.enabled | bool | `false` | Enable the CCHeaderService CSC |
 | ccoods.enabled | bool | `false` | Enable the CCOODS CSC |
-| global.baseUrl | string | Set by Argo CD | Base URL for the environment |
 | global.controlSystem.appNamespace | string | Set by ArgoCD | Application namespace for the control system deployment |
 | global.controlSystem.imageTag | string | Set by ArgoCD | Image tag for the control system deployment |
 | global.controlSystem.kafkaBrokerAddress | string | Set by ArgoCD | Kafka broker address for the control system deployment |
@@ -34,6 +33,7 @@ Deployment for the Simonyi Survey Telescope CSCs
 | mtm1m3-sim.enabled | bool | `false` | Enable the MTM1M3 simulator CSC |
 | mtm1m3.enabled | bool | `false` | Enable the MTM1M3 hardware simulator CSC |
 | mtm1m3ts-sim.enabled | bool | `false` | Enable the MTM1M3TS simulator CSC |
+| mtm2-hwsim.enabled | bool | `false` | Enable the MTM2 hardware simulator CSC |
 | mtm2-sim.enabled | bool | `false` | Enable the MTM2 simulator CSC |
 | mtm2.enabled | bool | `false` | Enable the MTM2 CSC |
 | mtm2hexapod-sim.enabled | bool | `false` | Enable the MTHexapod:2 simulator CSC |

@@ -10,14 +10,19 @@ Run InfluxDB Enterprise on Kubernetes
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| bootstrap.auth.secretName | string | `"sasquatch"` | Enable authentication of the data nodes using this secret, by creating a username and password for an admin account. The secret must contain keys `username` and `password`. |
+| bootstrap.auth.secretName | string | `"sasquatch"` | Enable authentication of the data nodes using this secret, by creating a username and password for an admin account. The secret must contain keys `influxdb-user` and `influxdb-password`. |
 | bootstrap.ddldml.configMap | string | Do not run DDL or DML | A config map containing DDL and DML that define databases, retention policies, and inject some data.  The keys `ddl` and `dml` must exist, even if one of them is empty.  DDL is executed before DML to ensure databases and retention policies exist. |
 | bootstrap.ddldml.resources | object | `{}` | Kubernetes resources and limits for the bootstrap job |
 | data.affinity | object | See `values.yaml` | Affinity rules for data pods |
 | data.config.antiEntropy.enabled | bool | `false` | Enable the anti-entropy service, which copies and repairs shards |
-| data.config.cluster.log-queries-after | string | `"15s"` | Maximum duration a query can run before InfluxDB logs it as a slow query |
-| data.config.cluster.max-concurrent-queries | int | `1000` | Maximum number of running queries allowed on the instance (0 is unlimited) |
-| data.config.cluster.query-timeout | string | `"300s"` | Maximum duration a query is allowed to run before it is killed |
+| data.config.cluster.log-queries-after | string | `"10s"` | Maximum duration a query can run before InfluxDB logs it as a slow query |
+| data.config.cluster.log-timedout-queries | bool | `true` | Whether to log timed out queries |
+| data.config.cluster.max-concurrent-queries | int | `50` | Maximum number of running queries allowed |
+| data.config.cluster.max-select-buckets | int | `20000` | Maximum number of GROUP BY time() buckets a single select query can retrieve |
+| data.config.cluster.max-select-point | int | `50000000` | Maximum number of points a single select query can process before it is killed |
+| data.config.cluster.max-select-series | int | `200000` | Maximum number of series a single select query can process before it is killed |
+| data.config.cluster.query-timeout | string | `"180s"` | Maximum duration a query is allowed to run before it is killed |
+| data.config.cluster.termination-query-log | bool | `true` | Whether to log queries that are terminated due to resource limits |
 | data.config.continuousQueries.enabled | bool | `false` | Whether continuous queries are enabled |
 | data.config.data.cache-max-memory-size | int | `0` | Maximum size a shared cache can reach before it starts rejecting writes |
 | data.config.data.trace-logging-enabled | bool | `true` | Whether to enable verbose logging of additional debug information within the TSM engine and WAL |
@@ -25,10 +30,9 @@ Run InfluxDB Enterprise on Kubernetes
 | data.config.hintedHandoff.max-size | int | `107374182400` | Maximum size of the hinted-handoff queue in bytes |
 | data.config.http.auth-enabled | bool | `true` | Whether authentication is required |
 | data.config.http.flux-enabled | bool | `true` | Whether to enable the Flux query endpoint |
-| data.config.logging.level | string | `"debug"` | Logging level |
+| data.config.logging.format | string | `"json"` | Format to use for log messages |
+| data.config.logging.level | string | `"info"` | Logging level |
 | data.env | object | `{}` | Additional environment variables to set in the meta container |
-| data.image.pullPolicy | string | `"IfNotPresent"` | Pull policy for data images |
-| data.image.repository | string | `"influxdb"` | Docker repository for data images |
 | data.ingress.annotations | object | See `values.yaml` | Extra annotations to add to the data ingress |
 | data.ingress.className | string | `"nginx"` | Ingress class name of the data service |
 | data.ingress.enabled | bool | `false` | Whether to enable an ingress for the data service |
@@ -46,7 +50,7 @@ Run InfluxDB Enterprise on Kubernetes
 | data.podSecurityContext | object | `{}` | Pod security context for data pods |
 | data.preruncmds | list | `[]` | Commands to run in data pods before InfluxDB is started. Each list entry should have a _cmd_ key with the command to run and an optional _description_ key describing that command |
 | data.replicas | int | `1` | Number of data replicas to run |
-| data.resources | object | `{}` | Kubernetes resources and limits for the meta container |
+| data.resources | object | `{"limits":{"cpu":2,"memory":"8Gi"},"requests":{"cpu":1,"memory":"4Gi"}}` | Kubernetes resources and limits for the meta container |
 | data.securityContext | object | `{}` | Security context for meta pods |
 | data.service.annotations | object | `{}` | Extra annotations for the data service |
 | data.service.externalIPs | list | Do not allocate external IPs | External IPs for the data service |
@@ -54,10 +58,15 @@ Run InfluxDB Enterprise on Kubernetes
 | data.service.loadBalancerIP | string | Do not allocate a load balancer IP | Load balancer IP for the data service |
 | data.service.nodePort | int | Do not allocate a node port | Node port for the data service |
 | data.service.type | string | `"ClusterIP"` | Service type for the data service |
+| data.startupProbe.enabled | bool | `false` | Whether to enable a startup probe to check if the data node is ready |
+| data.startupProbe.failureThreshold | int | `6` | Number of failures before the pod is restarted |
+| data.startupProbe.initialDelaySeconds | int | `60` | Number of seconds after the container has started before liveness/startup probes are initiated |
+| data.startupProbe.periodSeconds | int | `60` | How often (in seconds) to perform the probe |
 | data.tolerations | list | `[]` | Tolerations for data pods |
 | envFromSecret | string | No secret | The name of a secret in the same kubernetes namespace which contain values to be added to the environment |
 | fullnameOverride | string | `""` | Override the full name for resources (includes the release name) |
-| image.addsuffix | bool | `false` | Set to true to add a suffix for the type of image to the Docker tag (for example, `-meta`, making an image name of `influxdb:1.8.0-meta`) |
+| image.pullPolicy | string | `"IfNotPresent"` | Pull policy for images |
+| image.repository | string | `"influxdb"` | Docker repository for InfluxDB Enterprise images |
 | image.tag | string | `appVersion` from `Chart.yaml` | Tagged version of the Docker image that you want to run |
 | imagePullSecrets | list | `[]` | List of pull secrets needed for images. If set, each object in the list should have one attribute, _name_, identifying the pull secret to use |
 | license.key | string | `""` | License key. You can put your license key here for testing this chart out, but we STRONGLY recommend using a license file stored in a secret when you ship to production. |
@@ -65,8 +74,6 @@ Run InfluxDB Enterprise on Kubernetes
 | license.secret.name | string | `"influxdb-enterprise-license"` | Name of the secret containing the license |
 | meta.affinity | object | See `values.yaml` | Affinity rules for meta pods |
 | meta.env | object | `{}` | Additional environment variables to set in the meta container |
-| meta.image.pullPolicy | string | `"IfNotPresent"` | Pull policy for meta images |
-| meta.image.repository | string | `"influxdb"` | Docker repository for meta images |
 | meta.ingress.annotations | object | See `values.yaml` | Extra annotations to add to the meta ingress |
 | meta.ingress.className | string | `"nginx"` | Ingress class name of the meta service |
 | meta.ingress.enabled | bool | `false` | Whether to enable an ingress for the meta service |
@@ -84,7 +91,7 @@ Run InfluxDB Enterprise on Kubernetes
 | meta.podSecurityContext | object | `{}` | Pod security context for meta pods |
 | meta.preruncmds | list | `[]` | Commands to run in meta pods before InfluxDB is started. Each list entry should have a _cmd_ key with the command to run and an optional _description_ key describing that command |
 | meta.replicas | int | `3` | Number of meta pods to run |
-| meta.resources | object | `{}` | Kubernetes resources and limits for the meta container |
+| meta.resources | object | `{"limits":{"cpu":1,"memory":"1Gi"},"requests":{"cpu":"100m","memory":"128Mi"}}` | Kubernetes resources and limits for the meta container |
 | meta.securityContext | object | `{}` | Security context for meta pods |
 | meta.service.annotations | object | `{}` | Extra annotations for the meta service |
 | meta.service.externalIPs | list | Do not allocate external IPs | External IPs for the meta service |

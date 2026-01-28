@@ -101,4 +101,40 @@ Common environment variables
     secretKeyRef:
       name: "ook"
       key: "OOK_GITHUB_APP_PRIVATE_KEY"
+- name: "OOK_SLACK_WEBHOOK"
+  valueFrom:
+    secretKeyRef:
+      name: "ook"
+      key: "OOK_SLACK_WEBHOOK"
+{{- end }}
+
+{{/*
+Common volume mounts
+*/}}
+{{- define "ook.volumeMounts" -}}
+- name: "kafka"
+  mountPath: "/etc/kafkacluster/ca.crt"
+  subPath: "ssl.truststore.crt" # CA cert from the Kafka cluster
+- name: "kafka"
+  mountPath: "/etc/kafkauser/user.crt"
+  subPath: "ssl.keystore.crt" # User cert from the Kafka cluster signed by the clients' CA
+- name: "kafka"
+  mountPath: "/etc/kafkauser/user.key"
+  subPath: "ssl.keystore.key" # private key for the consuming client
+- name: "tmp"
+  mountPath: "/tmp/kafka_certs"
+{{- end }}
+
+{{/* Common volumes
+*/}}
+{{- define "ook.volumes" -}}
+# This secret comes from the KafkaAccess operator
+- name: "kafka"
+  secret:
+    secretName: ook-kafka
+- name: "ook"
+  secret:
+    secretName: "ook"
+- name: "tmp"
+  emptyDir: {}
 {{- end }}

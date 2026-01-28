@@ -10,17 +10,17 @@ Poll next visit events from Kafka, duplicate them, and send them to all applicat
 | debug | bool | `false` | If set, enable debug logging. |
 | detectorConfig | object | See `values.yaml`. | A mapping, for each instrument, of detector number to whether that detector is "active" (i.e., producing images). |
 | fullnameOverride | string | `""` |  |
-| global.baseUrl | string | Set by Argo CD | Base URL for the environment |
 | global.host | string | Set by Argo CD | Host name for ingress |
 | global.vaultSecretsPath | string | Set by Argo CD | Base path for Vault secrets |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
 | image.repository | string | `"us-central1-docker.pkg.dev/prompt-proto/prompt/nextvisit-fanout"` |  |
-| image.tag | string | `""` |  |
+| image.tag | string | None, must be set. | Overrides the image tag whose default is the chart appVersion. |
 | instruments | string | None, must be set. | The instruments that are initialized when the fan-out service starts up as a space-delimited string. This list is a subset of the keys of `detectorConfig` because the latter handles some special cases. |
 | kafka.expiration | float | `3600` | Maximum message age to consider, in seconds. |
 | kafka.offset | string | `"latest"` |  |
 | kafka.saslMechamism | string | `"SCRAM-SHA-512"` |  |
 | kafka.securityProtocol | string | `"SASL_SSL"` |  |
+| kafka.summitSasquatchAuth | bool | `false` | Enable secret for authenticating to the Summit.  Only should be enabled for prod. |
 | keda.redisHealthCheckInterval | int | `3` | Redis health check interval in seconds. |
 | keda.redisHost | string | See `values.yaml`. | Redis cluster host. |
 | keda.redisRetryCount | int | `3` | Redis max retry count |

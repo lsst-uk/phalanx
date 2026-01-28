@@ -11,17 +11,17 @@ strimzi-kafka:
       tls:
         enabled: true
       bootstrap:
-        loadBalancerIP: "35.222.7.174"
+        loadBalancerIP: "34.71.118.138"
         host: sasquatch-dev-kafka-bootstrap.lsst.cloud
       brokers:
         - broker: 0
-          loadBalancerIP: "35.193.196.189"
+          loadBalancerIP: "34.46.163.104"
           host: sasquatch-dev-kafka-0.lsst.cloud
         - broker: 1
-          loadBalancerIP: "35.232.19.196"
+          loadBalancerIP: "35.202.38.197"
           host: sasquatch-dev-kafka-1.lsst.cloud
         - broker: 2
-          loadBalancerIP: "34.172.163.125"
+          loadBalancerIP: "34.45.111.124"
           host: sasquatch-dev-kafka-2.lsst.cloud
   users:
     replicator:
@@ -30,43 +30,27 @@ strimzi-kafka:
       enabled: true
   controller:
     enabled: true
-    resources:
-      requests:
-        memory: 8Gi
-        cpu: "1"
-      limits:
-        memory: 8Gi
-        cpu: "1"
+    backup: true
   broker:
     enabled: true
     storage:
       size: 500Gi
-    resources:
-      requests:
-        memory: 16Gi
-        cpu: "2"
-      limits:
-        memory: 16Gi
-        cpu: "2"
-  registry:
-    ingress:
-      enabled: true
-      annotations:
-        nginx.ingress.kubernetes.io/rewrite-target: /$2
-      hostname: data-dev.lsst.cloud
-      path: /schema-registry(/|$)(.*)
+    backup: true
+
+schema-registry:
+  enabled: true
+  ingress:
+    enabled: true
+
+schema-registry-remote:
+  enabled: true
+  topic:
+    name: registry-schemas-remote
 
 influxdb:
   ingress:
     enabled: false
     hostname: data-dev.lsst.cloud
-  resources:
-    requests:
-      memory: 16Gi
-      cpu: 2
-    limits:
-      memory: 16Gi
-      cpu: 2
 
 customInfluxDBIngress:
   enabled: true
@@ -90,13 +74,6 @@ influxdb-enterprise:
       secret:
         name: sasquatch
         key: influxdb-enterprise-shared-secret
-    resources:
-      requests:
-        memory: 2Gi
-        cpu: 1
-      limits:
-        memory: 4Gi
-        cpu: 2
   data:
     replicas: 2
     config:
@@ -109,13 +86,6 @@ influxdb-enterprise:
       enabled: true
       accessMode: ReadWriteOnce
       size: 1Ti
-    resources:
-      requests:
-        memory: 8Gi
-        cpu: 2
-      limits:
-        memory: 16Gi
-        cpu: 4
 
 telegraf:
   enabled: true
@@ -134,22 +104,29 @@ telegraf:
       timestamp_field: "timestamp"
       topicRegexps: |
         [ "lsst.example" ]
+    backpack:
+      enabled: true
+      replicaCount: 1
+      database: "lsst.backpack"
+      timestamp_format: "unix"
+      timestamp_field: "timestamp"
+      topicRegexps: |
+        [ "lsst.backpack" ]
 
 kafdrop:
   cmdArgs: "--message.format=AVRO --message.keyFormat=DEFAULT --topic.deleteEnabled=true --topic.createEnabled=true"
   ingress:
     enabled: true
-    hostname: data-dev.lsst.cloud
 
 rest-proxy:
   enabled: true
   ingress:
     enabled: true
-    hostname: data-dev.lsst.cloud
   kafka:
     topicPrefixes:
       - lsst.example
       - lsst.tap
+      - lsst.backpack
 
 chronograf:
   ingress:
@@ -175,11 +152,13 @@ app-metrics:
     - noteburst
     - nublado
     - qservkafka
+    - repertoire
     - sia
     - wobbly
 
 backup:
   enabled: true
+  schedule: "0 5 * * *"
   persistence:
     size: 500Gi
     storageClass: standard
@@ -192,9 +171,41 @@ backup:
       retentionDays: 3
     - name: "influxdb-enterprise-incremental"
       enabled: true
+      bind: sasquatch-influxdb-enterprise-meta
     - name: "influxdb-oss-full"
       enabled: true
       retentionDays: 3
+  restore:
+    enabled: false
+
+backpack:
+  enabled: true
 
 tap:
+  enabled: true
+
+ppdbtap:
+  enabled: true
+
+# Send alerts to squadcast
+kapacitor:
+  enabled: true
+  squadcast:
+    enabled: true
+
+grafana:
+  enabled: true
+  influxdb:
+    url: "http://sasquatch-trickster.sasquatch"
+    databases:
+      - lsst.square.metrics
+      - lsst.example
+
+trickster:
+  enabled: true
+  config:
+    logging:
+      log_level: "debug"
+
+redis:
   enabled: true

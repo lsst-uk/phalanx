@@ -12,6 +12,7 @@ Argo CD project: ``roundtable``
    :maxdepth: 1
    :caption: Roundtable
 
+   atlantis/index
    checkerboard/index
    eups-distributor/index
    giftless/index
@@ -19,6 +20,7 @@ Argo CD project: ``roundtable``
    ook/index
    squarebot/index
    templatebot/index
+   turborepo-cache/index
    unfurlbot/index
    vault/index
 

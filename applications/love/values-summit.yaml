@@ -35,8 +35,8 @@ audio-broadcaster:
 
 love-commander:
   image:
-    repository: ts-dockerhub.lsst.org/love-commander
     revision: 0
+    repository: ts-dockerhub.lsst.org/love-commander
     pullPolicy: Always
   env:
     S3_INSTANCE: cp
@@ -51,18 +51,70 @@ love-commander:
     type: ClusterIP
   resources:
     requests:
-      cpu: 50m
-      memory: 512Mi
+      cpu: 300m
+      memory: 1Gi
     limits:
-      cpu: 500m
-      memory: 2048Mi
+      cpu: 900m
+      memory: 2Gi
+
+x-manager-producer:
+  &base-manager-producer
+  image:
+    revision: 11
+    repository: ts-dockerhub.lsst.org/love-manager
+    pullPolicy: Always
+  env:
+    LOVE_SITE: summit
+    SERVER_URL: summit-lsp.lsst.codes
+    OLE_API_HOSTNAME: summit-lsp.lsst.codes
+    AUTH_LDAP_1_SERVER_URI: ldap://ipa1.cp.lsst.org
+    AUTH_LDAP_2_SERVER_URI: ldap://ipa2.cp.lsst.org
+    AUTH_LDAP_3_SERVER_URI: ldap://ipa3.cp.lsst.org
+    COMMANDER_HOSTNAME: love-commander-service
+    COMMANDER_PORT: 5000
+    DB_HOST: postgresdb01.cp.lsst.org
+    DB_ENGINE: postgresql
+    DB_NAME: love
+    DB_PORT: 5432
+    DB_USER: love
+    HEARTBEAT_QUERY_COMMANDER: false
+    JIRA_API_HOSTNAME: rubinobs.atlassian.net
+    JIRA_PROJECT_ID: 10063
+    REDIS_CONFIG_CAPACITY: 100
+    REDIS_CONFIG_EXPIRY: 5
+    REDIS_HOST: love-manager-redis-service
+    REMOTE_STORAGE: true
+    URL_SUBPATH: /love
+  envSecrets:
+    SECRET_KEY: manager-secret-key
+    PROCESS_CONNECTION_PASS: process-connection-pass
+    ADMIN_USER_PASS: admin-user-pass
+    USER_USER_PASS: user-user-pass
+    CMD_USER_PASS: cmd-user-pass
+    AUTH_LDAP_BIND_PASSWORD: auth-ldap-bind-password
+    DB_PASS: db-pass
+    REDIS_PASS: redis-pass
+  resources:
+    requests:
+      cpu: 150m
+      memory: 200Mi
+    limits:
+      cpu: 1000m
+      memory: 1500Mi
+  readinessProbe:
+    tcpSocket:
+      port: 8000
+    initialDelaySeconds: 20
+    periodSeconds: 10
+  autoscaling:
+    enabled: false
 
 love-manager:
   manager:
     frontend:
       image:
+        revision: 11
         repository: ts-dockerhub.lsst.org/love-manager
-        revision: 6
         pullPolicy: Always
       env:
         SERVER_URL: summit-lsp.lsst.codes
@@ -104,194 +156,20 @@ love-manager:
         periodSeconds: 10
     producers:
     - name: general
-      image:
-        repository: ts-dockerhub.lsst.org/love-manager
-        revision: 6
-        pullPolicy: Always
-      env:
-        LOVE_SITE: summit
-        SERVER_URL: summit-lsp.lsst.codes
-        OLE_API_HOSTNAME: summit-lsp.lsst.codes
-        AUTH_LDAP_1_SERVER_URI: ldap://ipa1.cp.lsst.org
-        AUTH_LDAP_2_SERVER_URI: ldap://ipa2.cp.lsst.org
-        AUTH_LDAP_3_SERVER_URI: ldap://ipa3.cp.lsst.org
-        COMMANDER_HOSTNAME: love-commander-service
-        COMMANDER_PORT: 5000
-        DB_HOST: postgresdb01.ls.lsst.org
-        DB_ENGINE: postgresql
-        DB_NAME: love
-        DB_PORT: 5432
-        DB_USER: love
-        HEARTBEAT_QUERY_COMMANDER: false
-        JIRA_API_HOSTNAME: rubinobs.atlassian.net
-        JIRA_PROJECT_ID: 10063
-        REDIS_CONFIG_CAPACITY: 100
-        REDIS_CONFIG_EXPIRY: 5
-        REDIS_HOST: love-manager-redis-service
-        REMOTE_STORAGE: true
-        URL_SUBPATH: /love
-      envSecrets:
-        SECRET_KEY: manager-secret-key
-        PROCESS_CONNECTION_PASS: process-connection-pass
-        ADMIN_USER_PASS: admin-user-pass
-        USER_USER_PASS: user-user-pass
-        CMD_USER_PASS: cmd-user-pass
-        AUTH_LDAP_BIND_PASSWORD: auth-ldap-bind-password
-        DB_PASS: db-pass
-        REDIS_PASS: redis-pass
+      <<: *base-manager-producer
       replicas: 10
-      autoscaling:
-        enabled: false
-        minReplicas: 2
-        maxReplicas: 25
-        targetCPUUtilizationPercentage: 50
-        scaleDownPolicy:
-          policies:
-          - type: Pods
-            value: 2
-            periodSeconds: 120
-          - type: Percent
-            value: 10
-            periodSeconds: 120
-          selectPolicy: Min
-      resources:
-        requests:
-          cpu: 150m
-          memory: 200Mi
-        limits:
-          cpu: 1000m
-          memory: 1500Mi
-      readinessProbe:
-        tcpSocket:
-          port: 8000
-        initialDelaySeconds: 20
-        periodSeconds: 10
-    - name: queue
-      image:
-        repository: ts-dockerhub.lsst.org/love-manager
-        revision: 6
-        pullPolicy: Always
-      env:
-        LOVE_SITE: summit
-        SERVER_URL: summit-lsp.lsst.codes
-        OLE_API_HOSTNAME: summit-lsp.lsst.codes
-        AUTH_LDAP_1_SERVER_URI: ldap://ipa1.cp.lsst.org
-        AUTH_LDAP_2_SERVER_URI: ldap://ipa2.cp.lsst.org
-        AUTH_LDAP_3_SERVER_URI: ldap://ipa3.cp.lsst.org
-        COMMANDER_HOSTNAME: love-commander-service
-        COMMANDER_PORT: 5000
-        DB_HOST: postgresdb01.cp.lsst.org
-        DB_ENGINE: postgresql
-        DB_NAME: love
-        DB_PORT: 5432
-        DB_USER: love
-        HEARTBEAT_QUERY_COMMANDER: false
-        JIRA_API_HOSTNAME: rubinobs.atlassian.net
-        JIRA_PROJECT_ID: 10063
-        REDIS_CONFIG_CAPACITY: 100
-        REDIS_CONFIG_EXPIRY: 5
-        REDIS_HOST: love-manager-redis-service
-        REMOTE_STORAGE: true
-        URL_SUBPATH: /love
-      envSecrets:
-        SECRET_KEY: manager-secret-key
-        PROCESS_CONNECTION_PASS: process-connection-pass
-        ADMIN_USER_PASS: admin-user-pass
-        USER_USER_PASS: user-user-pass
-        CMD_USER_PASS: cmd-user-pass
-        AUTH_LDAP_BIND_PASSWORD: auth-ldap-bind-password
-        DB_PASS: db-pass
-        REDIS_PASS: redis-pass
-      replicas: 3
-      autoscaling:
-        enabled: false
-        minReplicas: 2
-        maxReplicas: 25
-        targetCPUUtilizationPercentage: 50
-        scaleDownPolicy:
-          policies:
-          - type: Pods
-            value: 2
-            periodSeconds: 120
-          - type: Percent
-            value: 10
-            periodSeconds: 120
-          selectPolicy: Min
-      resources:
-        requests:
-          cpu: 150m
-          memory: 200Mi
-        limits:
-          cpu: 1000m
-          memory: 1500Mi
-      readinessProbe:
-        tcpSocket:
-          port: 8000
-        initialDelaySeconds: 20
-        periodSeconds: 10
-    - name: m1m3
-      image:
-        repository: ts-dockerhub.lsst.org/love-manager
-        revision: 6
-        pullPolicy: Always
-      env:
-        LOVE_SITE: summit
-        SERVER_URL: summit-lsp.lsst.codes
-        OLE_API_HOSTNAME: summit-lsp.lsst.codes
-        AUTH_LDAP_1_SERVER_URI: ldap://ipa1.cp.lsst.org
-        AUTH_LDAP_2_SERVER_URI: ldap://ipa2.cp.lsst.org
-        AUTH_LDAP_3_SERVER_URI: ldap://ipa3.cp.lsst.org
-        COMMANDER_HOSTNAME: love-commander-service
-        COMMANDER_PORT: 5000
-        DB_HOST: postgresdb01.cp.lsst.org
-        DB_ENGINE: postgresql
-        DB_NAME: love
-        DB_PORT: 5432
-        DB_USER: love
-        HEARTBEAT_QUERY_COMMANDER: false
-        JIRA_API_HOSTNAME: rubinobs.atlassian.net
-        JIRA_PROJECT_ID: 10063
-        REDIS_CONFIG_CAPACITY: 100
-        REDIS_CONFIG_EXPIRY: 5
-        REDIS_HOST: love-manager-redis-service
-        REMOTE_STORAGE: true
-        URL_SUBPATH: /love
-      envSecrets:
-        SECRET_KEY: manager-secret-key
-        PROCESS_CONNECTION_PASS: process-connection-pass
-        ADMIN_USER_PASS: admin-user-pass
-        USER_USER_PASS: user-user-pass
-        CMD_USER_PASS: cmd-user-pass
-        AUTH_LDAP_BIND_PASSWORD: auth-ldap-bind-password
-        DB_PASS: db-pass
-        REDIS_PASS: redis-pass
+    - name: atqueue
+      <<: *base-manager-producer
       replicas: 1
-      autoscaling:
-        enabled: false
-        minReplicas: 2
-        maxReplicas: 25
-        targetCPUUtilizationPercentage: 50
-        scaleDownPolicy:
-          policies:
-          - type: Pods
-            value: 2
-            periodSeconds: 120
-          - type: Percent
-            value: 10
-            periodSeconds: 120
-          selectPolicy: Min
-      resources:
-        requests:
-          cpu: 150m
-          memory: 200Mi
-        limits:
-          cpu: 1000m
-          memory: 1500Mi
-      readinessProbe:
-        tcpSocket:
-          port: 8000
-        initialDelaySeconds: 20
-        periodSeconds: 10
+    - name: mtqueue
+      <<: *base-manager-producer
+      replicas: 1
+    - name: ocsqueue
+      <<: *base-manager-producer
+      replicas: 1
+    - name: m1m3
+      <<: *base-manager-producer
+      replicas: 1
   redis:
     image:
       repository: redis
@@ -302,7 +180,7 @@ love-manager:
       save ""
     resources:
       requests:
-        cpu: 250m
+        cpu: 450m
         memory: 300Mi
       limits:
         cpu: 2500m
@@ -334,13 +212,13 @@ love-nginx:
   initContainers:
     frontend:
       image:
+        revision: 11
         repository: ts-dockerhub.lsst.org/love-frontend-k8s
-        revision: 6
         pullPolicy: Always
     manager:
       image:
+        revision: 6
         repository: ts-dockerhub.lsst.org/love-manager-static
-        revision: 0
         pullPolicy: Always
       command:
       - /bin/sh
@@ -353,8 +231,8 @@ love-nginx:
     claimSize: 2Gi
   resources:
     requests:
-      cpu: 50m
-      memory: 70Mi
+      cpu: 120m
+      memory: 140Mi
     limits:
       cpu: 500m
       memory: 300Mi
@@ -391,8 +269,24 @@ love-nginx:
           proxy_set_header Host $host;
           proxy_redirect off;
       }
-      location /love/manager/queue {
-          proxy_pass http://love-manager-producer-queue-service:8000;
+      location /love/manager/atqueue {
+          proxy_pass http://love-manager-producer-atqueue-service:8000;
+          proxy_http_version 1.1;
+          proxy_set_header Upgrade $http_upgrade;
+          proxy_set_header Connection "upgrade";
+          proxy_set_header Host $host;
+          proxy_redirect off;
+      }
+      location /love/manager/mtqueue {
+          proxy_pass http://love-manager-producer-mtqueue-service:8000;
+          proxy_http_version 1.1;
+          proxy_set_header Upgrade $http_upgrade;
+          proxy_set_header Connection "upgrade";
+          proxy_set_header Host $host;
+          proxy_redirect off;
+      }
+      location /love/manager/ocsqueue {
+          proxy_pass http://love-manager-producer-ocsqueue-service:8000;
           proxy_http_version 1.1;
           proxy_set_header Upgrade $http_upgrade;
           proxy_set_header Connection "upgrade";
@@ -485,34 +379,34 @@ love-nginx:
 
 love-producer:
   image:
+    revision: 6
     repository: ts-dockerhub.lsst.org/love-producer
-    revision: 0
     pullPolicy: Always
   resources:
     requests:
       cpu: 10m
-      memory: 100Mi
+      memory: 150Mi
     limits:
       cpu: 100m
       memory: 300Mi
   producers:
   - name: ataos
-    csc: ATAOS:0 --log-level 10
+    csc: ATAOS:0
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: atbuilding
-    csc: ATBuilding:0 --log-level 10
+    csc: ATBuilding:0
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: atcamera
-    csc: ATCamera:0 --log-level 10
+    csc: ATCamera:0
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: atdome
-    csc: ATDome:0 --log-level 10
+    csc: ATDome:0
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: atdometrajectory
-    csc: ATDomeTrajectory:0 --log-level 10
+    csc: ATDomeTrajectory:0
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: atheaderservice
-    csc: ATHeaderService:0 --log-level 10
+    csc: ATHeaderService:0
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
     resources:
       requests:
@@ -522,32 +416,32 @@ love-producer:
         cpu: 500m
         memory: 600Mi
   - name: athexapod
-    csc: ATHexapod:0 --log-level 10
+    csc: ATHexapod:0
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: atmcs
-    csc: ATMCS:0 --log-level 10
+    csc: ATMCS:0
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: atmonochromator
-    csc: ATMonochromator:0 --log-level 10
+    csc: ATMonochromator:0
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: atocps
-    csc: OCPS:1 --log-level 10
+    csc: OCPS:1
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: atoods
-    csc: ATOODS:0 --log-level 10
+    csc: ATOODS:0
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: atpneumatics
-    csc: ATPneumatics:0 --log-level 10
+    csc: ATPneumatics:0
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: atptg
-    csc: ATPtg:0 --log-level 10
+    csc: ATPtg:0
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: atscheduler
-    csc: Scheduler:2 --log-level 10
+    csc: Scheduler:2
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: atscriptqueue
-    csc: ScriptQueue:2 --log-level 10
-    WEBSOCKET_HOST: love-nginx-service/love/manager/queue/ws/subscription
+    csc: ScriptQueue:2
+    WEBSOCKET_HOST: love-nginx-service/love/manager/atqueue/ws/subscription
     resources:
       requests:
         cpu: 50m
@@ -556,130 +450,130 @@ love-producer:
         cpu: 500m
         memory: 500Mi
   - name: atspectrograph
-    csc: ATSpectrograph:0 --log-level 10
+    csc: ATSpectrograph:0
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: atwhitelight
-    csc: ATWhiteLight:0 --log-level 10
+    csc: ATWhiteLight:0
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: auxteless201
-    csc: ESS:201 --log-level 10
+    csc: ESS:201
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: auxteless202
-    csc: ESS:202 --log-level 10
-    WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
-  - name: auxteless203
-    csc: ESS:203 --log-level 10
+    csc: ESS:202
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: auxteless204
-    csc: ESS:204 --log-level 10
+    csc: ESS:204
+    WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
+  - name: auxteless308
+    csc: ESS:308
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: calibhilless301
-    csc: ESS:301 --log-level 10
+    csc: ESS:301
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: cameraess111
-    csc: ESS:111 --log-level 10
+    csc: ESS:111
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: camerahexapod
-    csc: MTHexapod:1 --log-level 10
+    csc: MTHexapod:1
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: cccamera
-    csc: CCCamera:0 --log-level 10
+    csc: CCCamera:0
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: ccheaderservice
-    csc: CCHeaderService:0 --log-level 10
+    csc: CCHeaderService:0
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: ccocps
-    csc: OCPS:2 --log-level 10
+    csc: OCPS:2
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: ccoods
-    csc: CCOODS:0 --log-level 10
+    csc: CCOODS:0
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: cbp
-    csc: CBP:0 --log-level 10
+    csc: CBP:0
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: dream
-    csc: DREAM:0 --log-level 10
+    csc: DREAM:0
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: cleanroomess109
-    csc: ESS:109 --log-level 10
+    csc: ESS:109
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: dimm1
-    csc: DIMM:1 --log-level 10
+    csc: DIMM:1
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: dimm2
-    csc: DIMM:2 --log-level 10
+    csc: DIMM:2
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: dsm1
-    csc: DSM:1 --log-level 10
+    csc: DSM:1
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: dsm2
-    csc: DSM:2 --log-level 10
+    csc: DSM:2
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: earthquakeess302
-    csc: ESS:302 --log-level 10
+    csc: ESS:302
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: eas
-    csc: EAS:0 --log-level 10
+    csc: EAS:0
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: electrometer101
-    csc: Electrometer:101 --log-level 10
+    csc: Electrometer:101
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: electrometer102
-    csc: Electrometer:102 --log-level 10
+    csc: Electrometer:102
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: electrometer103
-    csc: Electrometer:103 --log-level 10
+    csc: Electrometer:103
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: electrometer201
-    csc: Electrometer:201 --log-level 10
+    csc: Electrometer:201
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: epm-ess303
-    csc: ESS:303 --log-level 10
+    csc: ESS:303
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: epm-generator-ess305
-    csc: ESS:305 --log-level 10
+    csc: ESS:305
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: epm-generator-ess306
-    csc: ESS:306 --log-level 10
+    csc: ESS:306
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: fiberspectrograph101
-    csc: FiberSpectrograph:101 --log-level 10
+    csc: FiberSpectrograph:101
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: fiberspectrograph102
-    csc: FiberSpectrograph:102 --log-level 10
+    csc: FiberSpectrograph:102
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: fiberspectrograph3
-    csc: FiberSpectrograph:3 --log-level 10
+    csc: FiberSpectrograph:3
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: gcheaderservice1
-    csc: GCHeaderService:1 --log-level 10
+    csc: GCHeaderService:1
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: gcheaderservice101
-    csc: GCHeaderService:101 --log-level 10
+    csc: GCHeaderService:101
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: gcheaderservice102
-    csc: GCHeaderService:102 --log-level 10
+    csc: GCHeaderService:102
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: gcheaderservice103
-    csc: GCHeaderService:103 --log-level 10
+    csc: GCHeaderService:103
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: genericcamera1
-    csc: GenericCamera:1 --log-level 10
+    csc: GenericCamera:1
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: genericcamera101
-    csc: GenericCamera:101 --log-level 10
+    csc: GenericCamera:101
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: genericcamera102
-    csc: GenericCamera:102 --log-level 10
+    csc: GenericCamera:102
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: genericcamera103
-    csc: GenericCamera:103 --log-level 10
+    csc: GenericCamera:103
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: gis
-    csc: GIS:0 --log-level 10
+    csc: GIS:0
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: hvac
-    csc: HVAC:0 --log-level 10
+    csc: HVAC:0
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
     resources:
       requests:
@@ -689,106 +583,101 @@ love-producer:
         cpu: 1
         memory: 600Mi
   - name: lasertracker1
-    csc: LaserTracker:1 --log-level 10
+    csc: LaserTracker:1
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: ledprojector
-    csc: LEDProjector:0 --log-level 10
+    csc: LEDProjector:0
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: linearstage101
-    csc: LinearStage:101 --log-level 10
+    csc: LinearStage:101
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: linearstage102
-    csc: LinearStage:102 --log-level 10
+    csc: LinearStage:102
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: linearstage103
-    csc: LinearStage:103 --log-level 10
+    csc: LinearStage:103
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: linearstage104
-    csc: LinearStage:104 --log-level 10
+    csc: LinearStage:104
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: love
-    csc: LOVE:0 --log-level 10
+    csc: LOVE:0
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: m1m3ess113
-    csc: ESS:113 --log-level 10
+    csc: ESS:113
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: m1m3ess114
-    csc: ESS:114 --log-level 10
+    csc: ESS:114
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: m1m3ess115
-    csc: ESS:115 --log-level 10
+    csc: ESS:115
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: m1m3ess116
-    csc: ESS:116 --log-level 10
+    csc: ESS:116
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: m1m3ess117
-    csc: ESS:117 --log-level 10
+    csc: ESS:117
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: m1m3mtvms1
-    csc: MTVMS:1 --log-level 10
+    csc: MTVMS:1
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
-    resources:
-      requests:
-        cpu: 100m
-        memory: 300Mi
-      limits:
-        cpu: 1
-        memory: 900Mi
   - name: m2ess106
-    csc: ESS:106 --log-level 10
+    csc: ESS:106
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: m2ess112
-    csc: ESS:112 --log-level 10
+    csc: ESS:112
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: m2mtvms2
-    csc: MTVMS:2 --log-level 10
+    csc: MTVMS:2
+    WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
+  - name: mtheaderservice
+    csc: MTHeaderService:0
+    WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
+  - name: m2hexapod
+    csc: MTHexapod:2
+    WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
+  - name: mtaircompressor1
+    csc: MTAirCompressor:1
+    WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
+  - name: mtaircompressor2
+    csc: MTAirCompressor:2
+    WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
+  - name: mtaos
+    csc: MTAOS:0
+    WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
+  - name: mtcamera
+    csc: MTCamera:0
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
     resources:
       requests:
         cpu: 100m
         memory: 300Mi
-      limits:
-        cpu: 1
-        memory: 900Mi
-  - name: mtheaderservice
-    csc: MTHeaderService:0 --log-level 10
-    WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
-  - name: m2hexapod
-    csc: MTHexapod:2 --log-level 10
-    WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
-  - name: mtaircompressor1
-    csc: MTAirCompressor:1 --log-level 10
-    WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
-  - name: mtaircompressor2
-    csc: MTAirCompressor:2 --log-level 10
-    WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
-  - name: mtaos
-    csc: MTAOS:0 --log-level 10
-    WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
-  - name: mtcamera
-    csc: MTCamera:0 --log-level 10
-    WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
-    resources:
-      requests:
-        cpu: 100m
-        memory: 200Mi
       limits:
         cpu: 1
         memory: 600Mi
   - name: mtdome
-    csc: MTDome:0 --log-level 10
+    csc: MTDome:0
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: mtdomeess107
-    csc: ESS:107 --log-level 10
+    csc: ESS:107
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: mtdomeess108
-    csc: ESS:108 --log-level 10
+    csc: ESS:108
+    WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
+  - name: mtdomeess118
+    csc: ESS:118
+    WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
+  - name: mtdomeess119
+    csc: ESS:119
+    WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
+  - name: mtdomeess120
+    csc: ESS:120
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: mtdometrajectory
-    csc: MTDomeTrajectory:0 --log-level 10
+    csc: MTDomeTrajectory:0
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: mtm1m3-telemetry-01
-    csc: MTM1M3:0 --log-level 10 --periodic-data tel_forceActuatorData tel_hardpointActuatorData tel_imsData tel_hardpointMonitorData tel_appliedAzimuthForces tel_appliedAccelerationForces tel_appliedBalanceForces tel_appliedCylinderForces tel_appliedElevationForces tel_appliedThermalForces tel_appliedVelocityForces
+    csc: MTM1M3:0 --periodic-data tel_forceActuatorData tel_hardpointActuatorData tel_imsData tel_hardpointMonitorData tel_appliedAzimuthForces tel_appliedAccelerationForces tel_appliedBalanceForces tel_appliedCylinderForces tel_appliedElevationForces tel_appliedThermalForces tel_appliedVelocityForces
     WEBSOCKET_HOST: love-nginx-service/love/manager/m1m3/ws/subscription
     resources:
       requests:
@@ -798,7 +687,7 @@ love-producer:
         cpu: 1
         memory: 600Mi
   - name: mtm1m3-telemetry-02
-    csc: MTM1M3:0 --log-level 10 --periodic-data tel_appliedForces
+    csc: MTM1M3:0 --periodic-data tel_appliedForces
     WEBSOCKET_HOST: love-nginx-service/love/manager/m1m3/ws/subscription
     resources:
       requests:
@@ -808,7 +697,7 @@ love-producer:
         cpu: 100m
         memory: 600Mi
   - name: mtm1m3-event-01
-    csc: MTM1M3:0 --log-level 10 --asynchronous-data evt_forceSetpointWarning evt_hardpointActuatorState evt_appliedStaticForces evt_forceActuatorInfo evt_interlockWarning evt_hardpointActuatorSettings evt_raisingLoweringInfo evt_preclippedCylinderForces evt_preclippedForces evt_preclippedActiveOpticForces evt_forceActuatorForceWarning evt_enabledForceActuators evt_forceActuatorBumpTestStatus evt_preclippedBalanceForces evt_preclippedStaticForces evt_preclippedThermalForces evt_hardpointMonitorInfo evt_preclippedVelocityForces evt_forceActuatorWarning evt_hardpointActuatorWarning evt_forceControllerState evt_preclippedAzimuthForces evt_preclippedElevationForces evt_hardpointActuatorInfo evt_forceActuatorState evt_forceActuatorFollowingErrorCounter evt_appliedActiveOpticForces evt_appliedOffsetForces evt_preclippedAccelerationForces evt_preclippedOffsetForces
+    csc: MTM1M3:0 --asynchronous-data evt_forceSetpointWarning evt_hardpointActuatorState evt_appliedStaticForces evt_forceActuatorInfo evt_interlockWarning evt_hardpointActuatorSettings evt_raisingLoweringInfo evt_preclippedCylinderForces evt_preclippedForces evt_preclippedActiveOpticForces evt_forceActuatorForceWarning evt_enabledForceActuators evt_forceActuatorBumpTestStatus evt_preclippedBalanceForces evt_preclippedStaticForces evt_preclippedThermalForces evt_hardpointMonitorInfo evt_preclippedVelocityForces evt_forceActuatorWarning evt_hardpointActuatorWarning evt_forceControllerState evt_preclippedAzimuthForces evt_preclippedElevationForces evt_hardpointActuatorInfo evt_forceActuatorState evt_forceActuatorFollowingErrorCounter evt_appliedActiveOpticForces evt_appliedOffsetForces evt_preclippedAccelerationForces evt_preclippedOffsetForces
     WEBSOCKET_HOST: love-nginx-service/love/manager/m1m3/ws/subscription
     resources:
       requests:
@@ -818,7 +707,7 @@ love-producer:
         cpu: 100m
         memory: 600Mi
   - name: mtm1m3
-    csc: MTM1M3:0 --log-level 10 --asynchronous-data evt_heartbeat evt_summaryState evt_logMessage evt_errorCode evt_logLevel evt_simulationMode evt_configurationApplied evt_configurationsAvailable evt_softwareVersions evt_detailedState
+    csc: MTM1M3:0 --asynchronous-data evt_heartbeat evt_summaryState evt_logMessage evt_errorCode evt_logLevel evt_simulationMode evt_configurationApplied evt_configurationsAvailable evt_softwareVersions evt_detailedState
     WEBSOCKET_HOST: love-nginx-service/love/manager/m1m3/ws/subscription
     resources:
       requests:
@@ -828,10 +717,10 @@ love-producer:
         cpu: 500m
         memory: 600Mi
   - name: mtm1m3ts
-    csc: MTM1M3TS:0 --log-level 10
+    csc: MTM1M3TS:0
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: mtm2
-    csc: MTM2:0 --log-level 10
+    csc: MTM2:0
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
     resources:
       requests:
@@ -841,7 +730,7 @@ love-producer:
         cpu: 1
         memory: 600Mi
   - name: mtmount
-    csc: MTMount:0 --log-level 10
+    csc: MTMount:0
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
     resources:
       requests:
@@ -851,26 +740,26 @@ love-producer:
         cpu: 1
         memory: 600Mi
   - name: mtocps
-    csc: OCPS:3 --log-level 10
+    csc: OCPS:3
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: mtoods
-    csc: MTOODS:0 --log-level 10
+    csc: MTOODS:0
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: mtptg
-    csc: MTPtg:0 --log-level 10
+    csc: MTPtg:0
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: mtreflector
-    csc: MTReflector:0 --log-level 10
+    csc: MTReflector:0
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: mtrotator
-    csc: MTRotator:0 --log-level 10
+    csc: MTRotator:0
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: mtscheduler
-    csc: Scheduler:1 --log-level 10
+    csc: Scheduler:1
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: mtscriptqueue
-    csc: ScriptQueue:1 --log-level 10
-    WEBSOCKET_HOST: love-nginx-service/love/manager/queue/ws/subscription
+    csc: ScriptQueue:1
+    WEBSOCKET_HOST: love-nginx-service/love/manager/mtqueue/ws/subscription
     resources:
       requests:
         cpu: 50m
@@ -879,11 +768,11 @@ love-producer:
         cpu: 500m
         memory: 500Mi
   - name: ocsscheduler
-    csc: Scheduler:3 --log-level 10
+    csc: Scheduler:3
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: ocsscriptqueue
-    csc: ScriptQueue:3 --log-level 10
-    WEBSOCKET_HOST: love-nginx-service/love/manager/queue/ws/subscription
+    csc: ScriptQueue:3
+    WEBSOCKET_HOST: love-nginx-service/love/manager/ocsqueue/ws/subscription
     resources:
       requests:
         cpu: 50m
@@ -892,35 +781,59 @@ love-producer:
         cpu: 500m
         memory: 500Mi
   - name: pmd1
-    csc: PMD:1 --log-level 10
+    csc: PMD:1
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: raocps
-    csc: OCPS:101 --log-level 10
+    csc: OCPS:101
+    WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
+  - name: test42
+    csc: Test:42
+    WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
+  - name: partsensess401
+    csc: ESS:401
+    WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
+  - name: partsensess402
+    csc: ESS:402
+    WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
+  - name: partsensess403
+    csc: ESS:403
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: ringssess304
-    csc: ESS:304 --log-level 10
+    csc: ESS:304
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
-  - name: tmaess001
-    csc: ESS:1 --log-level 10
+  - name: tea-ess123
+    csc: ESS:123
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
-  - name: tma-ess002
-    csc: ESS:2 --log-level 10
+  - name: tea-ess124
+    csc: ESS:124
+    WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
+  - name: tea-ess125
+    csc: ESS:125
+    WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
+  - name: tea-ess126
+    csc: ESS:126
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: tmaess104
-    csc: ESS:104 --log-level 10
+    csc: ESS:104
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: tmaess105
-    csc: ESS:105 --log-level 10
+    csc: ESS:105
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: tmaess110
-    csc: ESS:110 --log-level 10
+    csc: ESS:110
+    WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
+  - name: tmaess121
+    csc: ESS:121
+    WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
+  - name: tmaess122
+    csc: ESS:122
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: tunablelaser
-    csc: TunableLaser:0 --log-level 10
+    csc: TunableLaser:0
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: watcher
-    csc: Watcher:0 --log-level 10
+    csc: Watcher:0
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription
   - name: weatherforecast
-    csc: WeatherForecast:0 --log-level 10
+    csc: WeatherForecast:0
     WEBSOCKET_HOST: love-nginx-service/love/manager/producers/ws/subscription

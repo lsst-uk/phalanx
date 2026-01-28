@@ -13,9 +13,10 @@ Argo CD project: ``telescope``
    auxtel/index
    calsys/index
    control-system-test/index
+   csc-versions/index
    envsys/index
    love/index
-   obsenv-management/index
    obssys/index
+   rubin-too-producer/index
    simonyitel/index
    uws/index

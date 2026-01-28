@@ -19,6 +19,10 @@ config:
       - github:
           organization: "lsst-sqre"
           team: "square"
+    "admin:userinfo":
+      - github:
+          organization: "lsst-sqre"
+          team: "square"
     "exec:admin":
       - github:
           organization: "lsst-sqre"
@@ -65,7 +69,24 @@ config:
       - github:
           organization: "rubin-summit"
           team: "rsp-access"
+    "exec:portal-admin":
+      - github:
+          organization: "lsst-sqre"
+          team: "square"
     "read:image":
+      - github:
+          organization: "lsst-sqre"
+          team: "square"
+      - github:
+          organization: "lsst-sqre"
+          team: "friends"
+      - github:
+          organization: "lsst-ts"
+          team: "tts-access"
+      - github:
+          organization: "rubin-summit"
+          team: "rsp-access"
+    "read:sasquatch":
       - github:
           organization: "lsst-sqre"
           team: "square"

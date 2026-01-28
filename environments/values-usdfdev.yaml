@@ -9,20 +9,20 @@ vaultPathPrefix: "secret/rubin/usdf-rsp-dev"
 applications:
   # This environment uses an ingress managed in a separate Kubernetes cluster,
   # despite that configuration not being officially supported by Phalanx.
-  cert-manager: false
   ingress-nginx: false
 
   butler: true
-  consdb: true
   consdbtap: true
+  consdb: true
   datalinker: true
-  exposurelog: true
   exposure-checker: true
-  grafana: true
-  rubin-rag: true
+  exposurelog: true
+  fov-quicklook: true
+  grafana: false
   jira-data-proxy: true
   livetap: true
   mobu: true
+  mpsky: true
   narrativelog: true
   nightlydigest: true
   nightreport: true
@@ -33,16 +33,19 @@ applications:
   portal: true
   postgres: true
   ppdb-replication: true
+  qserv-kafka: true
+  rubin-rag: true
   rubintv: true
   s3proxy: true
   sasquatch: true
   schedview-snapshot: true
   semaphore: true
   sia: true
-  ssotap: true
   squareone: true
-  strimzi: true
+  ssotap: true
   strimzi-access-operator: true
+  strimzi-registry-operator: true
+  strimzi: true
   tap: true
   tasso: true
   times-square: true
