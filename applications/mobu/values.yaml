@@ -46,7 +46,7 @@ config:
   # -- One of 'production' or 'development'. 'production' configures structured
   # JSON logging, and 'development' configures unstructured human readable
   # logging.
-  logProfile: production
+  # logProfile: production
 
   # -- Prefix for mobu's API routes.
   pathPrefix: "/mobu"
