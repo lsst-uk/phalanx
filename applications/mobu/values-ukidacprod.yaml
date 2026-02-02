@@ -20,3 +20,4 @@ config:
         restart: true
   sentryTracesSampleConfig: null
   # logProfile: null
+  availableServices: []
