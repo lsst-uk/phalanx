@@ -17,7 +17,7 @@ IVOA TAP service
 | cloudsql.enabled | bool | `false` | Enable the Cloud SQL Auth Proxy sidecar, used with Cloud SQL databases on Google Cloud |
 | cloudsql.image.pullPolicy | string | `"IfNotPresent"` | Pull policy for Cloud SQL Auth Proxy images |
 | cloudsql.image.repository | string | `"gcr.io/cloudsql-docker/gce-proxy"` | Cloud SQL Auth Proxy image to use |
-| cloudsql.image.tag | string | `"1.37.11"` | Cloud SQL Auth Proxy tag to use |
+| cloudsql.image.tag | string | `"1.37.12"` | Cloud SQL Auth Proxy tag to use |
 | cloudsql.instanceConnectionName | string | `""` | Instance connection name for a Cloud SQL PostgreSQL instance |
 | cloudsql.resources | object | See `values.yaml` | Resource limits and requests for the Cloud SQL Proxy container |
 | cloudsql.serviceAccount | string | None, must be set | The Google service account that has an IAM binding to the `cadc-tap` Kubernetes service accounts and has the `cloudsql.client` role, access |
@@ -85,7 +85,7 @@ IVOA TAP service
 | tapSchema.external.port | int | `5432` | Port of external PostgreSQL server |
 | tapSchema.image.pullPolicy | string | `"IfNotPresent"` | Pull policy for the TAP schema image |
 | tapSchema.image.repository | string | `"lsstsqre/tap-schema-mock"` | TAP schema image to ue. This must be overridden by each environment with the TAP schema for that environment. |
-| tapSchema.image.tag | string | `"DP1-v1.2.0"` | Tag of TAP schema image |
+| tapSchema.image.tag | string | `"w.2026.01"` | Tag of TAP schema image |
 | tapSchema.nodeSelector | object | `{}` | Node selection rules for the TAP schema database pod |
 | tapSchema.password | string | `"TAP_SCHEMA"` | Database password (only used for containerized) |
 | tapSchema.passwordKey | string | `"tap-schema-password"` | Secret key containing the database password |
