@@ -21,5 +21,4 @@ config:
   sentryTracesSampleConfig: null
   # logProfile: null
   availableServices: []
-global:
-  baseUrl: "https://rsp.lsst.ac.uk"
+baseUrl: "https://rsp.lsst.ac.uk"
