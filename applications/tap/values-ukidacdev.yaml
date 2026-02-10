@@ -1,7 +1,7 @@
 cadc-tap:
   tapSchema:
     image:
-      repository: "lsstuk/tap-schema-ukidacdev"
+      repository: "lsstuk/tap-schema-ukidacdev-qsdp1"
       tag: "29.2.1"
     type: "containerized"
     database: "TAP_SCHEMA"
