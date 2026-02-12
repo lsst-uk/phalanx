@@ -24,3 +24,6 @@ cadc-tap:
       host: "192.41.122.85:30040"
       image:
         tag: "2.15.1"
+
+    kafka:
+      enabled: true
