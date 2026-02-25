@@ -11,3 +11,4 @@ applications:
   squareone: true
   tap: true
   ssotap: true
+  qserv-kafka: true
