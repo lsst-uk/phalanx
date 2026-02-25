@@ -5,6 +5,3 @@ config:
     servers:
       tap:
         enabled: true
-      ssotap:
-        enabled: true
-
