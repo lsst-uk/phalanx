@@ -1,11 +1,10 @@
 config:
   availableDatasets:
     - "dp1"
-  metrics:
-    enabled: true
   tap:
     servers:
       tap:
         enabled: true
       ssotap:
         enabled: true
+
