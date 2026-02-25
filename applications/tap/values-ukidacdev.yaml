@@ -21,7 +21,7 @@ cadc-tap:
     jvmMaxHeapSize: "31G"
 
     qserv:
-      host: "192.41.122.85:4040"
+      host: "192.41.122.85:30431"
       image:
         tag: "2.15.1"
 
