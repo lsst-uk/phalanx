@@ -1,8 +1,4 @@
 config:
   logLevel: "DEBUG"
-  metrics:
-    enabled: true
-  slack:
-    enabled: true
 resultWorker:
   allowRootDebug: true
