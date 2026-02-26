@@ -10,6 +10,5 @@ applications:
   postgres: true
   squareone: true
   tap: true
-  ssotap: true
   qserv-kafka: true
   strimzi-access-operator: true
