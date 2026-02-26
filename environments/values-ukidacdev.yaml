@@ -12,3 +12,6 @@ applications:
   tap: true
   ssotap: true
   qserv-kafka: true
+  strimzi: true
+  strimzi-access-operator: true
+  strimzi-registry-operator: true
