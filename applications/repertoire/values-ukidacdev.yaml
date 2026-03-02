@@ -5,3 +5,4 @@ config:
     servers:
       tap:
         enabled: true
+  slackAlerts: true
