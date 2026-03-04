@@ -1,8 +1,3 @@
 config:
   availableDatasets:
     - "dp1"
-  tap:
-    servers:
-      tap:
-        enabled: true
-  slackAlerts: true
