@@ -268,6 +268,57 @@ hvac:
       cpu: 2
       memory: 30000Mi
 
+louver-h1-ess441:
+  enabled: true
+  classifier: ess441
+  image:
+    revision: 1
+    repository: ts-dockerhub.lsst.org/ess
+    pullPolicy: Always
+  env:
+    RUN_ARG: 441
+  resources:
+    requests:
+      cpu: 19m
+      memory: 180Mi
+    limits:
+      cpu: 190m
+      memory: 540Mi
+
+louver-h1h2-ess442:
+  enabled: true
+  classifier: ess442
+  image:
+    revision: 1
+    repository: ts-dockerhub.lsst.org/ess
+    pullPolicy: Always
+  env:
+    RUN_ARG: 442
+  resources:
+    requests:
+      cpu: 19m
+      memory: 180Mi
+    limits:
+      cpu: 190m
+      memory: 540Mi
+
+louver-h2-ess443:
+  enabled: true
+  classifier: ess443
+  image:
+    revision: 1
+    repository: ts-dockerhub.lsst.org/ess
+    pullPolicy: Always
+  env:
+    RUN_ARG: 443
+  resources:
+    requests:
+      cpu: 19m
+      memory: 180Mi
+    limits:
+      cpu: 190m
+      memory: 540Mi
+
 m1m3-ess113:
   enabled: true
   classifier: ess113
@@ -387,15 +438,15 @@ m2-ess112:
       cpu: 190m
       memory: 510Mi
 
-mtdome-ess107:
+mtdome-ess404:
   enabled: true
-  classifier: ess107
+  classifier: ess404
   image:
-    revision: 0
+    revision: 1
     repository: ts-dockerhub.lsst.org/ess
     pullPolicy: Always
   env:
-    RUN_ARG: 107
+    RUN_ARG: 404
   resources:
     requests:
       cpu: 1
@@ -404,15 +455,15 @@ mtdome-ess107:
       cpu: 2
       memory: 900Mi
 
-mtdome-ess108:
+mtdome-ess405:
   enabled: true
-  classifier: ess108
+  classifier: ess405
   image:
-    revision: 0
+    revision: 1
     repository: ts-dockerhub.lsst.org/ess
     pullPolicy: Always
   env:
-    RUN_ARG: 108
+    RUN_ARG: 405
   resources:
     requests:
       cpu: 19m
@@ -421,15 +472,15 @@ mtdome-ess108:
       cpu: 190m
       memory: 510Mi
 
-mtdome-ess118:
+partsens-ess127:
   enabled: true
-  classifier: ess118
+  classifier: ess127
   image:
-    revision: 0
+    revision: 1
     repository: ts-dockerhub.lsst.org/ess
     pullPolicy: Always
   env:
-    RUN_ARG: 118
+    RUN_ARG: 127
   resources:
     requests:
       cpu: 19m
@@ -438,15 +489,15 @@ mtdome-ess118:
       cpu: 190m
       memory: 540Mi
 
-mtdome-ess119:
+partsens-ess128:
   enabled: true
-  classifier: ess119
+  classifier: ess128
   image:
-    revision: 0
+    revision: 1
     repository: ts-dockerhub.lsst.org/ess
     pullPolicy: Always
   env:
-    RUN_ARG: 119
+    RUN_ARG: 128
   resources:
     requests:
       cpu: 19m
@@ -455,66 +506,15 @@ mtdome-ess119:
       cpu: 190m
       memory: 540Mi
 
-mtdome-ess120:
+partsens-ess129:
   enabled: true
-  classifier: ess120
+  classifier: ess129
   image:
-    revision: 0
+    revision: 1
     repository: ts-dockerhub.lsst.org/ess
     pullPolicy: Always
   env:
-    RUN_ARG: 120
-  resources:
-    requests:
-      cpu: 19m
-      memory: 180Mi
-    limits:
-      cpu: 190m
-      memory: 540Mi
-
-partsens-ess401:
-  enabled: true
-  classifier: ess401
-  image:
-    revision: 0
-    repository: ts-dockerhub.lsst.org/ess
-    pullPolicy: Always
-  env:
-    RUN_ARG: 401
-  resources:
-    requests:
-      cpu: 19m
-      memory: 180Mi
-    limits:
-      cpu: 190m
-      memory: 540Mi
-
-partsens-ess402:
-  enabled: true
-  classifier: ess402
-  image:
-    revision: 0
-    repository: ts-dockerhub.lsst.org/ess
-    pullPolicy: Always
-  env:
-    RUN_ARG: 402
-  resources:
-    requests:
-      cpu: 19m
-      memory: 180Mi
-    limits:
-      cpu: 190m
-      memory: 540Mi
-
-partsens-ess403:
-  enabled: true
-  classifier: ess403
-  image:
-    revision: 0
-    repository: ts-dockerhub.lsst.org/ess
-    pullPolicy: Always
-  env:
-    RUN_ARG: 403
+    RUN_ARG: 129
   resources:
     requests:
       cpu: 19m
@@ -548,7 +548,7 @@ tea-ess123:
   enabled: true
   classifier: ess123
   image:
-    revision: 0
+    revision: 1
     repository: ts-dockerhub.lsst.org/ess
     pullPolicy: Always
   env:
@@ -565,7 +565,7 @@ tea-ess124:
   enabled: true
   classifier: ess124
   image:
-    revision: 0
+    revision: 1
     repository: ts-dockerhub.lsst.org/ess
     pullPolicy: Always
   env:

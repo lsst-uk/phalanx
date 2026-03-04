@@ -91,7 +91,7 @@ athexapod:
 atmcs:
   enabled: true
   image:
-    revision: 0
+    revision: 1
     repository: ts-dockerhub.lsst.org/atmcs
     pullPolicy: Always
   resources:
@@ -167,11 +167,13 @@ atoods:
                   - LATISS/raw/all
               collection_cleaner:
                   collections_to_clean:
-                      - collection: LATISS/raw/all
+                      - collections:
+                          - LATISS/raw/all
                         files_older_than:
                             <<: *interval
                             days: 30
-                      - collection: LATISS/runs/quickLook
+                      - collections:
+                          - LATISS/runs/quickLook
                         files_older_than:
                             <<: *interval
                             days: 7
@@ -182,7 +184,7 @@ atoods:
 atpneumatics:
   enabled: true
   image:
-    revision: 0
+    revision: 1
     repository: ts-dockerhub.lsst.org/at_pneumatics
     pullPolicy: Always
   resources:

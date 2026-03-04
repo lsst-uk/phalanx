@@ -187,7 +187,7 @@ mtqueue:
 mtscheduler:
   classifier: scheduler1
   image:
-    revision: 0
+    revision: 1
     repository: ts-dockerhub.lsst.org/scheduler
     pullPolicy: Always
   env:
@@ -321,7 +321,7 @@ ocsscheduler:
 
 watcher:
   image:
-    revision: 0
+    revision: 1
     repository: ts-dockerhub.lsst.org/watcher
     pullPolicy: Always
   envSecrets:
