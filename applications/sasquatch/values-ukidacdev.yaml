@@ -23,6 +23,11 @@ strimzi-kafka:
   kafkaExporter:
     enabled: false
 
+schema-registry:
+  enabled: true
+  ingress:
+    enabled: true
+
 influxdb:
   enabled: false
 
