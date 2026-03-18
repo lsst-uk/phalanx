@@ -11,4 +11,6 @@ applications:
   squareone: true
   tap: true
   qserv-kafka: true
+  strimzi: true
   strimzi-access-operator: true
+  sasquatch: true

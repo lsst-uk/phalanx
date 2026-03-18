@@ -1,0 +1,48 @@
+strimzi-kafka:
+  kafka:
+    listeners:
+      tls:
+        enabled: true
+      plain:
+        enabled: false
+      external:
+        enabled: false
+  controller:
+    enabled: true
+  broker:
+    enabled: true
+  users:
+    telegraf:
+      enabled: false
+    replicator:
+      enabled: false
+  connect:
+    enabled: false
+  cruiseControl:
+    enabled: false
+  kafkaExporter:
+    enabled: false
+
+influxdb:
+  enabled: false
+
+chronograf:
+  enabled: false
+
+kapacitor:
+  enabled: false
+
+kafdrop:
+  enabled: false
+
+app-metrics:
+  enabled: false
+
+telegraf:
+  enabled: false
+
+telegraf-standby:
+  enabled: false
+
+tap:
+  enabled: true
