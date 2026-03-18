@@ -198,7 +198,7 @@ gcheaderservice103:
 lasertracker1:
   enabled: true
   image:
-    revision: 0
+    revision: 1
     repository: ts-dockerhub.lsst.org/lasertracker
     pullPolicy: Always
   env:
@@ -521,7 +521,7 @@ mtmount-sim:
 mtoods:
   enabled: true
   image:
-    revision: 0
+    revision: 1
     repository: ts-dockerhub.lsst.org/mtoods
     pullPolicy: Always
   env:
@@ -558,7 +558,13 @@ mtoods:
                 - lsst.s3.raw.lsstcam
               group_id: MTOODS-S3
               max_messages: 250
+              max_wait_time: 0.5
+              group_wait_time: 0.1
+              time_to_wait_without_data: 0.5
           butler:
+              ingest_scaling:
+                  file_threshold: 150
+                  num_workers: 2
               guider_max_age_seconds: 90
               instrument: lsst.obs.lsst.LsstCam
               repo_directory : s3://butler@rubinobs-butler-lsstcam
@@ -630,7 +636,7 @@ mtrotator-sim:
 wfoods:
   enabled: true
   image:
-    revision: 0
+    revision: 1
     repository: ts-dockerhub.lsst.org/wfoods
     pullPolicy: Always
   env:
@@ -666,9 +672,14 @@ wfoods:
               topics:
                 - lsst.s3.wf.lsstcam
               group_id: MTOODS-S3
-              max_messages: 16
-              max_wait_time: 0.25
+              max_messages: 8
+              max_wait_time: 0.5
+              group_wait_time: 0.1
+              time_to_wait_without_data: 0.5
           butler:
+              ingest_scaling:
+                    file_threshold: 150
+                    num_workers: 2
               guider_max_age_seconds: 90
               instrument: lsst.obs.lsst.LsstCam
               repo_directory : s3://butler@rubinobs-butler-lsstcam

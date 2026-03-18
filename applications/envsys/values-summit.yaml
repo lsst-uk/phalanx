@@ -190,7 +190,7 @@ earthquake-ess302:
 eas:
   enabled: true
   image:
-    revision: 0
+    revision: 1
     repository: ts-dockerhub.lsst.org/eas
     pullPolicy: Always
   resources:
@@ -255,7 +255,7 @@ epm-generator-ess306:
 hvac:
   enabled: true
   image:
-    revision: 0
+    revision: 2
     repository: ts-dockerhub.lsst.org/hvac
     pullPolicy: Always
   env:
@@ -582,7 +582,7 @@ tea-ess125:
   enabled: true
   classifier: ess125
   image:
-    revision: 0
+    revision: 1
     repository: ts-dockerhub.lsst.org/ess
     pullPolicy: Always
   env:
@@ -599,7 +599,7 @@ tea-ess126:
   enabled: true
   classifier: ess126
   image:
-    revision: 0
+    revision: 1
     repository: ts-dockerhub.lsst.org/ess
     pullPolicy: Always
   env:
