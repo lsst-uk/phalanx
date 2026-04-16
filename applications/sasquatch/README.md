@@ -17,6 +17,9 @@ Rubin Observatory's telemetry service
 |-----|------|---------|-------------|
 | global.host | string | Set by Argo CD | Host name for ingress |
 | global.vaultSecretsPath | string | Set by Argo CD | Base path for Vault secrets |
+| alert-brokers.enabled | bool | `false` | Whether to enable the alert-brokers subchart |
+| alert-database.enabled | bool | `false` | Whether to enable the alert-database subchart |
+| alert-stream-schema-sync.enabled | bool | `false` | Whether to enable the alert-stream-schema-sync subchart |
 | app-metrics.apps | list | `[]` | The apps to create configuration for. |
 | app-metrics.enabled | bool | `false` | Enable the app-metrics subchart with topic, user, and telegraf configurations |
 | backpack.enabled | bool | `false` | Whether to enable the backpack subchart |
@@ -62,7 +65,7 @@ Rubin Observatory's telemetry service
 | influxdb.config.logging.format | string | `"json"` | Format to use for log messages |
 | influxdb.config.logging.level | string | `"debug"` | Logging level |
 | influxdb.enabled | bool | `true` | Whether InfluxDB is enabled |
-| influxdb.image.tag | string | `"1.11.8"` | InfluxDB image tag |
+| influxdb.image.tag | string | `"1.12.3"` | InfluxDB image tag |
 | influxdb.ingress.annotations | object | See `values.yaml` | Annotations to add to the ingress |
 | influxdb.ingress.className | string | `"nginx"` | Ingress class to use |
 | influxdb.ingress.enabled | bool | `false` | Whether to enable the InfluxDB ingress |
@@ -90,7 +93,7 @@ Rubin Observatory's telemetry service
 | kapacitor.existingSecret | string | `"sasquatch"` | Use `influxdb-user` and `influxdb-password` keys from this secret |
 | kapacitor.image.pullPolicy | string | `"IfNotPresent"` | Pull policy for Kapacitor |
 | kapacitor.image.repository | string | `"docker.io/library/kapacitor"` | Docker image to use for Kapacitor |
-| kapacitor.image.tag | string | `"1.8.2"` | Tag to use for Kapacitor |
+| kapacitor.image.tag | string | `"1.8.3"` | Tag to use for Kapacitor |
 | kapacitor.influxURL | string | `"http://sasquatch-influxdb.sasquatch:8086"` | InfluxDB connection URL |
 | kapacitor.persistence.enabled | bool | `true` | Whether to enable Kapacitor data persistence |
 | kapacitor.persistence.size | string | `"100Gi"` | Size of storage to request if enabled |
@@ -99,6 +102,7 @@ Rubin Observatory's telemetry service
 | kapacitor.strategy.type | string | `"Recreate"` | Deployment strategy, use recreate with persistence enabled |
 | obsenv.enabled | bool | `false` | Whether to enable the obsenv subchart |
 | obsloctap.enabled | bool | `false` | Whether to enable the obsloctap subchart |
+| ppdbtap.enabled | bool | `false` | Whether to enable the ppdbtap subchart |
 | prompt-processing.enabled | bool | `false` | Whether to enable the prompt-processing subchart |
 | redis.affinity | object | `{}` | Affinity rules for the ephemeral Redis pod |
 | redis.enabled | bool | `false` | Whether to enable the ephemeral Redis instance for Trickster |
@@ -137,6 +141,48 @@ Rubin Observatory's telemetry service
 | trickster.replicaCount | int | `3` | Number of Trickster replicas |
 | trickster.resources.limits | object | `{"cpu":"200m","memory":"512Mi"}` | Kubernetes resource limits for Trickster |
 | trickster.resources.requests | object | `{"cpu":"100m","memory":"256Mi"}` | Kubernetes resource requests and limits for Trickster |
+| alert-brokers.cluster.name | string | `"sasquatch"` | Name of the Strimzi cluster. Synchronize this with the cluster name in the parent Prompt Kafka chart. |
+| alert-database.fullnameOverride | string | `""` | Override the full name for resources (includes the release name) |
+| alert-database.ingester.image.pullPolicy | string | `"IfNotPresent"` |  |
+| alert-database.ingester.image.repository | string | `"lsstdm/alert_database_ingester"` |  |
+| alert-database.ingester.image.tag | string | `""` |  |
+| alert-database.ingester.kafka.cluster | string | `"sasquatch"` | Name of a Strimzi Kafka cluster to connect to. |
+| alert-database.ingester.kafka.port | int | `9093` | Port to connect to on the Strimzi Kafka cluster. It should be an internal listener that expects TLS auth. |
+| alert-database.ingester.kafka.topic | list | `["alerts-simulated"]` | Name of the topic which will holds alert data. |
+| alert-database.ingester.kafka.user | string | `"alert-database-ingester"` | The username of the Kafka user identity used to connect to the broker. |
+| alert-database.ingester.logLevel | string | `"verbose"` | set the log level of the application. can be 'info', or 'debug', or anything else to suppress logging. |
+| alert-database.ingester.s3.alertBucket | string | `"rubin-alert-archive"` |  |
+| alert-database.ingester.s3.endpointURL | string | `"https://sdfdatas3.slac.stanford.edu/"` |  |
+| alert-database.ingester.s3.schemaBucket | string | `"rubin-alert-archive"` |  |
+| alert-database.ingester.s3.serviceAccountName | string | `""` | Name of a service account which has credentials granting access to the alert database's backing storage buckets. |
+| alert-database.ingester.s3.usdf | bool | `true` |  |
+| alert-database.ingester.schemaRegistryUrl | string | `"http://sasquatch-schema-registry.sasquatch:8081"` | URL of a schema registry instance |
+| alert-database.ingester.serviceAccountName | string | `"alert-database-ingester"` | The name of the Kubernetes ServiceAccount (*not* the Google Cloud IAM service account!) which is used by the alert database ingester. |
+| alert-database.ingress.annotations."nginx.ingress.kubernetes.io/rewrite-target" | string | `"/$2"` |  |
+| alert-database.ingress.enabled | bool | `false` | Whether to create an ingress |
+| alert-database.ingress.host | string | None, must be set if the ingress is enabled | Hostname for the ingress |
+| alert-database.ingress.path | string | `"/v1"` | Subpath to host the alert database application under the ingress |
+| alert-database.ingress.tls | list | `[]` | Configures TLS for the ingress if needed. If multiple ingresses share the same hostname, only one of them needs a TLS configuration. |
+| alert-database.nameOverride | string | `""` | Override the base name for resources |
+| alert-database.server.image.imagePullPolicy | string | `"Always"` |  |
+| alert-database.server.image.repository | string | `"lsstdm/alert_database_server"` |  |
+| alert-database.server.image.tag | string | `"v3.1.0"` |  |
+| alert-database.server.logLevel | string | `"verbose"` | set the log level of the application. can be 'info', or 'debug', or anything else to suppress logging. |
+| alert-database.server.s3.alertBucket | string | `"rubin-alert-archive"` |  |
+| alert-database.server.s3.endpointURL | string | `"https://sdfdatas3.slac.stanford.edu/ "` | Project ID which has the above GCP IAM service account |
+| alert-database.server.s3.schemaBucket | string | `"rubin-alert-archive"` |  |
+| alert-database.server.s3.serviceAccountName | string | `""` | Name of a service account which has credentials granting access to the alert database's backing storage buckets. |
+| alert-database.server.service.port | int | `3000` |  |
+| alert-database.server.service.type | string | `"ClusterIP"` |  |
+| alert-database.server.serviceAccountName | string | `"alertdb-reader"` | The name of the Kubernetes ServiceAccount (*not* the Google Cloud IAM service account!) which is used by the alert database server. |
+| alert-database.storage.s3.alertBucket | string | `"rubin-alert-archive"` | Name of a s3 storage bucket with alert data |
+| alert-database.storage.s3.endpointURL | string | `"https://sdfdatas3.slac.stanford.edu/"` |  |
+| alert-database.storage.s3.schemaBucket | string | `"rubin-alert-archive"` | Name of a s3 storage bucket with schema data |
+| alert-stream-schema-sync.schemaRegistryUrl | string | `"http://sasquatch-schema-registry:8081"` | URL for Schema Registry |
+| alert-stream-schema-sync.schemaSync | object | `{"image":{"pullPolicy":"IfNotPresent","repository":"lsstdm/lsst_alert_packet","tag":""},"subject":"alert-packet"}` | Configuration for the Job which injects the most recent alert_packet schema into the Schema Registry |
+| alert-stream-schema-sync.schemaSync.image.repository | string | `"lsstdm/lsst_alert_packet"` | Repository of a container which has the alert_packet syncLatestSchemaToRegistry.py program. |
+| alert-stream-schema-sync.schemaSync.image.tag | string | `""` | Version of the container to use. If container isn't updating in Argo, switch to digest. |
+| alert-stream-schema-sync.schemaSync.subject | string | `"alert-packet"` | Subject name to use when inserting data into the Schema Registry |
 | app-metrics.affinity | object | `{}` | Affinity for pod assignment |
 | app-metrics.apps | list | `[]` | A list of applications that will publish metrics events, and the keys that should be ingested into InfluxDB as tags.  The names should be the same as the app names in Phalanx. |
 | app-metrics.args | list | `[]` | Arguments passed to the Telegraf agent containers |
@@ -151,7 +197,7 @@ Rubin Observatory's telemetry service
 | app-metrics.image.tag | string | The appVersion of the chart | Telegraf image tag |
 | app-metrics.imagePullSecrets | list | `[]` | Secret names to use for Docker pulls |
 | app-metrics.influxdb.url | string | `"http://sasquatch-influxdb.sasquatch:8086"` | URL of the InfluxDB v1 instance to write to |
-| app-metrics.kafkaVersion | string | `"4.0.0"` |  |
+| app-metrics.kafkaVersion | string | `"4.1.0"` |  |
 | app-metrics.nodeSelector | object | `{}` | Node labels for pod assignment |
 | app-metrics.podAnnotations | object | `{}` | Annotations for the Telegraf pods |
 | app-metrics.podLabels | object | `{}` | Labels for the Telegraf pods |
@@ -194,6 +240,7 @@ Rubin Observatory's telemetry service
 | influxdb-enterprise.data.config.cluster.termination-query-log | bool | `true` | Whether to log queries that are terminated due to resource limits |
 | influxdb-enterprise.data.config.continuousQueries.enabled | bool | `false` | Whether continuous queries are enabled |
 | influxdb-enterprise.data.config.data.cache-max-memory-size | int | `0` | Maximum size a shared cache can reach before it starts rejecting writes |
+| influxdb-enterprise.data.config.data.max-series-per-database | int | `10000000` | The maximum number of series allowed per database before writes are dropped when in-memory indexing is enabled. This is a safety mechanism to prevent OOM crashes when a large number of series are being written to the database. |
 | influxdb-enterprise.data.config.data.trace-logging-enabled | bool | `true` | Whether to enable verbose logging of additional debug information within the TSM engine and WAL |
 | influxdb-enterprise.data.config.data.wal-fsync-delay | string | `"100ms"` | Duration a write will wait before fsyncing. This is useful for slower disks or when WAL write contention is present. |
 | influxdb-enterprise.data.config.hintedHandoff.max-size | int | `107374182400` | Maximum size of the hinted-handoff queue in bytes |
@@ -291,6 +338,7 @@ Rubin Observatory's telemetry service
 | influxdb-enterprise-active.data.config.cluster.termination-query-log | bool | `true` | Whether to log queries that are terminated due to resource limits |
 | influxdb-enterprise-active.data.config.continuousQueries.enabled | bool | `false` | Whether continuous queries are enabled |
 | influxdb-enterprise-active.data.config.data.cache-max-memory-size | int | `0` | Maximum size a shared cache can reach before it starts rejecting writes |
+| influxdb-enterprise-active.data.config.data.max-series-per-database | int | `10000000` | The maximum number of series allowed per database before writes are dropped when in-memory indexing is enabled. This is a safety mechanism to prevent OOM crashes when a large number of series are being written to the database. |
 | influxdb-enterprise-active.data.config.data.trace-logging-enabled | bool | `true` | Whether to enable verbose logging of additional debug information within the TSM engine and WAL |
 | influxdb-enterprise-active.data.config.data.wal-fsync-delay | string | `"100ms"` | Duration a write will wait before fsyncing. This is useful for slower disks or when WAL write contention is present. |
 | influxdb-enterprise-active.data.config.hintedHandoff.max-size | int | `107374182400` | Maximum size of the hinted-handoff queue in bytes |
@@ -388,6 +436,7 @@ Rubin Observatory's telemetry service
 | influxdb-enterprise-standby.data.config.cluster.termination-query-log | bool | `true` | Whether to log queries that are terminated due to resource limits |
 | influxdb-enterprise-standby.data.config.continuousQueries.enabled | bool | `false` | Whether continuous queries are enabled |
 | influxdb-enterprise-standby.data.config.data.cache-max-memory-size | int | `0` | Maximum size a shared cache can reach before it starts rejecting writes |
+| influxdb-enterprise-standby.data.config.data.max-series-per-database | int | `10000000` | The maximum number of series allowed per database before writes are dropped when in-memory indexing is enabled. This is a safety mechanism to prevent OOM crashes when a large number of series are being written to the database. |
 | influxdb-enterprise-standby.data.config.data.trace-logging-enabled | bool | `true` | Whether to enable verbose logging of additional debug information within the TSM engine and WAL |
 | influxdb-enterprise-standby.data.config.data.wal-fsync-delay | string | `"100ms"` | Duration a write will wait before fsyncing. This is useful for slower disks or when WAL write contention is present. |
 | influxdb-enterprise-standby.data.config.hintedHandoff.max-size | int | `107374182400` | Maximum size of the hinted-handoff queue in bytes |
@@ -610,7 +659,7 @@ Rubin Observatory's telemetry service
 | rest-proxy.heapOptions | string | `"-Xms8192M -Xmx8192M"` | Kafka REST proxy JVM Heap Option |
 | rest-proxy.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
 | rest-proxy.image.repository | string | `"confluentinc/cp-kafka-rest"` | Kafka REST proxy image repository |
-| rest-proxy.image.tag | string | `"8.1.1"` | Kafka REST proxy image tag |
+| rest-proxy.image.tag | string | `"8.2.0"` | Kafka REST proxy image tag |
 | rest-proxy.ingress.annotations | object | `{"nginx.ingress.kubernetes.io/rewrite-target":"/$2"}` | Annotations that will be added to the Ingress resource |
 | rest-proxy.ingress.anonymous | bool | false | Whether to enable anonymous access to the REST proxy |
 | rest-proxy.ingress.enabled | bool | `false` | Whether to enable the ingress for the REST proxy |
@@ -629,7 +678,7 @@ Rubin Observatory's telemetry service
 | schema-registry.cluster.name | string | `"sasquatch"` | Name of the Strimzi cluster used by the Schema Registry. |
 | schema-registry.compatibilityLevel | string | `"none"` | Compatibility level for the Schema Registry. Options are: none, backward, backward_transitive, forward, forward_transitive, full, and full_transitive. |
 | schema-registry.image.repository | string | `"confluentinc/cp-schema-registry"` | Docker image for the Confluent Schema Registry. |
-| schema-registry.image.tag | string | `"8.1.1"` | Docker image tag for the Confluent Schema Registry. |
+| schema-registry.image.tag | string | `"8.2.0"` | Docker image tag for the Confluent Schema Registry. |
 | schema-registry.ingress.annotations | object | `{"nginx.ingress.kubernetes.io/rewrite-target":"/$2"}` | Annotations that will be added to the Ingress resource |
 | schema-registry.ingress.anonymous | bool | false | Whether to enable anonymous access to the Schema Registry |
 | schema-registry.ingress.enabled | bool | `false` | Whether to enable an ingress for the Schema Registry |
@@ -641,7 +690,7 @@ Rubin Observatory's telemetry service
 | schema-registry-remote.cluster.name | string | `"sasquatch"` | Name of the Strimzi cluster used by the Schema Registry. |
 | schema-registry-remote.compatibilityLevel | string | `"none"` | Compatibility level for the Schema Registry. Options are: none, backward, backward_transitive, forward, forward_transitive, full, and full_transitive. |
 | schema-registry-remote.image.repository | string | `"confluentinc/cp-schema-registry"` | Docker image for the Confluent Schema Registry. |
-| schema-registry-remote.image.tag | string | `"8.1.1"` | Docker image tag for the Confluent Schema Registry. |
+| schema-registry-remote.image.tag | string | `"8.2.0"` | Docker image tag for the Confluent Schema Registry. |
 | schema-registry-remote.ingress.annotations | object | `{"nginx.ingress.kubernetes.io/rewrite-target":"/$2"}` | Annotations that will be added to the Ingress resource |
 | schema-registry-remote.ingress.anonymous | bool | false | Whether to enable anonymous access to the Schema Registry |
 | schema-registry-remote.ingress.enabled | bool | `false` | Whether to enable an ingress for the Schema Registry |
@@ -657,9 +706,11 @@ Rubin Observatory's telemetry service
 | strimzi-kafka.broker.enabled | bool | `false` | Enable node pool for the kafka brokers |
 | strimzi-kafka.broker.name | string | `"kafka"` | Node pool name |
 | strimzi-kafka.broker.nodeIds | string | `"[0,1,2]"` | IDs to assign to the brokers |
+| strimzi-kafka.broker.replicas | int | `3` | Number of Kafka broker replicas to run |
 | strimzi-kafka.broker.resources | object | `{"limits":{"cpu":2,"memory":"8Gi"},"requests":{"cpu":1,"memory":"4Gi"}}` | Kubernetes resources for the brokers |
 | strimzi-kafka.broker.storage.size | string | `"1.5Ti"` | Storage size for the brokers |
 | strimzi-kafka.broker.storage.storageClassName | string | None, use the default storage class | Storage class to use when requesting persistent volumes |
+| strimzi-kafka.broker.terminationGracePeriodSeconds | int | `180` |  |
 | strimzi-kafka.broker.tolerations | list | `[]` | Tolerations for broker pod assignment |
 | strimzi-kafka.brokerMigration.affinity | object | `{"podAntiAffinity":{"requiredDuringSchedulingIgnoredDuringExecution":[{"labelSelector":{"matchExpressions":[{"key":"app.kubernetes.io/name","operator":"In","values":["kafka"]}]},"topologyKey":"kubernetes.io/hostname"}]}}` | Affinity for Kafka broker pod assignment |
 | strimzi-kafka.brokerMigration.enabled | bool | `false` | Whether to enable another node pool to migrate the kafka brokers to |
@@ -686,9 +737,11 @@ Rubin Observatory's telemetry service
 | strimzi-kafka.controller.backup | bool | `false` | Whether to label the controller PVCs for backup by k8up, enabled on the summit and base environments |
 | strimzi-kafka.controller.enabled | bool | `false` | Enable node pool for the kafka controllers |
 | strimzi-kafka.controller.nodeIds | string | `"[3,4,5]"` | IDs to assign to the controllers |
+| strimzi-kafka.controller.replicas | int | `3` | Number of kafka controllers to run |
 | strimzi-kafka.controller.resources | object | `{"limits":{"cpu":"1","memory":"4Gi"},"requests":{"cpu":"500m","memory":"2Gi"}}` | Kubernetes resources for the controllers |
 | strimzi-kafka.controller.storage.size | string | `"20Gi"` | Storage size for the controllers |
 | strimzi-kafka.controller.storage.storageClassName | string | None, use the default storage class | Storage class to use when requesting persistent volumes |
+| strimzi-kafka.controller.terminationGracePeriodSeconds | int | `180` |  |
 | strimzi-kafka.controller.tolerations | list | `[]` | Tolerations for controller pod assignment |
 | strimzi-kafka.cruiseControl.enabled | bool | `false` | Enable cruise control (required for broker migration and rebalancing) |
 | strimzi-kafka.cruiseControl.maxReplicasPerBroker | int | `20000` | Maximum number of replicas per broker |
@@ -711,10 +764,11 @@ Rubin Observatory's telemetry service
 | strimzi-kafka.kafka.maintenanceTimeWindows | string | `"0 0 12-13 ? * *"` | 09:00–11:00 CLT (UTC−3) |
 | strimzi-kafka.kafka.metadataVersion | string | `nil` | The KRaft metadata version used by the Kafka cluster. If the property is not set, it defaults to the metadata version that corresponds to the version property. |
 | strimzi-kafka.kafka.metricsConfig.enabled | bool | `false` | Whether metric configuration is enabled |
+| strimzi-kafka.kafka.metricsConfig.includeTopicMetrics | bool | `false` | Include per topic metrics in Jmx Exporter |
 | strimzi-kafka.kafka.minInsyncReplicas | int | `2` | The minimum number of in-sync replicas that must be available for the producer to successfully send records Cannot be greater than the number of replicas. |
 | strimzi-kafka.kafka.pauseReconciliation | bool | `false` | If Strimzi reconciliation of this resource should be paused: https://strimzi.io/docs/operators/latest/full/deploying#proc-pausing-reconciliation-str |
-| strimzi-kafka.kafka.replicas | int | `3` | Number of Kafka broker replicas to run |
-| strimzi-kafka.kafka.version | string | `"4.0.0"` | Version of Kafka to deploy |
+| strimzi-kafka.kafka.replicationFactor | int | `3` | Topic Replication Factor.  The number of copies of topic data that are maintained. |
+| strimzi-kafka.kafka.version | string | `"4.1.0"` | Version of Kafka to deploy |
 | strimzi-kafka.kafkaExporter.enableSaramaLogging | bool | `false` | Enable Sarama logging for pod |
 | strimzi-kafka.kafkaExporter.enabled | bool | `false` | Enable Kafka exporter |
 | strimzi-kafka.kafkaExporter.groupRegex | string | `".*"` | Consumer groups to monitor |

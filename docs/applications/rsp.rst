@@ -9,10 +9,12 @@ Argo CD project: ``rsp``
 .. toctree::
    :maxdepth: 1
 
+   bigquery-kafka/index
    butler/index
    consdbtap/index
    datalinker/index
    fov-quicklook/index
+   herald/index
    hips/index
    hoverdrive/index
    jira-data-proxy/index
@@ -20,6 +22,7 @@ Argo CD project: ``rsp``
    noteburst/index
    nublado/index
    portal/index
+   ppdbtap/index
    qserv-kafka/index
    semaphore/index
    sia/index

@@ -49,6 +49,7 @@ config:
   quota:
     default:
       api:
+        hips: 1000
         sia: 70
         tap: 1000
         vo-cutouts: 35
@@ -86,6 +87,8 @@ config:
     "write:files":
       - "g_rubin"
       - "g_users"
+    "write:sasquatch":
+      - "g_admins"
 
   initialAdmins:
     - "adam"

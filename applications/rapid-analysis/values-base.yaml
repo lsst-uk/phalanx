@@ -1,9 +1,8 @@
 image:
-  repository: ghcr.io/lsst-sitcom/rubintv_production
-  tag: w_2025_48
+  repository: ghcr.io/lsst-so/rubintv_production
+  tag: w_2026_13
   pullPolicy: Always
 location: BTS
-siteTag: bts
 env:
   DAF_BUTLER_REPOSITORY_INDEX: /project/data-repos.yaml
   DEPLOY_BRANCH: deploy-bts
@@ -11,8 +10,27 @@ env:
   AWS_REQUEST_CHECKSUM_CALCULATION: WHEN_REQUIRED
   RAPID_ANALYSIS_DO_RAISE: True
   BUTLER_ROLLOUT_PAUSE: 1.0
-  RA_PULL_DIRECTORIES: "TARTS donut_viz drp_pipe ts_wep ts_ofc summit_utils summit_extras rubintv_production"
+  RA_PULL_DIRECTORIES: "TARTS donut_viz drp_pipe ts_wep ts_ofc ts_config_mttcs summit_utils summit_extras rubintv_production daf_butler pipe_base"
   TARTS_DATA_DIR: /project/rubintv/aos_data/TARTS
+  AI_DONUT_DATA_DIR: /project/rubintv/aos_data/AI_DONUT
+  # These threading env vars are the ones set in
+  # lsst.utils.disable_implicit_threading() They are being set here as well for
+  # extra safety as there is a possibility that code could init before that's
+  # called, at least in theory. Pods which want to take advantage of more cores
+  # can override these values at runtime.
+  OPENBLAS_NUM_THREADS: 1
+  GOTO_NUM_THREADS: 1
+  OMP_NUM_THREADS: 1
+  MKL_NUM_THREADS: 1
+  MKL_DOMAIN_NUM_THREADS: 1
+  MPI_NUM_THREADS: 1
+  NUMEXPR_NUM_THREADS: 1
+  NUMEXPR_MAX_THREADS: 1
+  OMP_PROC_BIND: false
+envSecrets:
+- name: SENTRY_DSN
+  secretName: rapid-analysis-secrets
+  secretKey: sentry.dsn
 securityContext:
   uid: 73006
   gid: 73006
@@ -35,11 +53,6 @@ scripts:
   - auxtel-data
   - auxtel-gen3-data
   - project-shared
-# - name: LATISS/runOneOffVisitImage.py
-#   mounts:
-#   - auxtel-data
-#   - auxtel-gen3-data
-#   - project-shared
 - name: LATISS/runOneOffExpRecord.py
   mounts:
   - auxtel-data
@@ -89,12 +102,13 @@ scripts:
   - lsstcam-data
   - project-shared
 - name: LSSTCam/runPlotter.py
+  replicas: 2
   mounts:
   - lsstcam-data
   - project-shared
   resources:
     requests:
-      cpu: .2
+      cpu: 0.2
       memory: 6G
     limits:
       cpu: 1.0
@@ -105,10 +119,10 @@ scripts:
   - project-shared
   resources:
     requests:
-      cpu: .5
+      cpu: 0.5
       memory: 4G
     limits:
-      cpu: 1
+      cpu: 1.0
       memory: 8G
 - name: LSSTCam/runZernikePredictionPlotting.py
   mounts:
@@ -116,10 +130,10 @@ scripts:
   - project-shared
   resources:
     requests:
-      cpu: .5
+      cpu: 0.5
       memory: 6G
     limits:
-      cpu: 1
+      cpu: 1.0
       memory: 12G
 - name: LSSTCam/runCleanup.py
   mounts:
@@ -127,15 +141,48 @@ scripts:
   - project-shared
   resources:
     requests:
-      cpu: .5
+      cpu: 0.5
       memory: 3G
     limits:
-      cpu: 1
+      cpu: 1.0
       memory: 6G
 - name: LSSTCam/runClusterManager.py
   mounts:
   - lsstcam-data
   - project-shared
+- name: LSSTCam/runRadialPlotting.py
+  mounts:
+  - lsstcam-data
+  - project-shared
+  resources:
+    requests:
+      cpu: 1.0
+      memory: 12G
+    limits:
+      cpu: 1.2
+      memory: 16G
+- name: LSSTCam/runFWHMPlotting.py
+  mounts:
+  - lsstcam-data
+  - project-shared
+  resources:
+    requests:
+      cpu: 1.0
+      memory: 4G
+    limits:
+      cpu: 1.0
+      memory: 6G
+- name: LSSTCam/runGuiderAnalysis.py
+  mounts:
+  - lsstcam-data
+  - project-shared
+  resources:
+    requests:
+      cpu: 1.0
+      memory: 6G
+    limits:
+      cpu: 1.0
+      memory: 8G
 ##
 ## LATISS StatefulSets
 ##
@@ -153,6 +200,20 @@ latissWorkerSet:
     limits:
       cpu: 1.0
       memory: 6G
+latissGather1bSet:
+  name: LATISS/runStep1bWorker.py
+  mounts:
+  - auxtel-data
+  - auxtel-gen3-data
+  - project-shared
+  replicas: 1
+  resources:
+    requests:
+      cpu: 0.5
+      memory: 4G
+    limits:
+      cpu: 1.0
+      memory: 8G
 ###
 ### LSSTCam StatefulSets
 ###
@@ -164,7 +225,7 @@ lsstcamWorkerSet:
   replicas: 189  # 1 deep for now
   resources:
     requests:
-      cpu: .5
+      cpu: 0.5
       memory: 4G
     limits:
       cpu: 1.0
@@ -177,7 +238,7 @@ lsstcamAosWorkerSet:
   replicas: 16  # 2 deep for corner chips (8 of them)
   resources:
     requests:
-      cpu: .5
+      cpu: 0.5
       memory: 4G
     limits:
       cpu: 1.0
@@ -191,10 +252,10 @@ lsstcamGather1bSet:
   resources:
     requests:
       cpu: 1.0
-      memory: "4G"
+      memory: 4G
     limits:
       cpu: 1.0
-      memory: "8G"
+      memory: 8G
 lsstcamGather1bAosSet:
   name: LSSTCam/runStep1bAosWorker.py
   mounts:
@@ -204,10 +265,10 @@ lsstcamGather1bAosSet:
   resources:
     requests:
       cpu: 0.5
-      memory: "4G"
+      memory: 4G
     limits:
       cpu: 1.0
-      memory: "8G"
+      memory: 8G
 lsstcamGatherRollupSet:
   name: LSSTCam/runNightlyWorker.py
   mounts:
@@ -217,10 +278,10 @@ lsstcamGatherRollupSet:
   resources:
     requests:
       cpu: 1.0
-      memory: "12G"
+      memory: 12G
     limits:
       cpu: 1.0
-      memory: "24G"
+      memory: 24G
 lsstcamBacklogWorkerSet:
   name: LSSTCam/runBacklogWorker.py
   mounts:
@@ -230,10 +291,10 @@ lsstcamBacklogWorkerSet:
   resources:
     requests:
       cpu: 1.0
-      memory: "4G"
+      memory: 4G
     limits:
       cpu: 1.0
-      memory: "8G"
+      memory: 8G
 pullSecretsPath: pull-secret
 butlerSecret:
   containerPath: /home/saluser/.lsst
@@ -280,7 +341,7 @@ redis:
       cpu: 100m
       memory: 1Gi
     limits:
-      cpu: 1
+      cpu: 1.0
       memory: 50Gi
 squid:
   enabled: true

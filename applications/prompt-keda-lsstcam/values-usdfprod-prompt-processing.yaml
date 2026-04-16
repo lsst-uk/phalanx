@@ -1,7 +1,7 @@
 prompt-keda:
   image:
     pullPolicy: IfNotPresent
-    tag: 13.1.0
+    tag: 13.12.0
 
   alerts:
     username: kafka-admin
@@ -18,48 +18,50 @@ prompt-keda:
       # The config will get corrupted after template substitution.
       # Block-style mappings can have lines of any length.
       main: |-
-        - survey: BLOCK-407  # FBS Pre-Operations Survey (independent of environmental conditions)
+        # Dense dithered star field calibrations
+        - survey: BLOCK-365
           pipelines: &std-main-pipelines
           - ${PROMPT_PROCESSING_DIR}/pipelines/LSSTCam/ApPipe.yaml
           - ${PROMPT_PROCESSING_DIR}/pipelines/LSSTCam/SingleFrame.yaml
           - ${PROMPT_PROCESSING_DIR}/pipelines/LSSTCam/Isr.yaml
-        - survey: BLOCK-408  # FBS Pre-Operations Survey (triggered by environmental conditions)
-          pipelines: *std-main-pipelines
-        - survey: BLOCK-416  # FBS Pre-Operations Survey (with a constrained LSST configuration)
-          pipelines: *std-main-pipelines
-        - survey: BLOCK-417  # FBS Pre-Operations Survey (with a constrained LSST configuration)
-          pipelines: *std-main-pipelines
-        - survey: BLOCK-419  # FBS Pre-Operations Survey (a version without elevation, rotation, or filter change constraints)
-          pipelines: *std-main-pipelines
-        - survey: BLOCK-421  # FBS Pre-Operations Survey (a version without FAM triplets)
-          pipelines: *std-main-pipelines
-        - survey: BLOCK-T637  # Exposure time test
-          pipelines: *std-main-pipelines
-        - survey: BLOCK-T427  # Daytime checkout
+        # FBS Pre-Operations Survey
+        - {survey: BLOCK-407, pipelines: *std-main-pipelines}
+        - {survey: BLOCK-408, pipelines: *std-main-pipelines}
+        - {survey: BLOCK-416, pipelines: *std-main-pipelines}
+        - {survey: BLOCK-417, pipelines: *std-main-pipelines}
+        - {survey: BLOCK-419, pipelines: *std-main-pipelines}
+        - {survey: BLOCK-421, pipelines: *std-main-pipelines}
+        # TMA checkout, no images
+        - {survey: BLOCK-T250, pipelines: []}
+        # Daytime checkout
+        - survey: BLOCK-T427
           pipelines: ['${PROMPT_PROCESSING_DIR}/pipelines/LSSTCam/Isr-cal.yaml']
-        # Produces nextVisits but not images
-        - {survey: "BLOCK-T454", pipelines: []}
+        # All-day clearing; produces nextVisits but not images
+        - {survey: BLOCK-T454, pipelines: []}
+        # Fixed telescope pointing stability test
+        - {survey: BLOCK-T698, pipelines: *std-main-pipelines}
+        - {survey: BLOCK-T703, pipelines: *std-main-pipelines}
+        - {survey: BLOCK-T704, pipelines: *std-main-pipelines}
+        - {survey: BLOCK-T706, pipelines: *std-main-pipelines}
         # Miscellaneous scripts, not always images
         - {survey: "", pipelines: []}
         # Ignore unknown events during Commissioning
         - {pipelines: []}
       preprocessing: |-
         # Run to enable solar system processing in SingleFrame
-        - survey: BLOCK-407
+        - survey: BLOCK-365
           pipelines: &std-pre-pipelines
           - ${PROMPT_PROCESSING_DIR}/pipelines/LSSTCam/Preprocessing.yaml
-        - survey: BLOCK-408
-          pipelines: *std-pre-pipelines
-        - survey: BLOCK-416
-          pipelines: *std-pre-pipelines
-        - survey: BLOCK-417
-          pipelines: *std-pre-pipelines
-        - survey: BLOCK-419
-          pipelines: *std-pre-pipelines
-        - survey: BLOCK-421
-          pipelines: *std-pre-pipelines
-        - survey: BLOCK-T637
-          pipelines: *std-pre-pipelines
+        - {survey: BLOCK-407, pipelines: *std-pre-pipelines}
+        - {survey: BLOCK-408, pipelines: *std-pre-pipelines}
+        - {survey: BLOCK-416, pipelines: *std-pre-pipelines}
+        - {survey: BLOCK-417, pipelines: *std-pre-pipelines}
+        - {survey: BLOCK-419, pipelines: *std-pre-pipelines}
+        - {survey: BLOCK-421, pipelines: *std-pre-pipelines}
+        - {survey: BLOCK-T698, pipelines: *std-pre-pipelines}
+        - {survey: BLOCK-T703, pipelines: *std-pre-pipelines}
+        - {survey: BLOCK-T704, pipelines: *std-pre-pipelines}
+        - {survey: BLOCK-T706, pipelines: *std-pre-pipelines}
         - {survey: "", pipelines: []}
         # Don't preprocess anything unknown
         - {pipelines: []}
@@ -107,7 +109,7 @@ prompt-keda:
 
   imageNotifications:
     kafkaClusterAddress: s3-file-notifications-kafka-external-bootstrap.s3-file-notifications:9094
-    topic: rubin-summit-notification-7
+    topic: rubin-summit-notification-8
     imageTimeout: 120
 
   apdb:
