@@ -89,14 +89,19 @@ influxdb:
     size: 15Ti
   config:
     coordinator:
-      query-timeout: 300s
+      query-timeout: 180s
+      max-concurrent-queries: 50
+      max-select-series: 200000
+      max-select-buckets: 20000
+      log-queries-after: "10s"
+      termination-query-log: true
   resources:
     requests:
-      memory: 96Gi
-      cpu: 8
+      memory: 128Gi
+      cpu: 16
     limits:
-      memory: 96Gi
-      cpu: 8
+      memory: 128Gi
+      cpu: 16
 
 customInfluxDBIngress:
   enabled: true
@@ -128,7 +133,7 @@ telegraf:
         [ "lsst.prompt" ]
       timestamp_field: "timestamp"
       tags: |
-        [ "dataset_tag", "band", "instrument", "skymap", "detector", "physical_filter", "tract", "patch", "group"]
+        [ "dataset_tag", "band", "instrument", "skymap", "detector", "physical_filter", "tract", "patch"]
     dm:
       enabled: true
       debug: true
@@ -233,4 +238,22 @@ consdb:
   enabled: true
 
 tap:
+  enabled: true
+
+grafana:
+  enabled: true
+  influxdb:
+    url: "http://sasquatch-trickster.sasquatch"
+    databases:
+      - lsst.prompt
+      - lsst.verify
+      - lsst.dm
+
+trickster:
+  enabled: true
+  config:
+    logging:
+      log_level: "debug"
+
+redis:
   enabled: true

@@ -1,4 +1,4 @@
-fqdn: k8s.slac.stanford.edu
+fqdn: usdfprod-prompt-processing.slac.stanford.edu
 name: usdfprod-prompt-processing
 appOfAppsName: "prompt-processing"
 vaultUrl: "https://vault.slac.stanford.edu"
@@ -14,7 +14,10 @@ applications:
   prompt-kafka: true
   prompt-keda-latiss: false
   prompt-keda-lsstcam: true
+  prompt-pub: true
   prompt-redis: true
+  sasquatch: true
   s3-file-notifications: true
   strimzi: true
+  strimzi-registry-operator: true
   vault-secrets-operator: false

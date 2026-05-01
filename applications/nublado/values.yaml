@@ -165,6 +165,10 @@ controller:
           effect: "NoSchedule"
 
     images:
+      # -- How long to wait for a prepull of a pod to finish before deciding
+      # it has failed, in Safir `parse_timedelta` format.
+      prepullTimeout: "10m"
+
       # -- How frequently to refresh the list of available images and compare
       # it to the cached images on nodes to prepull new images, in Safir
       # `parse_timedelta` format. Newly-available images will not appear in
@@ -222,7 +226,7 @@ controller:
 
       # -- Timeout for deleting a user's lab resources from Kubernetes in
       # Safir `parse_timedelta` format
-      deleteTimeout: 1m
+      deleteTimeout: 2m
 
       # -- Select where `/tmp` and `/lab_startup` in the lab will come
       # from. Choose between `disk` (node-local ephemeral storage) and
@@ -398,7 +402,7 @@ controller:
       # -- Directory in the lab under which runtime information such as
       # tokens, environment variables, and container information will be
       # mounted
-      runtimeMountsDir: "/opt/lsst/software/jupyterlab"
+      runtimeMountsDir: "/etc/nublado"
 
       # -- Secrets to set in the user pods. Each should have a `secretKey` key
       # pointing to a secret in the same namespace as the controller
@@ -566,7 +570,7 @@ jupyterhub:
       name: "ghcr.io/lsst-sqre/nublado-jupyterhub"
 
       # -- Tag of image to use for JupyterHub
-      tag: "12.0.2"
+      tag: "13.0.0"
 
     # -- Resource limits and requests
     # @default -- See `values.yaml`
@@ -749,7 +753,7 @@ cloudsql:
     pullPolicy: "IfNotPresent"
 
     # -- Cloud SQL Auth Proxy tag to use
-    tag: "1.37.13"
+    tag: "1.37.15"
 
   # -- Instance connection name for a Cloud SQL PostgreSQL instance
   # @default -- None, must be set if Cloud SQL Auth Proxy is enabled

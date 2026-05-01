@@ -33,6 +33,7 @@
 | applications.gke | bool | `false` | Enable the gke application |
 | applications.google-cloud-observability | bool | `false` | Enable the google-cloud-observability application |
 | applications.grafana | bool | `false` | Enable the grafana application |
+| applications.herald | bool | `false` | Enable the herald application |
 | applications.hips | bool | `false` | Enable the HiPS application |
 | applications.hoverdrive | bool | `false` | Enable the hoverdrive application |
 | applications.ingress-nginx | bool | `true` | Enable the ingress-nginx application. This is required for all environments, but is still configurable because currently USDF uses an unsupported configuration with ingress-nginx deployed in a different cluster. |
@@ -62,6 +63,7 @@
 | applications.prompt-keda-hsc | bool | `false` | Enable the prompt-keda-hsc application |
 | applications.prompt-keda-latiss | bool | `false` | Enable the prompt-keda-latiss application |
 | applications.prompt-keda-lsstcam | bool | `false` | Enable the prompt-keda-lsstcam application |
+| applications.prompt-pub | bool | `false` | Enable the prompt-pub application |
 | applications.prompt-redis | bool | `false` | Enable the prompt-redis application |
 | applications.qserv-kafka | bool | `false` | Enable the qserv-kafka application |
 | applications.repertoire | bool | `true` | Enable the Repertoire application. This provides service discovery for many other Phalanx applications, all of which assume that it is running. |
