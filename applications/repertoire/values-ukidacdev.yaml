@@ -2,8 +2,8 @@ config:
   availableDatasets:
     - "dp1"
   tap:
-  servers:
-    tap:
-      enabled: true
-    ssotap:
-      enabled: false
+    servers:
+      tap:
+        enabled: true
+      ssotap:
+        enabled: false
