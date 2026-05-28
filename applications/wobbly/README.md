@@ -14,7 +14,7 @@ IVOA UWS database storage
 | cloudsql.enabled | bool | `false` | Enable the Cloud SQL Auth Proxy sidecar, used with Cloud SQL databases on Google Cloud |
 | cloudsql.image.pullPolicy | string | `"IfNotPresent"` | Pull policy for Cloud SQL Auth Proxy images |
 | cloudsql.image.repository | string | `"gcr.io/cloudsql-docker/gce-proxy"` | Cloud SQL Auth Proxy image to use |
-| cloudsql.image.tag | string | `"1.37.15"` | Cloud SQL Auth Proxy tag to use |
+| cloudsql.image.tag | string | `"1.38.0"` | Cloud SQL Auth Proxy tag to use |
 | cloudsql.instanceConnectionName | string | None, must be set if Cloud SQL is used | Instance connection name for a Cloud SQL PostgreSQL instance |
 | cloudsql.resources | object | See `values.yaml` | Resource limits and requests for the Cloud SQL Proxy container |
 | cloudsql.serviceAccount | string | None, must be set if Cloud SQL Auth Proxy is enabled | The Google service account that has an IAM binding to the `wobbly` Kubernetes service account and has the `cloudsql.client` role |
@@ -45,4 +45,4 @@ IVOA UWS database storage
 | podAnnotations | object | `{}` | Annotations for the wobbly deployment pod |
 | replicaCount | int | `1` | Number of web deployment pods to start |
 | resources | object | See `values.yaml` | Resource limits and requests for the wobbly deployment pod |
-| tolerations | list | `[]` | Tolerations for the wobbly deployment pod |
+| tolerations | list | TolerateGKE amd64 and arm64 taints | Tolerations for the wobbly deployment pod |

@@ -2,11 +2,18 @@ image:
   pullPolicy: "Always"
 
 config:
-  databaseUrl: "postgresql://docverse@localhost/docverse"
   logLevel: "DEBUG"
+  databaseUrl: "postgresql://docverse@localhost/docverse"
+  githubAppId: "3556766"
   updateSchema: true
   superadminUsers:
     - "jonathansick"
+  keeperSync:
+    enabled: true
+  lifecycleEval:
+    enabled: true
+  sentry:
+    enabled: true
 
 cloudsql:
   enabled: true

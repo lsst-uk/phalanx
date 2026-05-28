@@ -14,15 +14,20 @@ Publish versioned docs
 | cloudsql.enabled | bool | `false` | Enable the Cloud SQL Auth Proxy sidecar, used with Cloud SQL databases on Google Cloud |
 | cloudsql.image.pullPolicy | string | `"IfNotPresent"` | Pull policy for Cloud SQL Auth Proxy images |
 | cloudsql.image.repository | string | `"gcr.io/cloudsql-docker/gce-proxy"` | Cloud SQL Auth Proxy image to use |
-| cloudsql.image.tag | string | `"1.37.15"` | Cloud SQL Auth Proxy tag to use |
+| cloudsql.image.tag | string | `"1.38.0"` | Cloud SQL Auth Proxy tag to use |
 | cloudsql.instanceConnectionName | string | `""` | Instance connection name for a Cloud SQL PostgreSQL instance |
 | cloudsql.resources | object | See `values.yaml` | Resource requests and limits for Cloud SQL Auth Proxy |
 | cloudsql.serviceAccount | string | `""` | The Google service account that has an IAM binding to the `docverse` Kubernetes service accounts and has the `cloudsql.client` role |
 | config.arqRedisUrl | string | Points to embedded Redis | URL for Redis arq queue database |
 | config.databaseUrl | string | `""` | Database URL for PostgreSQL |
+| config.githubAppId | string | `nil` | GitHub App ID for Docverse to use when accessing GitHub repositories. If not set, Docverse will operate in a limited mode without GitHub integration. |
+| config.keeperSync.enabled | bool | `false` | Enable the Keeper-sync worker that consumes the `docverse:sync-queue` arq queue. Requires the docverse image to provide `docverse.worker.main.KeeperSyncWorkerSettings`. |
+| config.lifecycleEval.enabled | bool | `false` | Enable the lifecycle-evaluation worker that consumes the `docverse:lifecycle-queue` arq queue. Requires the docverse image to provide `docverse.worker.main.LifecycleEvalWorkerSettings`. |
 | config.logLevel | string | `"INFO"` | Logging level |
 | config.logProfile | string | `"production"` | Logging profile (`production` for JSON, `development` for human-friendly) |
 | config.pathPrefix | string | `"/docverse/api"` | URL path prefix |
+| config.sentry.enabled | bool | `false` | Whether to send error reports and tracing data to Sentry. Requires the sentry-dsn secret to be set in Vault. |
+| config.sentry.tracesSampleRate | float | `0` | The percentage of requests that should be traced. This should be a float between 0 and 1. |
 | config.slackAlerts | bool | `false` | Whether to send Slack alerts for unexpected failures |
 | config.superadminUsers | list | `["jonathansick"]` | Usernames that have super admin (de facto admin in all organizations) |
 | config.updateSchema | bool | `false` | Whether to run Alembic schema migrations on install/upgrade |
@@ -33,6 +38,12 @@ Publish versioned docs
 | image.repository | string | `"ghcr.io/lsst-sqre/docverse"` | Image to use in the docverse deployment |
 | image.tag | string | The appVersion of the chart | Tag of image to use |
 | ingress.annotations | object | `{}` | Additional annotations for the ingress rule |
+| lifecycleWorker.affinity | object | `{}` | Affinity rules for the lifecycle-eval worker pod |
+| lifecycleWorker.nodeSelector | object | `{}` | Node selection rules for the lifecycle-eval worker pod |
+| lifecycleWorker.podAnnotations | object | `{}` | Annotations for the lifecycle-eval worker pod |
+| lifecycleWorker.replicaCount | int | `1` | Number of lifecycle-eval worker pods to start |
+| lifecycleWorker.resources | object | See `values.yaml` | Resource limits and requests for the lifecycle-eval worker pod |
+| lifecycleWorker.tolerations | list | `[]` | Tolerations for the lifecycle-eval worker pod |
 | nodeSelector | object | `{}` | Node selection rules for the docverse deployment pod |
 | podAnnotations | object | `{}` | Annotations for the docverse deployment pod |
 | redis.affinity | object | `{}` | Affinity rules for the Redis pod |
@@ -49,6 +60,12 @@ Publish versioned docs
 | replicaCount.worker | int | `1` | Number of worker deployment pods to start |
 | resources | object | See `values.yaml` | Resource limits and requests for the docverse deployment pod |
 | resources.requests.cpu | string | `"50m"` | GKE Autopilot requires a minimum CPU request of 50m |
+| syncWorker.affinity | object | `{}` | Affinity rules for the Keeper-sync worker pod |
+| syncWorker.nodeSelector | object | `{}` | Node selection rules for the Keeper-sync worker pod |
+| syncWorker.podAnnotations | object | `{}` | Annotations for the Keeper-sync worker pod |
+| syncWorker.replicaCount | int | `1` | Number of Keeper-sync worker pods to start |
+| syncWorker.resources | object | See `values.yaml` | Resource limits and requests for the Keeper-sync worker pod |
+| syncWorker.tolerations | list | `[]` | Tolerations for the Keeper-sync worker pod |
 | tolerations | list | `[]` | Tolerations for the docverse deployment pod |
 | workerResources | object | See `values.yaml` | Resource limits and requests for the docverse worker pod |
 | workerResources.requests.cpu | string | `"50m"` | GKE Autopilot requires a minimum CPU request of 50m |

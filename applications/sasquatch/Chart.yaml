@@ -71,6 +71,9 @@ dependencies:
   - name: backup
     condition: backup.enabled
     version: 1.0.0
+  - name: influxdb-migration
+    condition: influxdb-migration.enabled
+    version: 1.0.0
   - name: app-metrics
     condition: app-metrics.enabled
     version: 1.0.0
@@ -113,7 +116,7 @@ dependencies:
     repository: oci://ghcr.io/trickstercache/charts
   - name: redis
     condition: redis.enabled
-    version: 1.1.10
+    version: 1.1.11
     repository: "https://lsst-sqre.github.io/charts/"
   - name: alert-brokers
     condition: alert-brokers.enabled
@@ -123,6 +126,9 @@ dependencies:
     version: 1.0.0
   - name: alert-stream-schema-sync
     condition: alert-stream-schema-sync.enabled
+    version: 1.0.0
+  - name: kafbat
+    condition: kafbat.enabled
     version: 1.0.0
 
 annotations:

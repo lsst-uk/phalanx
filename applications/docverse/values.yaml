@@ -34,6 +34,15 @@ config:
   # -- Whether to send Slack alerts for unexpected failures
   slackAlerts: false
 
+  sentry:
+    # -- Whether to send error reports and tracing data to Sentry. Requires
+    # the sentry-dsn secret to be set in Vault.
+    enabled: false
+
+    # -- The percentage of requests that should be traced. This should be a
+    # float between 0 and 1.
+    tracesSampleRate: 0.0
+
   # -- Database URL for PostgreSQL
   databaseUrl: ""
 
@@ -44,9 +53,25 @@ config:
   # -- Whether to run Alembic schema migrations on install/upgrade
   updateSchema: false
 
+  # -- GitHub App ID for Docverse to use when accessing GitHub repositories. If
+  # not set, Docverse will operate in a limited mode without GitHub integration.
+  githubAppId: null
+
   # -- Usernames that have super admin (de facto admin in all organizations)
   superadminUsers:
     - "jonathansick"
+
+  keeperSync:
+    # -- Enable the Keeper-sync worker that consumes the
+    # `docverse:sync-queue` arq queue. Requires the docverse image to
+    # provide `docverse.worker.main.KeeperSyncWorkerSettings`.
+    enabled: false
+
+  lifecycleEval:
+    # -- Enable the lifecycle-evaluation worker that consumes the
+    # `docverse:lifecycle-queue` arq queue. Requires the docverse image to
+    # provide `docverse.worker.main.LifecycleEvalWorkerSettings`.
+    enabled: false
 
 ingress:
   # -- Additional annotations for the ingress rule
@@ -83,6 +108,58 @@ workerResources:
     cpu: "50m"
     memory: "128Mi"
 
+syncWorker:
+  # -- Number of Keeper-sync worker pods to start
+  replicaCount: 1
+
+  # -- Resource limits and requests for the Keeper-sync worker pod
+  # @default -- See `values.yaml`
+  resources:
+    limits:
+      cpu: "1"
+      memory: "512Mi"
+    requests:
+      cpu: "50m"
+      memory: "128Mi"
+
+  # -- Affinity rules for the Keeper-sync worker pod
+  affinity: {}
+
+  # -- Node selection rules for the Keeper-sync worker pod
+  nodeSelector: {}
+
+  # -- Annotations for the Keeper-sync worker pod
+  podAnnotations: {}
+
+  # -- Tolerations for the Keeper-sync worker pod
+  tolerations: []
+
+lifecycleWorker:
+  # -- Number of lifecycle-eval worker pods to start
+  replicaCount: 1
+
+  # -- Resource limits and requests for the lifecycle-eval worker pod
+  # @default -- See `values.yaml`
+  resources:
+    limits:
+      cpu: "1"
+      memory: "512Mi"
+    requests:
+      cpu: "50m"
+      memory: "128Mi"
+
+  # -- Affinity rules for the lifecycle-eval worker pod
+  affinity: {}
+
+  # -- Node selection rules for the lifecycle-eval worker pod
+  nodeSelector: {}
+
+  # -- Annotations for the lifecycle-eval worker pod
+  podAnnotations: {}
+
+  # -- Tolerations for the lifecycle-eval worker pod
+  tolerations: []
+
 # -- Tolerations for the docverse deployment pod
 tolerations: []
 
@@ -96,7 +173,7 @@ cloudsql:
     repository: "gcr.io/cloudsql-docker/gce-proxy"
 
     # -- Cloud SQL Auth Proxy tag to use
-    tag: "1.37.15"
+    tag: "1.38.0"
 
     # -- Pull policy for Cloud SQL Auth Proxy images
     pullPolicy: "IfNotPresent"

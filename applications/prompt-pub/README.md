@@ -14,7 +14,7 @@ Manages the lifecycle of Butler Prompt Data Products as they move from the embar
 | alloyDbProxy.config.instanceUri | string | `""` | Uri for Allow DB instance |
 | alloyDbProxy.image.pullPolicy | string | `"IfNotPresent"` | Pull policy for the allow db proxy image |
 | alloyDbProxy.image.repository | string | `"gcr.io/alloydb-connectors/alloydb-auth-proxy"` | Image to use for alloy db proxy |
-| alloyDbProxy.image.tag | string | `"1.14.2"` | Tag of image to use |
+| alloyDbProxy.image.tag | string | `"1.15.0"` | Tag of image to use |
 | alloyDbProxy.resources | object | See `values.yaml` | Resource limits and requests for the alloy db proxy pod |
 | global.host | string | Set by Argo CD | Host name for ingress |
 | global.repertoireUrl | string | Set by Argo CD | Base URL for Repertoire discovery API |
@@ -37,4 +37,7 @@ Manages the lifecycle of Butler Prompt Data Products as they move from the embar
 | publication.stateDB | string | `""` | Postgres database for holding publication state |
 | replicaCount | int | `1` | Number of statefulset pods to start |
 | resources | object | See `values.yaml` | Resource limits and requests for the prompt-pub statefulset pod |
+| scaleReplica.downSchedule | string | `"30 21 * * *"` | Time in Cron format to scale down replica in UTC |
+| scaleReplica.enabled | bool | `false` | Enable scale up and down of prompt pub statefulset on a schedule |
+| scaleReplica.upSchedule | string | `"0 12 * * *"` | Time to Cron format scale up replica in UTC |
 | tolerations | list | `[]` | Tolerations for the prompt-pub deployment pod |

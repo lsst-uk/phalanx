@@ -65,11 +65,34 @@ Secret environment variables shared across all Docverse pods.
     secretKeyRef:
       name: "docverse"
       key: "DOCVERSE_DATABASE_PASSWORD"
+{{- if .Values.config.githubAppId }}
+- name: "DOCVERSE_GITHUB_APP_PRIVATE_KEY"
+  valueFrom:
+    secretKeyRef:
+      name: "docverse"
+      key: "DOCVERSE_GITHUB_APP_PRIVATE_KEY"
+- name: "DOCVERSE_GITHUB_WEBHOOK_SECRET"
+  valueFrom:
+    secretKeyRef:
+      name: "docverse"
+      key: "DOCVERSE_GITHUB_WEBHOOK_SECRET"
+{{- end }}
 {{- if .Values.config.slackAlerts }}
 - name: "DOCVERSE_SLACK_WEBHOOK"
   valueFrom:
     secretKeyRef:
       name: "docverse"
       key: "slack-webhook"
+{{- end }}
+{{- if .Values.config.sentry.enabled }}
+- name: "SENTRY_DSN"
+  valueFrom:
+    secretKeyRef:
+      name: "docverse"
+      key: "SENTRY_DSN"
+- name: "SENTRY_ENVIRONMENT"
+  value: {{ .Values.global.environmentName | quote }}
+- name: "SENTRY_TRACES_SAMPLE_RATE"
+  value: {{ .Values.config.sentry.tracesSampleRate | quote }}
 {{- end }}
 {{- end }}

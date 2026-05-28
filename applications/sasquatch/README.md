@@ -49,6 +49,7 @@ Rubin Observatory's telemetry service
 | influxdb-enterprise-active.enabled | bool | `false` | Whether to enable influxdb-enterprise-active |
 | influxdb-enterprise-standby.enabled | bool | `false` | Whether to enable influxdb-enterprise-standby |
 | influxdb-enterprise.enabled | bool | `false` | Whether to enable influxdb-enterprise |
+| influxdb-migration.enabled | bool | `false` | Whether to enable the influxdb-migration subchart |
 | influxdb.config.continuous_queries.enabled | bool | `false` | Whether continuous queries are enabled |
 | influxdb.config.coordinator.log-queries-after | string | `"15s"` | Maximum duration a query can run before InfluxDB logs it as a slow query |
 | influxdb.config.coordinator.max-concurrent-queries | int | `500` | Maximum number of running queries allowed on the instance (0 is unlimited) |
@@ -83,6 +84,7 @@ Rubin Observatory's telemetry service
 | influxdb.securityContext.runAsUser | int | `1500` |  |
 | influxdb.setDefaultUser.enabled | bool | `true` | Whether the default InfluxDB user is set |
 | influxdb.setDefaultUser.user.existingSecret | string | `"sasquatch"` | Use `influxdb-user` and `influxdb-password` keys from this secret |
+| kafbat.enabled | bool | `false` | Whether to enable the kafbat subchart |
 | kafdrop-remote.enabled | bool | `false` | Whether to enable the kafdrop-remote, an instance of kafdrop for remote topics |
 | kafdrop-remote.kafka.topicPrefixes | string | None, must be set if enabled | Prefixes of the remote topics kafdrop-remote has access to. |
 | kafdrop-remote.kafka.user | string | `"kafdrop-remote"` | Kafka user to use for kafdrop-remote |
@@ -93,7 +95,7 @@ Rubin Observatory's telemetry service
 | kapacitor.existingSecret | string | `"sasquatch"` | Use `influxdb-user` and `influxdb-password` keys from this secret |
 | kapacitor.image.pullPolicy | string | `"IfNotPresent"` | Pull policy for Kapacitor |
 | kapacitor.image.repository | string | `"docker.io/library/kapacitor"` | Docker image to use for Kapacitor |
-| kapacitor.image.tag | string | `"1.8.3"` | Tag to use for Kapacitor |
+| kapacitor.image.tag | string | `"1.8.5"` | Tag to use for Kapacitor |
 | kapacitor.influxURL | string | `"http://sasquatch-influxdb.sasquatch:8086"` | InfluxDB connection URL |
 | kapacitor.persistence.enabled | bool | `true` | Whether to enable Kapacitor data persistence |
 | kapacitor.persistence.size | string | `"100Gi"` | Size of storage to request if enabled |
@@ -166,7 +168,7 @@ Rubin Observatory's telemetry service
 | alert-database.nameOverride | string | `""` | Override the base name for resources |
 | alert-database.server.image.imagePullPolicy | string | `"Always"` |  |
 | alert-database.server.image.repository | string | `"lsstdm/alert_database_server"` |  |
-| alert-database.server.image.tag | string | `"v3.1.0"` |  |
+| alert-database.server.image.tag | string | `"v4.0.0"` |  |
 | alert-database.server.logLevel | string | `"verbose"` | set the log level of the application. can be 'info', or 'debug', or anything else to suppress logging. |
 | alert-database.server.s3.alertBucket | string | `"rubin-alert-archive"` |  |
 | alert-database.server.s3.endpointURL | string | `"https://sdfdatas3.slac.stanford.edu/ "` | Project ID which has the above GCP IAM service account |
@@ -519,6 +521,42 @@ Rubin Observatory's telemetry service
 | influxdb-enterprise-standby.serviceAccount.annotations | object | `{}` | Annotations to add to the service account |
 | influxdb-enterprise-standby.serviceAccount.create | bool | `false` | Whether to create a Kubernetes service account to run as |
 | influxdb-enterprise-standby.serviceAccount.name | string | Name based on the chart fullname | Name of the Kubernetes service account to run as |
+| influxdb-migration.affinity | object | `{}` | Affinity rules for the influxdb-migration deployment pod |
+| influxdb-migration.image.pullPolicy | string | `"IfNotPresent"` | Pull policy for the influxdb-migration image |
+| influxdb-migration.image.repository | string | `"ghcr.io/lsst-sqre/sasquatch"` | Image to use in the influxdb-migration deployment |
+| influxdb-migration.image.tag | string | The appVersion of the chart | Tag of image to use |
+| influxdb-migration.influxdb.host | string | `"usdf-rsp.slac.stanford.edu"` | Target InfluxDB host |
+| influxdb-migration.influxdb.path | string | `"influxdb-enterprise-data"` | Target InfluxDB path |
+| influxdb-migration.nodeSelector | object | `{}` | Node selection rules for the influxdb-migration deployment pod |
+| influxdb-migration.podAnnotations | object | `{}` | Annotations for the influxdb-migration deployment pod |
+| influxdb-migration.resources | object | `{}` | Resource limits and requests for the influxdb-migration deployment pod |
+| influxdb-migration.tolerations | list | `[]` | Tolerations for the influxdb-migration deployment pod |
+| kafbat.affinity | object | `{}` | Affinity configuration |
+| kafbat.cluster.name | string | `"sasquatch"` | Name of the Strimzi cluster. Synchronize this with the cluster name in the parent Sasquatch chart. |
+| kafbat.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
+| kafbat.image.repository | string | `"ghcr.io/kafbat/kafka-ui"` | kafbat Docker image repository |
+| kafbat.image.tag | string | `"v1.5.0"` | kafbat image version |
+| kafbat.ingress.annotations | object | `{}` | Additional ingress annotations |
+| kafbat.ingress.enabled | bool | `false` | Whether to enable the ingress |
+| kafbat.ingress.path | string | `"/kafbat"` | Ingress path |
+| kafbat.kafbatUser.securityProtocol | string | `"SSL"` | Kafka Security Protocol for user |
+| kafbat.kafka.bootstrap | string | `"sasquatch-kafka-bootstrap.sasquatch:9093"` | Kafka bootstrap |
+| kafbat.kafka.topicPrefixes | list | ["lsst"] | Kafka topic prefixes to filter topics by |
+| kafbat.logging.appLevel | string | `"INFO"` | application logging level |
+| kafbat.logging.uiLevel | string | `"INFO"` | UI logging level |
+| kafbat.nodeSelector | object | `{}` | Node selector configuration |
+| kafbat.podAnnotations | object | `{}` | Pod annotations |
+| kafbat.replicaCount | int | `1` | Number of kafbat pods to run in the deployment. |
+| kafbat.resources | object | See `values.yaml` | Kubernetes requests and limits for kafbat |
+| kafbat.schemaRegistry | string | `"http://sasquatch-schema-registry.sasquatch:8081"` | The endpoint of Schema Registry |
+| kafbat.server.maxInMemorySize | string | `"20MB"` | Spring code max in memory size. Increase to improve kafbat performance. |
+| kafbat.server.pollingInterval | string | `"20"` | Polling interval to Kafka.  Increase to reduce kafbat load. |
+| kafbat.server.port | int | `8080` | The web server port to listen on |
+| kafbat.server.resourceLocking | bool | `true` | Sets Kafbat to read only |
+| kafbat.server.servlet.contextPath | string | `"/kafbat"` | The context path to serve requests on |
+| kafbat.service.annotations | object | `{}` | Additional annotations to add to the service |
+| kafbat.service.port | int | `8080` | Service port |
+| kafbat.tolerations | list | `[]` | Tolerations configuration |
 | kafdrop.affinity | object | `{}` | Affinity configuration |
 | kafdrop.cluster.name | string | `"sasquatch"` | Name of the Strimzi cluster. Synchronize this with the cluster name in the parent Sasquatch chart. |
 | kafdrop.cmdArgs | string | See `values.yaml` | Command line arguments to Kafdrop |
@@ -659,7 +697,7 @@ Rubin Observatory's telemetry service
 | rest-proxy.heapOptions | string | `"-Xms8192M -Xmx8192M"` | Kafka REST proxy JVM Heap Option |
 | rest-proxy.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
 | rest-proxy.image.repository | string | `"confluentinc/cp-kafka-rest"` | Kafka REST proxy image repository |
-| rest-proxy.image.tag | string | `"8.2.0"` | Kafka REST proxy image tag |
+| rest-proxy.image.tag | string | `"8.2.1"` | Kafka REST proxy image tag |
 | rest-proxy.ingress.annotations | object | `{"nginx.ingress.kubernetes.io/rewrite-target":"/$2"}` | Annotations that will be added to the Ingress resource |
 | rest-proxy.ingress.anonymous | bool | false | Whether to enable anonymous access to the REST proxy |
 | rest-proxy.ingress.enabled | bool | `false` | Whether to enable the ingress for the REST proxy |
@@ -678,7 +716,7 @@ Rubin Observatory's telemetry service
 | schema-registry.cluster.name | string | `"sasquatch"` | Name of the Strimzi cluster used by the Schema Registry. |
 | schema-registry.compatibilityLevel | string | `"none"` | Compatibility level for the Schema Registry. Options are: none, backward, backward_transitive, forward, forward_transitive, full, and full_transitive. |
 | schema-registry.image.repository | string | `"confluentinc/cp-schema-registry"` | Docker image for the Confluent Schema Registry. |
-| schema-registry.image.tag | string | `"8.2.0"` | Docker image tag for the Confluent Schema Registry. |
+| schema-registry.image.tag | string | `"8.2.1"` | Docker image tag for the Confluent Schema Registry. |
 | schema-registry.ingress.annotations | object | `{"nginx.ingress.kubernetes.io/rewrite-target":"/$2"}` | Annotations that will be added to the Ingress resource |
 | schema-registry.ingress.anonymous | bool | false | Whether to enable anonymous access to the Schema Registry |
 | schema-registry.ingress.enabled | bool | `false` | Whether to enable an ingress for the Schema Registry |
@@ -690,7 +728,7 @@ Rubin Observatory's telemetry service
 | schema-registry-remote.cluster.name | string | `"sasquatch"` | Name of the Strimzi cluster used by the Schema Registry. |
 | schema-registry-remote.compatibilityLevel | string | `"none"` | Compatibility level for the Schema Registry. Options are: none, backward, backward_transitive, forward, forward_transitive, full, and full_transitive. |
 | schema-registry-remote.image.repository | string | `"confluentinc/cp-schema-registry"` | Docker image for the Confluent Schema Registry. |
-| schema-registry-remote.image.tag | string | `"8.2.0"` | Docker image tag for the Confluent Schema Registry. |
+| schema-registry-remote.image.tag | string | `"8.2.1"` | Docker image tag for the Confluent Schema Registry. |
 | schema-registry-remote.ingress.annotations | object | `{"nginx.ingress.kubernetes.io/rewrite-target":"/$2"}` | Annotations that will be added to the Ingress resource |
 | schema-registry-remote.ingress.anonymous | bool | false | Whether to enable anonymous access to the Schema Registry |
 | schema-registry-remote.ingress.enabled | bool | `false` | Whether to enable an ingress for the Schema Registry |
