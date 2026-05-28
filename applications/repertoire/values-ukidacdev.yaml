@@ -5,5 +5,7 @@ config:
     servers:
       tap:
         enabled: true
+        databaseUrl: "postgresql://tap@10.72.0.77:5432/tap"
+        databasePasswordKey: "tap-database-password"
       ssotap:
         enabled: false
