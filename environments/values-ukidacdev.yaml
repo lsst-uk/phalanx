@@ -4,7 +4,7 @@ appOfAppsName: "science-platform"
 vaultUrl: "https://vault-rsp.lsst.ac.uk"
 vaultPathPrefix: "secret/phalanx/ukidacdev"
 applications:
-  mobu: true
+  mobu: false
   nublado: true
   portal: true
   postgres: true
