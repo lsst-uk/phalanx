@@ -2,12 +2,12 @@ config:
   availableDatasets:
     - "dp1"
   tap:
+    schemaVersion: "w.2026.17"
+    schemaSourceTemplate: "https://github.com/lsst/sdm_schemas/archive/refs/tags/w.2026.17.tar.gz"
     servers:
       tap:
         enabled: true
         databaseUrl: "postgresql://tap@192.41.122.236:5432/tap"
         databasePasswordKey: "tap-database-password"
-        schemaVersion: "w.2026.17"
-        schemaSourceTemplate: "https://github.com/lsst/sdm_schemas/archive/refs/tags/w.2026.17.tar.gz"
       ssotap:
         enabled: false
