@@ -5,7 +5,7 @@ cadc-tap:
     username: "tap"
     useVaultPassword: true
     external:
-      host: 10.72.0.77
+      host: 192.41.122.236
       port: 5432
 
   uws:
@@ -14,7 +14,7 @@ cadc-tap:
     username: "tap"
     useVaultPassword: true
     external:
-      host: 10.72.0.77
+      host: 192.41.122.236
       port: 5432
 
   config:
