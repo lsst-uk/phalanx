@@ -10,8 +10,13 @@ strimzi-kafka:
   controller:
     enabled: true
     affinity: {}
+    storage:
+      size: "10Gi"
   broker:
     enabled: true
+    affinity: {}
+    storage:
+      size: "5Gi"
   users:
     telegraf:
       enabled: false
