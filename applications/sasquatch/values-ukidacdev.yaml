@@ -9,6 +9,7 @@ strimzi-kafka:
         enabled: false
   controller:
     enabled: true
+    affinity: {}
   broker:
     enabled: true
   users:
