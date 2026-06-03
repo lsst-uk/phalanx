@@ -10,11 +10,13 @@ strimzi-kafka:
   controller:
     enabled: true
     affinity: {}
+    replicas: 1
     storage:
       size: "10Gi"
   broker:
     enabled: true
     affinity: {}
+    replicas: 1
     storage:
       size: "5Gi"
   users:
