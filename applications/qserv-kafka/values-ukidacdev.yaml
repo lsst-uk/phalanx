@@ -1,4 +1,12 @@
 config:
   logLevel: "DEBUG"
+  qservDatabaseUrl: ""
+  qservRestSendApiVersion: false
+  qservRestUrl: ""
+  qservRestUsername: ""
+frontend:
+  allowRootDebug: true
 resultWorker:
   allowRootDebug: true
+  autoscaling:
+    maxReplicas: 50
