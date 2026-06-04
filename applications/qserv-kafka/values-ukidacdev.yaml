@@ -1,6 +1,6 @@
 config:
   logLevel: "DEBUG"
-  qservDatabaseUrl: "mysql+asyncmy://qsmaster@192.41.122.106:4040"
+  qservDatabaseUrl: "mysql+asyncmy://qsmaster@192.41.122.106:30431"
   qservRestSendApiVersion: false
   qservRestUrl: "https://192.41.122.106:4048"
 frontend:
