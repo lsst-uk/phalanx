@@ -9,12 +9,34 @@ strimzi-kafka:
         enabled: false
   controller:
     enabled: true
-    affinity: {}
+    affinity:
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoreDuringExecution:
+          - podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+                - key: app.kubernetes.io/name
+                  operator: In
+                  values:
+                    - kafka
+            topologyKey: kubernetes.io/hostname
+        weight: 1
     storage:
       size: "5Gi"
   broker:
     enabled: true
-    affinity: {}
+    affinity:
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoreDuringExecution:
+          - podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+                - key: app.kubernetes.io/name
+                  operator: In
+                  values:
+                    - kafka
+            topologyKey: kubernetes.io/hostname
+        weight: 1
     storage:
       size: "5Gi"
   users:
