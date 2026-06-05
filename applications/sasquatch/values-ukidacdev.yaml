@@ -9,7 +9,6 @@ strimzi-kafka:
         enabled: false
   controller:
     enabled: true
-        weight: 1
     storage:
       size: "5Gi"
   broker:
