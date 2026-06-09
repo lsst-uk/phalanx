@@ -25,6 +25,7 @@ cadc-tap:
 
     qserv:
       host: "192.41.122.106:30431"
+      passwordEnabled: true
       image:
         tag: "2.15.1"
 
