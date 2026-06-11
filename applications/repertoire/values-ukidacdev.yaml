@@ -2,8 +2,8 @@ config:
   availableDatasets:
     - "dp1"
   tap:
-    schemaVersion: "w.2026.24"
-    schemaSourceTemplate: "https://github.com/lsst-uk/sdm_schemas/archive/refs/tags/w.2026.24.tar.gz"
+    schemaVersion: "w.2026.24_a"
+    schemaSourceTemplate: "https://github.com/lsst-uk/sdm_schemas/archive/refs/tags/w.2026.24_a.tar.gz"
     servers:
       tap:
         enabled: true
