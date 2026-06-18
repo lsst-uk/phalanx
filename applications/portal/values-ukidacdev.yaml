@@ -1,9 +1,18 @@
 replicaCount: 2
 
+redis:
+  persistence:
+    enabled: true
+    size: "32Gi"
+    storageClass: "cephfs"
+  resources:
+    limits:
+      memory: "1Gi"
+
 resources:
   limits:
-    memory: "8Gi"
-
-config:
-  hipsUrl: "http://alasky.cds.unistra.fr/DSS/DSSColor"
-  ssotap: "ssotap"
+    cpu: "4"
+    memory: "60Gi"
+  requests:
+    cpu: "1"
+    memory: "16Gi"
