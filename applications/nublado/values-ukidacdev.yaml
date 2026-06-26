@@ -7,10 +7,11 @@ controller:
         repository: "lsstsqre/sciplat-lab"
     lab:
       env:
-        AUTO_REPO_URLS: "https://github.com/lsst-uk/rsp-uk-notebooks"
         AUTO_REPO_BRANCH: "main"
-        AUTO_REPO_SPECS: "https://github.com/lsst-uk/rsp-uk-notebooks@main"
+        AUTO_REPO_SPECS: "https://github.com/lsst-uk/unified-tutorial-notebooks@main"
+        AUTO_REPO_URLS: "https://github.com/lsst-uk/unified-tutorial-notebooks"
         RSP_SITE_TYPE: "science"
+        TUTORIAL_NOTEBOOKS_URL: "https://github.com/lsst-uk/unified-tutorial-notebooks@main"
         DAF_BUTLER_REPOSITORY_INDEX: "/data/butler/data-repos.yaml"
       pullSecret: "pull-secret"
       standardInithome: true
