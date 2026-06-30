@@ -1,4 +1,20 @@
 config:
+  datasets:
+    macauff_gaiadr3xcatwise:
+      description: >-
+        Table of counterpart associations between Gaia DR3 and CatWISE2020.
+        Uses probabilistic cross-match algorithms as described by Wilson
+        &amp; Naylor (MNRAS, 2017, 2018a,b) and Wilson (RNAAS, 2022).
+        Sources are returned either as a pairing, in which the Gaia and
+        WISE objects are the same astrophysical source detected twice, or
+        as non-matches, with that particular object in one of the catalogues
+        having a corresponding flux upper limits in the opposing catalogue,
+        and entries include various pieces of metadata such as the
+        probability of the match/non-match, likelihood of match on purely
+        position or brightness grounds, and information on the level to
+        which objects suffer contamination due to hidden and unresolved
+        background sources.
+        docsUrl: "https://dp1.lsst.io/"
   availableDatasets:
     - "dp1"
     - "macauff_gaiadr3xcatwise2020_260630"
