@@ -1,9 +1,1 @@
 replicaCount: 2
-
-config:
-  cleanupInterval: "1h"
-  volumes:
-    privateWorkarea:
-      pvc:
-        size: "5Gi"
-        storageClass: "ceph-hdd"
