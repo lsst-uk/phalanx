@@ -22,7 +22,9 @@ config:
     schemaVersion: "w.2026.26-dev.531aab0"
     schemaSourceTemplate: "https://github.com/lsst-uk/sdm_schemas/archive/refs/tags/w.2026.26-dev.531aab0.tar.gz"
     servers:
-      tap:
+        schemas:
+          - dp1
+          - macauff_gaiadr3xcatwise
         enabled: true
         databaseUrl: "postgresql://tap@192.41.122.236:5432/tap"
         databasePasswordKey: "tap-database-password"
