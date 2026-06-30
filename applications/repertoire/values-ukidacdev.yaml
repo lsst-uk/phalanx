@@ -1,9 +1,10 @@
 config:
   availableDatasets:
     - "dp1"
+    - "macauff_gaiadr3xcatwise"
   tap:
-    schemaVersion: "w.2026.24_a"
-    schemaSourceTemplate: "https://github.com/lsst-uk/sdm_schemas/archive/refs/tags/w.2026.24_a.tar.gz"
+    schemaVersion: "w.2026.26-dev.531aab0"
+    schemaSourceTemplate: "https://github.com/lsst-uk/sdm_schemas/archive/refs/tags/w.2026.26-dev.531aab0.tar.gz"
     servers:
       tap:
         enabled: true
