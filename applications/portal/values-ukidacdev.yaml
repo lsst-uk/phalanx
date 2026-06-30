@@ -6,4 +6,4 @@ config:
     privateWorkarea:
       pvc:
         size: "5Gi"
-        storageClass: "cephfs"
+        storageClass: "ceph-hdd"
