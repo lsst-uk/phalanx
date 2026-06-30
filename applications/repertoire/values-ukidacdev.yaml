@@ -19,8 +19,8 @@ config:
     - "dp1"
     - "macauff_gaiadr3xcatwise"
   tap:
-    schemaVersion: "w.2026.26-dev.531aab0"
-    schemaSourceTemplate: "https://github.com/lsst-uk/sdm_schemas/archive/refs/tags/w.2026.26-dev.531aab0.tar.gz"
+    schemaVersion: "w.2026.26-dev.8e3187d"
+    schemaSourceTemplate: "https://github.com/lsst-uk/sdm_schemas/archive/refs/tags/w.2026.26-dev.8e3187d.tar.gz"
     servers:
       tap:
         schemas:
