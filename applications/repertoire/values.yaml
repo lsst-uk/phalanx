@@ -58,6 +58,10 @@ config:
         LSST Commissioning Camera of seven ~1 square degree fields, over seven
         weeks in late 2024.
       docsUrl: "https://dp1.lsst.io/"
+    dp2:
+      description: >-
+        Data Preview 2.
+      docsUrl: "https://dp2.lsst.io/"
     efd:
       description: "Engineering Field Database."
     live:
@@ -137,7 +141,7 @@ config:
     created: "2026-05-20T00:00:00"
     creator: "Vera C. Rubin Observatory"
     ivoid: "ivo://org.rubinobs/registry"
-    pathPrefix: "/discovery"
+    path: "/api/registry"
     repositoryName: "Rubin Science Platform IVOA Publishing Registry"
     rights: >-
       Restricted to authorized Rubin data rights holders. See
@@ -362,6 +366,7 @@ config:
         datasets:
           - "dp02"
           - "dp1"
+          - "dp2"
         template: "https://{{base_hostname}}/api/tap"
         versions:
           tables:
@@ -491,7 +496,7 @@ cloudsql:
     repository: "gcr.io/cloudsql-docker/gce-proxy"
 
     # -- Cloud SQL Auth Proxy tag to use
-    tag: "1.38.0"
+    tag: "1.38.1"
 
     # -- Pull policy for Cloud SQL Auth Proxy images
     pullPolicy: "IfNotPresent"

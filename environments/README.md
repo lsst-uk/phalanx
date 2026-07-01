@@ -5,7 +5,6 @@
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | appOfAppsName | string | `"app-of-apps"` | Name of the parent Argo CD app-of-apps that manages all the applications enabled for this environment |
-| applications.alert-stream-broker | bool | `false` | Enable the alert-stream-broker application |
 | applications.argo-workflows | bool | `false` | Enable the argo-workflows application |
 | applications.argocd | bool | `true` | Enable the Argo CD application. This must be enabled for all environments and is present here only because it makes parsing easier |
 | applications.atlantis | bool | `false` | Enable the atlantis application |
@@ -87,7 +86,6 @@
 | applications.strimzi-access-operator | bool | `false` | Enable the strimzi-access-operator application |
 | applications.strimzi-registry-operator | bool | `false` | Enable the strimzi-registry-operator application |
 | applications.tap | bool | `false` | Enable the tap application |
-| applications.tasso | bool | `false` | Enable the tasso application |
 | applications.templatebot | bool | `false` | Enable the templatebot application |
 | applications.times-square | bool | `false` | Enable the times-square application |
 | applications.turborepo-cache | bool | `false` | Enable the turborepo-cache application |

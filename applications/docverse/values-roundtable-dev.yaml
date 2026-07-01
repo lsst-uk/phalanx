@@ -10,9 +10,12 @@ config:
     - "jonathansick"
   keeperSync:
     enabled: true
-  lifecycleEval:
+  maintenance:
     enabled: true
+    gitRefAuditEnabled: true
   sentry:
+    enabled: true
+  metrics:
     enabled: true
 
 cloudsql:
