@@ -86,6 +86,10 @@ config:
     # -- Extra JDBC connection parameters
     jdbcParams: ""
 
+    # -- Schema name mappings: comma-separated list of user_schema:internal_schema pairs.
+    # Example: "dp1:dp1_pilot" dp1 queries execute against dp1_pilot.
+    schemaMappings: ""
+
     image:
       # -- TAP image to use
       repository: "ghcr.io/lsst-sqre/lsst-tap-service"
@@ -94,7 +98,7 @@ config:
       pullPolicy: "IfNotPresent"
 
       # -- Tag of TAP image to use
-      tag: "3.17.0"
+      tag: "3.18.0"
 
     # -- Whether the Qserv database is password protected
     # @default -- false
@@ -120,7 +124,7 @@ config:
       pullPolicy: "IfNotPresent"
 
       # -- Tag of TAP image to use
-      tag: "3.17.0"
+      tag: "3.18.0"
 
   # -- Address to a MySQL database containing TAP schema data
   tapSchemaAddress: "cadc-tap-schema-db:3306"
@@ -194,6 +198,10 @@ config:
   # -- Maximum row limit (MAXREC) enforced server-side.
   # Leave empty to use the default (100000000).
   maxRec: ""
+
+  # -- Whether to advertise VOParquet (application/vnd.apache.parquet) as a
+  # supported output format in the TAP capabilities.
+  voParquet: false
 
   # -- Rules for renaming Columns
   urlRewrite:
@@ -355,7 +363,7 @@ uws:
     pullPolicy: "IfNotPresent"
 
     # -- Tag of UWS database image to use
-    tag: "3.17.0"
+    tag: "3.18.0"
 
   # -- Resource limits and requests for the UWS database pod
   # @default -- See `values.yaml`
@@ -394,7 +402,7 @@ cloudsql:
     repository: "gcr.io/cloudsql-docker/gce-proxy"
 
     # -- Cloud SQL Auth Proxy tag to use
-    tag: "1.37.15"
+    tag: "1.38.1"
 
     # -- Pull policy for Cloud SQL Auth Proxy images
     pullPolicy: "IfNotPresent"

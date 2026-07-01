@@ -31,7 +31,10 @@ dependencies = [
     "pydantic>2",
     "pyyaml",
     "rubin-gafaelfawr",
-    "safir>5",
+    "safir>=14.3",
+    "google-cloud-gke-backup<1",
+    "google-cloud-compute-v1beta<1",
+    "google-cloud-container>=2,<3",
 ]
 
 [project.scripts]
@@ -53,7 +56,6 @@ dev = [
     "pytest-cov",
     "pytest-sugar",
     "pytest-mock",
-    "syrupy",
 ]
 docs = [
     "autodoc-pydantic",
@@ -63,9 +65,9 @@ docs = [
     "sphinx-jinja",
 ]
 lint = [
-    "pre-commit",
-    "pre-commit-uv",
+    "prek!=0.4.2",  # https://github.com/j178/prek/issues/2127
     "ruff>=0.15",
+    "uv",
 ]
 tox = [
     "tox>=4.24",

@@ -1,0 +1,65 @@
+{
+  "items": [
+    {
+      "finalizers": [],
+      "kind": "Deployment",
+      "name": "gafaelfawr",
+      "namespace": "gafaelfawr",
+      "previous_replica_count": null,
+      "replicas": 1,
+      "status": {
+        "conditions": [
+          {
+            "status": "True",
+            "type": "Available"
+          },
+          {
+            "status": "True",
+            "type": "Progressing"
+          }
+        ]
+      }
+    },
+    {
+      "finalizers": [],
+      "kind": "Deployment",
+      "name": "gafaelfawr-operator",
+      "namespace": "gafaelfawr",
+      "previous_replica_count": null,
+      "replicas": 1,
+      "status": {
+        "conditions": [
+          {
+            "status": "True",
+            "type": "Available"
+          },
+          {
+            "status": "True",
+            "type": "Progressing"
+          }
+        ]
+      }
+    },
+    {
+      "finalizers": [],
+      "kind": "Deployment",
+      "name": "argocd",
+      "namespace": "argocd",
+      "previous_replica_count": null,
+      "replicas": 1,
+      "status": {
+        "conditions": [
+          {
+            "status": "True",
+            "type": "Available"
+          },
+          {
+            "status": "True",
+            "type": "Progressing"
+          }
+        ]
+      }
+    }
+  ],
+  "kind": "List"
+}

@@ -274,7 +274,7 @@ kapacitor:
     # -- Docker image to use for Kapacitor
     repository: docker.io/library/kapacitor
     # -- Tag to use for Kapacitor
-    tag: 1.8.3
+    tag: 1.8.5
     # -- Pull policy for Kapacitor
     pullPolicy: "IfNotPresent"
 
@@ -315,6 +315,10 @@ kapacitor:
       memory: 2Gi
       cpu: 2
 
+kafbat:
+  # -- Whether to enable the kafbat subchart
+  enabled: false
+
 kafdrop:
   # -- Whether to enable the kafdrop subchart
   enabled: true
@@ -336,6 +340,10 @@ squareEvents:
 
 backup:
   # -- Whether to enable the backups subchart
+  enabled: false
+
+influxdb-migration:
+  # -- Whether to enable the influxdb-migration subchart
   enabled: false
 
 tap:

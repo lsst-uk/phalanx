@@ -36,7 +36,7 @@
 .. _Phalanx repository: https://github.com/lsst-sqre/phalanx
 .. _Pods:
 .. _Pod: https://kubernetes.io/docs/concepts/workloads/pods/
-.. _pre-commit: https://pre-commit.com
+.. _prek: https://prek.j178.dev/
 .. _Repertoire: https://repertoire.lsst.io/
 .. _Roundtable: https://roundtable.lsst.io/
 .. _Ruff: https://docs.astral.sh/ruff/
@@ -48,8 +48,6 @@
 .. _SODA: https://ivoa.net/documents/SODA/
 .. _Sphinx: https://www.sphinx-doc.org/en/master/
 .. _SQuaRE Bot: https://squarebot.lsst.io/
-.. _syrupy: https://syrupy-project.github.io/syrupy/
-.. _syrupy docs: https://syrupy-project.github.io/syrupy/#cli-options
 .. _TAP: https://www.ivoa.net/documents/TAP/
 .. _Telegraf: https://www.influxdata.com/time-series-platform/telegraf/
 .. _tox: https://tox.wiki/en/latest/

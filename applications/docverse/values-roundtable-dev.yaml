@@ -8,6 +8,15 @@ config:
   updateSchema: true
   superadminUsers:
     - "jonathansick"
+  keeperSync:
+    enabled: true
+  maintenance:
+    enabled: true
+    gitRefAuditEnabled: true
+  sentry:
+    enabled: true
+  metrics:
+    enabled: true
 
 cloudsql:
   enabled: true

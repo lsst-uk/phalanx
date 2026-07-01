@@ -14,14 +14,13 @@ x-butler-lfa-combo: &butler-lfa-combo
 atqueue:
   classifier: scriptqueue2
   image:
-    revision: 0
+    revision: 4
     repository: ts-dockerhub.lsst.org/scriptqueue
-    pullPolicy: Always
   env:
     DAF_BUTLER_REPOSITORY_INDEX: /project/data-repos.yaml
     RUN_ARG: 2 --state enabled
     USER_USERNAME: user
-    IMAGE_SERVER_URL: http://ccs.lsst.org
+    IMAGE_SERVER_URL: http://lsstcam-mcm.cp.lsst.org
     AWS_REQUEST_CHECKSUM_CALCULATION: WHEN_REQUIRED
     LSST_RESOURCES_S3_PROFILE_butler: https://s3-butler.cp.lsst.org
     AWS_SHARED_CREDENTIALS_FILE: /home/saluser/.lsst/aws-credentials.ini
@@ -70,9 +69,8 @@ atqueue:
 atscheduler:
   classifier: scheduler2
   image:
-    revision: 1
+    revision: 8
     repository: ts-dockerhub.lsst.org/scheduler
-    pullPolicy: Always
   env:
     INDEX: 2
     AWS_REQUEST_CHECKSUM_CALCULATION: WHEN_REQUIRED
@@ -110,9 +108,8 @@ atscheduler:
 gis:
   enabled: true
   image:
-    revision: 0
+    revision: 2
     repository: ts-dockerhub.lsst.org/gis
-    pullPolicy: Always
   secretFixup:
     containerPath: /home/saluser/.store
     filenames:
@@ -131,14 +128,13 @@ gis:
 mtqueue:
   classifier: scriptqueue1
   image:
-    revision: 0
+    revision: 4
     repository: ts-dockerhub.lsst.org/scriptqueue
-    pullPolicy: Always
   env:
     DAF_BUTLER_REPOSITORY_INDEX: /project/data-repos.yaml
     RUN_ARG: 1 --state enabled
     USER_USERNAME: user
-    IMAGE_SERVER_URL: http://ccs.lsst.org
+    IMAGE_SERVER_URL: http://lsstcam-mcm.cp.lsst.org
     AWS_REQUEST_CHECKSUM_CALCULATION: WHEN_REQUIRED
     LSST_RESOURCES_S3_PROFILE_butler: https://s3-butler.cp.lsst.org
     AWS_SHARED_CREDENTIALS_FILE: /home/saluser/.lsst/aws-credentials.ini
@@ -187,9 +183,8 @@ mtqueue:
 mtscheduler:
   classifier: scheduler1
   image:
-    revision: 1
+    revision: 8
     repository: ts-dockerhub.lsst.org/scheduler
-    pullPolicy: Always
   env:
     INDEX: 1
     AWS_REQUEST_CHECKSUM_CALCULATION: WHEN_REQUIRED
@@ -227,13 +222,12 @@ mtscheduler:
 ocsqueue:
   classifier: scriptqueue3
   image:
-    revision: 0
+    revision: 4
     repository: ts-dockerhub.lsst.org/scriptqueue
-    pullPolicy: Always
   env:
     DAF_BUTLER_REPOSITORY_INDEX: /project/data-repos.yaml
     RUN_ARG: 3 --state enabled
-    IMAGE_SERVER_URL: http://ccs.lsst.org
+    IMAGE_SERVER_URL: http://lsstcam-mcm.cp.lsst.org
     AWS_REQUEST_CHECKSUM_CALCULATION: WHEN_REQUIRED
     LSST_RESOURCES_S3_PROFILE_butler: https://s3-butler.cp.lsst.org
     AWS_SHARED_CREDENTIALS_FILE: /home/saluser/.lsst/aws-credentials.ini
@@ -282,9 +276,8 @@ ocsqueue:
 ocsscheduler:
   classifier: scheduler3
   image:
-    revision: 1
+    revision: 8
     repository: ts-dockerhub.lsst.org/scheduler
-    pullPolicy: Always
   env:
     INDEX: 3
     AWS_REQUEST_CHECKSUM_CALCULATION: WHEN_REQUIRED
@@ -321,9 +314,8 @@ ocsscheduler:
 
 watcher:
   image:
-    revision: 1
+    revision: 3
     repository: ts-dockerhub.lsst.org/watcher
-    pullPolicy: Always
   envSecrets:
   - name: ESCALATION_KEY
     key: squadcast-escalation-key
