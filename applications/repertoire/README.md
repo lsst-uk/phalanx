@@ -16,7 +16,7 @@ Service discovery
 | cloudsql.enabled | bool | `false` | Enable the Cloud SQL Auth Proxy, used with Cloud SQL databases on Google Cloud |
 | cloudsql.image.pullPolicy | string | `"IfNotPresent"` | Pull policy for Cloud SQL Auth Proxy images |
 | cloudsql.image.repository | string | `"gcr.io/cloudsql-docker/gce-proxy"` | Cloud SQL Auth Proxy image to use |
-| cloudsql.image.tag | string | `"1.37.14"` | Cloud SQL Auth Proxy tag to use |
+| cloudsql.image.tag | string | `"1.38.1"` | Cloud SQL Auth Proxy tag to use |
 | cloudsql.instanceConnectionName | string | None, must be set if Cloud SQL Auth Proxy is enabled | Instance connection name for a Cloud SQL PostgreSQL instance |
 | cloudsql.resources | object | See `values.yaml` | Resource limits and requests for the Cloud SQL Proxy container |
 | cloudsql.serviceAccount | string | None, must be set if Cloud SQL Auth Proxy is enabled | The Google service account that has an IAM binding to the `repertoire` Kubernetes service account and has the `cloudsql.client` role |
@@ -32,6 +32,7 @@ Service discovery
 | config.hips.pathPrefix | string | `"/api/hips/v2"` | Path prefix at which the HiPS lists should be served |
 | config.hips.sourceTemplate | string | See `values.yaml` | Jinja template to construct the base URLs of the underlying HiPS surveys, used to construct the HiPS list. |
 | config.influxdbDatabases | object | `{}` | Dictionary of InfluxDB database names to connection information for that database, with keys `url`, `database`, `username`, `passwordKey`, and `schemaRegistry`. `passwordKey` must match an entry in `secrets.yaml`. |
+| config.ivoaRegistry | object | See `values.yaml` | IVOA publishing registry configuration. |
 | config.logLevel | string | `"INFO"` | Logging level |
 | config.logProfile | string | `"production"` | Logging profile (`production` for JSON, `development` for human-friendly) |
 | config.metrics.application | string | `"repertoire"` | Name under which to log metrics. Generally there is no reason to change this. |
@@ -44,8 +45,8 @@ Service discovery
 | config.sentry.enabled | bool | `false` | Whether to enable the Sentry integration |
 | config.slackAlerts | bool | `false` | Whether to send Slack alerts for unexpected failures |
 | config.subdomainRules | object | See `values.yaml` | Rules for determining the expected URLs of deployed services that use a subdomain. See the [Repertoire documentation](https://repertoire.lsst.io/) for more information. |
-| config.tap.schemaSourceTemplate | string | lsst/sdm_schemas on GitHub | Template for schema artifact URLs (use {schemaVersion} placeholder) |
-| config.tap.schemaVersion | string | `"w.2026.01"` | Default schema version for all TAP services (can be overridden per-app) |
+| config.tap.schemaSourceTemplate | string | GCS rubin-sdm-schemas-artifacts bucket | Template for schema artifact URLs (use {schemaVersion} placeholder) |
+| config.tap.schemaVersion | string | `"releases/w.2026.17"` | Default schema version for all TAP services (can be overridden per-app) |
 | config.tap.servers | object | See `values.yaml` | TAP Server configuration by application name. Configuration is used to populate & update the TAP_SCHEMA database for each enabled TAP application |
 | config.useSubdomains | list | `[]` | List of services that use subdomains instead of the main hostname. See the [Repertoire documentation](https://repertoire.lsst.io/) for more information. |
 | global.environmentName | string | Set by Argo CD | Name of the Phalanx environment |

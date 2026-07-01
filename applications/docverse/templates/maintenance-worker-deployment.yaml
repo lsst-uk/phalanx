@@ -1,0 +1,83 @@
+{{- if .Values.config.maintenance.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "docverse-maintenance-worker"
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+  labels:
+    {{- include "docverse.labels" . | nindent 4 }}
+    app.kubernetes.io/component: "maintenance-worker"
+    docverse-redis-client: "true"
+spec:
+  replicas: {{ .Values.maintenanceWorker.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "docverse.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: "maintenance-worker"
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        {{- with .Values.maintenanceWorker.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        {{- include "docverse.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: "maintenance-worker"
+        docverse-redis-client: "true"
+    spec:
+      {{- with .Values.maintenanceWorker.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.cloudsql.enabled }}
+      serviceAccountName: "docverse"
+      {{- else }}
+      automountServiceAccountToken: false
+      {{- end }}
+      containers:
+        - name: "docverse-maintenance-worker"
+          command: ["arq"]
+          args: ["docverse.worker.main.MaintenanceWorkerSettings"]
+          env:
+            {{- include "docverse.envVars" . | nindent 12 }}
+            {{- include "docverse.kafkaEnvVars" . | nindent 12 }}
+          envFrom:
+            - configMapRef:
+                name: "docverse"
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          resources:
+            {{- toYaml .Values.maintenanceWorker.resources | nindent 12 }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - "all"
+            readOnlyRootFilesystem: true
+          {{- if .Values.config.metrics.enabled }}
+          volumeMounts:
+            {{- include "docverse.kafkaVolumeMounts" . | nindent 12 }}
+          {{- end }}
+      {{- if .Values.cloudsql.enabled }}
+      initContainers:
+        {{- include "docverse.cloudsqlSidecar" . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.maintenanceWorker.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.maintenanceWorker.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+      {{- if .Values.config.metrics.enabled }}
+      volumes:
+        {{- include "docverse.kafkaVolume" . | nindent 8 }}
+      {{- end }}
+{{- end }}

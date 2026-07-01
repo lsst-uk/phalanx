@@ -84,6 +84,14 @@ controller:
             requests:
               cpu: 1.0
               memory: "8Gi"
+        - size: "gargantuan"
+          resources:
+            limits:
+              cpu: 15.0
+              memory: "120Gi"
+            requests:
+              cpu: 1.875
+              memory: "40Gi"
       tolerations:
         - key: "nublado.lsst.io/permitted"
           operator: "Exists"
@@ -120,7 +128,8 @@ hub:
 
 jupyterhub:
   cull:
-    timeout: 108000  # 30 hours
+    timeout: 90000  # 25 hours
+    maxAge: 432000  # 5 days
   hub:
     config:
       JupyterHub:

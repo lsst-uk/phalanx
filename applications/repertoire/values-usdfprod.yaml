@@ -3,6 +3,8 @@ config:
     - "dp02"
     - "dp03"
     - "dp1"
+    - "efd"
+    - "live"
   hips:
     datasets: {}
   influxdbDatabases:
@@ -12,3 +14,4 @@ config:
       username: "efdreader"
       passwordKey: "usdf_efd-password"
       schemaRegistry: "http://sasquatch-schema-registry.sasquatch:8081"
+      local: true

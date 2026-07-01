@@ -15,11 +15,11 @@ __all__ = ["MockCommand"]
 class _CaptureCall:
     """Args and response for an expected call to Command.capture."""
 
-    args: tuple[str]
+    args: tuple
     """The expected args."""
 
-    response: str
-    """The mock response."""
+    response: str | Exception
+    """The mock response, or an exception to raise."""
 
 
 class MockCommand:
@@ -35,70 +35,70 @@ class MockCommand:
 
     Examples
     --------
-    import phalanx.kubernetes
+    .. code-block:: python
 
-    mock_command = MockCommand()
-    with mock_command.patch_module(kubernetes) as command:
+       import phalanx.kubernetes
 
-        command.expect_capture(
-            args=(
-                "get",
-                "Deployment",
-                "-l",
-                "argocd.argoproj.io/instance",
-                "-o",
-                "json",
-                "--all-namespaces",
-            ),
-            stdout=kubectl_output("deployment-list_scaled-down.json"),
+       mock_command = MockCommand()
+       with mock_command.patch_module(kubernetes) as command:
+           command.expect_capture(
+               args=(
+                   "get",
+                   "Deployment",
+                   "-l",
+                   "argocd.argoproj.io/instance",
+                   "-o",
+                   "json",
+                   "--all-namespaces",
+               ),
+               stdout=kubectl_output("deployment-list_scaled-down.json"),
+           )
 
-        command.expect_capture(
-            args=(
-                "get",
-                "StatefulSet",
-                "-l",
-                "argocd.argoproj.io/instance",
-                "-o",
-                "json",
-                "--all-namespaces",
-            ),
-            stdout=kubectl_output("statefulset-list-scaled-down.json"),
-        )
+           command.expect_capture(
+               args=(
+                   "get",
+                   "StatefulSet",
+                   "-l",
+                   "argocd.argoproj.io/instance",
+                   "-o",
+                   "json",
+                   "--all-namespaces",
+               ),
+               stdout=kubectl_output("statefulset-list-scaled-down.json"),
+           )
 
-        # Some method that uses a command instance in the kubernetes module
-        use_command()
+           # Some method that uses a command instance in the kubernetes module
+           phalanx.kubernetes.use_command()
 
-        assert command.mock.capture.call_args_list == [
-            call(
-                "get",
-                "Deployment",
-                "-l",
-                "argocd.argoproj.io/instance",
-                "-o",
-                "json",
-                "--all-namespaces",
-            ),
-            call(
-                "get",
-                "StatefulSet",
-                "-l",
-                "argocd.argoproj.io/instance",
-                "-o",
-                "json",
-                "--all-namespaces",
-            ),
-        ]
-
-
+           assert command.mock.capture.call_args_list == [
+               call(
+                   "get",
+                   "Deployment",
+                   "-l",
+                   "argocd.argoproj.io/instance",
+                   "-o",
+                   "json",
+                   "--all-namespaces",
+               ),
+               call(
+                   "get",
+                   "StatefulSet",
+                   "-l",
+                   "argocd.argoproj.io/instance",
+                   "-o",
+                   "json",
+                   "--all-namespaces",
+               ),
+           ]
     """
 
     def __init__(self) -> None:
         self._capture_calls: list[_CaptureCall] = []
-        self._run_calls: list[tuple] = []
+        self._run_calls: list[_CaptureCall] = []
         self._mock: Mock | None = None
 
-    def expect_capture(self, args: tuple, stdout: str) -> None:
-        """Expect capture to be called with args and return response.
+    def expect_capture(self, args: tuple, response: str | Exception) -> None:
+        """Expect capture to be called with args and return response or raise.
 
         This will configure the mock to expect calls to be made in the order
         that calls to this method are made.
@@ -108,16 +108,16 @@ class MockCommand:
         args
             A tuple of args to expect capture to be called with.
         response
-            The response to return from the mock call when called with these
-            args.
+            The response to return, or an exception to raise, from the mock
+            call when called with these args.
         """
-        self._capture_calls.append(_CaptureCall(args=args, response=stdout))
+        self._capture_calls.append(_CaptureCall(args=args, response=response))
 
     @property
     def mock(self) -> Mock:
         """Return the wrapped Mock object if it has been initialized.
 
-        patch_command_class must be called before accessing this property.
+        `patch_command_class` must be called before accessing this property.
 
         Returns
         -------
@@ -131,17 +131,16 @@ class MockCommand:
             patch_command_class.
         """
         if self._mock is None:
-            raise RuntimeError(
-                "You must call patch_object to initialize this MockCommand."
-            )
+            msg = "Initialize this MockCommand first with patch_command_class"
+            raise RuntimeError(msg)
         return self._mock
 
     def patch_command_class(self, module: object) -> Iterator[Self]:
         """Patch a Command object with a mock.
 
-        This will patch the Command constructor in the given module to return a
-        mock that will expect an explicit list of calls to the capture method
-        and return explicit responses for each call.
+        This will patch the Command constructor in the given module to return
+        a mock that will expect an explicit list of calls to the capture
+        method and return explicit responses for each call.
 
         Parameters
         ----------
@@ -151,35 +150,39 @@ class MockCommand:
         Yields
         ------
         Self
-            This same MockCommand instance with the mock
-            attibute initialized to a mock Command instance
-            that will expect an exact list of calls to its
-            capture method.
+            This same MockCommand instance with the mock attibute initialized
+            to a mock Command instance that will expect an exact list of calls
+            to its capture method.
         """
 
-        def side_effect(*args: Any) -> CompletedProcess:
+        def capture_side_effect(*args: Any) -> CompletedProcess:
             """Return fake data from calls to capture."""
             try:
                 expected = self._capture_calls.pop(0)
             except IndexError:
                 pytest.fail(
-                    f"More were made to capture than were expected."
+                    f"More calls were made to capture than were expected."
                     f" Extra call: {args}"
                 )
-
-            process = CompletedProcess(
-                args=expected.args, returncode=0, stdout=expected.response
-            )
 
             if args != expected.args:
                 pytest.fail(
                     f"Command called with unexpected arguments. Expected:"
                     f" {expected.args}, actual: {args}"
                 )
-            return process
+
+            match expected.response:
+                case Exception() as exc:
+                    raise exc
+                case str() as stdout:
+                    return CompletedProcess(
+                        args=expected.args,
+                        returncode=0,
+                        stdout=stdout,
+                    )
 
         mock = Mock()
-        mock.capture.side_effect = side_effect
+        mock.capture.side_effect = capture_side_effect
         self._mock = mock
 
         with patch.object(module, "Command", return_value=mock, autospec=True):

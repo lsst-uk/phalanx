@@ -3,6 +3,7 @@ config:
     - "dp02"
     - "dp03"
     - "dp1"
+    - "prompt"
   hips:
     legacy:
       dataset: "dp1"
@@ -13,12 +14,11 @@ config:
       username: "efdreader"
       passwordKey: "idfdev_efd-password"
       schemaRegistry: "http://sasquatch-schema-registry.sasquatch:8081"
+      local: true
   metrics:
     enabled: true
   slackAlerts: true
   tap:
-    schemaVersion: "releases/w.2026.15"
-    schemaSourceTemplate: "gs://rubin-sdm-schemas-artifacts/{version}/schemas.tar.gz"
     servers:
       tap:
         enabled: true

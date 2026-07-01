@@ -28,6 +28,14 @@ config:
     uidAttr: null
     gidAttr: null
     addUserGroup: true
+    systemGroups:
+      - "g_admins"
+      - "g_contrib"
+      - "g_developers"
+      - "g_dm"
+      - "g_portal_admins"
+      - "g_rubin"
+      - "g_users"
 
   firestore:
     project: "rsp-firestore-stable-e8eb"
@@ -49,19 +57,22 @@ config:
   quota:
     default:
       api:
+        herald: 250
         hips: 1000
         sia: 70
         tap: 1000
         vo-cutouts: 35
       notebook:
         cpu: 4.0
-        memory: 16
+        memory: 32
       tap:
         qserv:
           concurrent: 12
 
   groupMapping:
     "admin:jupyterlab":
+      - "g_admins"
+    "admin:notifications":
       - "g_admins"
     "admin:userinfo":
       - "g_admins"

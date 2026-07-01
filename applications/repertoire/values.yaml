@@ -58,6 +58,10 @@ config:
         LSST Commissioning Camera of seven ~1 square degree fields, over seven
         weeks in late 2024.
       docsUrl: "https://dp1.lsst.io/"
+    dp2:
+      description: >-
+        Data Preview 2.
+      docsUrl: "https://dp2.lsst.io/"
     efd:
       description: "Engineering Field Database."
     live:
@@ -129,6 +133,31 @@ config:
   # human-friendly)
   logProfile: "production"
 
+  # -- IVOA publishing registry configuration.
+  # @default -- See `values.yaml`
+  ivoaRegistry:
+    adminEmail: "rubin-vo@lists.lsst.org"
+    authority: "ivo://org.rubinobs"
+    created: "2026-05-20T00:00:00"
+    creator: "Vera C. Rubin Observatory"
+    ivoid: "ivo://org.rubinobs/registry"
+    path: "/api/registry"
+    repositoryName: "Rubin Science Platform IVOA Publishing Registry"
+    rights: >-
+      Restricted to authorized Rubin data rights holders. See
+      https://www.lsst.org/content/data-rights
+    rightsUri: "https://www.lsst.org/content/data-rights"
+    shortName: "Rubin RSP"
+    organisation:
+      created: "2026-05-20T00:00:00Z"
+      description: >-
+        The NSF-DOE Vera C. Rubin Observatory conducts the Legacy Survey of
+        Space and Time (LSST) using the Simonyi Survey Telescope on Cerro
+        Pachón, Chile.
+      homepage: "https://rubinobservatory.org"
+      ivoid: "ivo://org.rubinobs/org"
+      title: "Vera C. Rubin Observatory"
+
   metrics:
     # -- Whether to enable sending metrics
     enabled: false
@@ -170,16 +199,10 @@ config:
         datasets:
           - "efd"
         template: "https://{{base_hostname}}/api/consdbtap"
-    herald:
-      - type: "data"
-        name: "alerts"
-        datasets:
-          - "dp02"
-          - "dp03"
-          - "dp1"
-          - "prompt"
-        template: "https://{{base_hostname}}/api/alerts"
-        openapi: "https://{{base_hostname}}/api/alerts/openapi.json"
+        versions:
+          tables:
+            template: "https://{{base_hostname}}/api/consdbtap/tables"
+            ivoaStandardId: "ivo://ivoa.net/std/VOSI#tables"
     datalinker:
       - type: "data"
         name: "datalink"
@@ -199,7 +222,25 @@ config:
           datalink-links-1.1:
             template: "https://{{base_hostname}}/api/datalink/links"
         openapi: "https://{{base_hostname}}/api/datalink/openapi.json"
+    docverse:
+      - type: "internal"
+        name: "docverse"
+        template: "https://{{base_hostname}}/docverse/api"
+        openapi: "https://{{base_hostname}}/docverse/api/openapi.json"
     gafaelfawr:
+      - type: "data"
+        name: "gms"
+        template: "https://{{base_hostname}}/auth/gms"
+        versions:
+          gms-search-1.0:
+            template: "https://{{base_hostname}}/auth/gms"
+            ivoaStandardId: "ivo://ivoa.net/std/gms#search-1.0"
+        ivoaRegistry:
+          ivoaServiceType: "gms"
+          ivoid: "ivo://example.com/groups"
+          title: "Rubin Observatory GMS"
+          created: '2026-06-04T00:00:00'
+          description: "Group Membership Service for Rubin Observatory."
       - type: "internal"
         name: "gafaelfawr"
         template: "https://{{base_hostname}}/auth"
@@ -213,12 +254,23 @@ config:
       - type: "ui"
         name: "logout"
         template: "https://{{base_hostname}}/logout"
+    herald:
+      - type: "data"
+        name: "alerts"
+        datasets:
+          - "prompt"
+        template: "https://{{base_hostname}}/api/alerts"
+        openapi: "https://{{base_hostname}}/api/alerts/openapi.json"
     livetap:
       - type: "data"
         name: "tap"
         datasets:
           - "live"
         template: "https://{{base_hostname}}/api/livetap"
+        versions:
+          tables:
+            template: "https://{{base_hostname}}/api/livetap/tables"
+            ivoaStandardId: "ivo://ivoa.net/std/VOSI#tables"
     mobu:
       - type: "internal"
         name: "mobu"
@@ -262,6 +314,13 @@ config:
         name: "semaphore"
         template: "https://{{base_hostname}}/semaphore"
         openapi: "https://{{base_hostname}}/semaphore/openapi.json"
+    sasquatch:
+      - type: "ui"
+        name: "chronograf"
+        template: "https://{{base_hostname}}/chronograf"
+      - type: "ui"
+        name: "kafdrop"
+        template: "https://{{base_hostname}}/chronograf"
     sia:
       - type: "data"
         name: "sia"
@@ -274,6 +333,16 @@ config:
             template: "https://{{base_hostname}}/api/sia/{{dataset}}/query"
             ivoaStandardId: "ivo://ivoa.net/std/SIA#query-2.0"
         openapi: "https://{{base_hostname}}/api/sia/openapi.json"
+        ivoaRegistry:
+          ivoaServiceType: "sia"
+          records:
+            dp1:
+              ivoid: "ivo://org.rubinobs/sia/lsst-dp1"
+              title: "Rubin Science Platform SIA Service (DP1)"
+              created: "2026-05-20T00:00:00"
+              description: >-
+                Simple Image Access v2 service for Data Preview 1, providing
+                image access to commissioning data from Rubin Observatory.
     squareone:
       - type: "ui"
         name: "settings"
@@ -287,13 +356,33 @@ config:
         datasets:
           - "dp03"
         template: "https://{{base_hostname}}/api/ssotap"
+        versions:
+          tables:
+            template: "https://{{base_hostname}}/api/ssotap/tables"
+            ivoaStandardId: "ivo://ivoa.net/std/VOSI#tables"
     tap:
       - type: "data"
         name: "tap"
         datasets:
           - "dp02"
           - "dp1"
+          - "dp2"
         template: "https://{{base_hostname}}/api/tap"
+        versions:
+          tables:
+            template: "https://{{base_hostname}}/api/tap/tables"
+            ivoaStandardId: "ivo://ivoa.net/std/VOSI#tables"
+        ivoaRegistry:
+          ivoaServiceType: "tap"
+          ivoid: "ivo://org.rubinobs/tap"
+          title: "Rubin Science Platform TAP Service"
+          created: "2026-05-20T00:00:00"
+          description: >-
+            Table Access Protocol service for the Rubin Science Platform,
+            providing access to catalog data from Rubin Observatory data
+            releases.
+          adqlVersion: "2.1"
+          uploadSupported: true
     times-square:
       - type: "internal"
         name: "times-square"
@@ -317,6 +406,14 @@ config:
             template: "https://{{base_hostname}}/api/cutout/sync"
             ivoaStandardId: "ivo://ivoa.net/std/SODA#sync-1.0"
         openapi: "https://{{base_hostname}}/api/cutout/openapi.json"
+        ivoaRegistry:
+          ivoaServiceType: "soda"
+          ivoid: "ivo://org.rubinobs/cutout"
+          title: "Rubin Science Platform Image Cutout Service"
+          created: "2026-05-20T00:00:00"
+          description: >-
+            Image cutout service (SODA) for the Rubin Science Platform,
+            supporting both synchronous and asynchronous image cutout requests.
     wobbly:
       - type: "internal"
         name: "wobbly"
@@ -354,11 +451,11 @@ config:
   tap:
     # -- Default schema version for all TAP services (can be overridden
     # per-app)
-    schemaVersion: "w.2026.01"
+    schemaVersion: "releases/w.2026.17"
 
     # -- Template for schema artifact URLs (use {schemaVersion} placeholder)
-    # @default -- lsst/sdm_schemas on GitHub
-    schemaSourceTemplate: "https://github.com/lsst/sdm_schemas/archive/refs/tags/{version}.tar.gz"
+    # @default -- GCS rubin-sdm-schemas-artifacts bucket
+    schemaSourceTemplate: "gs://rubin-sdm-schemas-artifacts/{version}/schemas.tar.gz"
 
     # -- TAP Server configuration by application name. Configuration is used
     # to populate & update the TAP_SCHEMA database for each enabled TAP
@@ -399,7 +496,7 @@ cloudsql:
     repository: "gcr.io/cloudsql-docker/gce-proxy"
 
     # -- Cloud SQL Auth Proxy tag to use
-    tag: "1.37.14"
+    tag: "1.38.1"
 
     # -- Pull policy for Cloud SQL Auth Proxy images
     pullPolicy: "IfNotPresent"

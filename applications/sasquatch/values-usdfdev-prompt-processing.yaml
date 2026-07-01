@@ -13,11 +13,17 @@ alert-brokers:
       replicas: 3
       bytesRetained: "300000000000"
       millisecondsRetained: "2629740000"
+    - name: lsst-alerts-v11
+      partitions: 45
+      replicas: 3
+      bytesRetained: "300000000000"
+      millisecondsRetained: "2629740000"
 
   communityReadonlyTopics: &communityReadonlyTopics
     - "alerts-simulated"
     - "lsst-alerts-v10.0"
     - "lsst-alerts-reprocessed-v10.0"
+    - "lsst-alerts-v11"
 
   users:
 
@@ -30,34 +36,34 @@ alert-brokers:
         - "rubin-devel-idfint"
 
     # The community broker users
-    - username: "alerce-idfint"
+    - username: "alerce-usdf"
       topics: *communityReadonlyTopics
       groups:
-        - "alerce-idfint"
-    - username: "ampel-idfint"
+        - "alerce-usdf"
+    - username: "ampel-usdf"
       topics: *communityReadonlyTopics
       groups:
-        - "ampel-idfint"
-    - username: "antares-idfint"
+        - "ampel-usdf"
+    - username: "antares-usdf"
       topics: *communityReadonlyTopics
       groups:
-        - "antares-idfint"
-    - username: "babamul-idfint"
+        - "antares-usdf"
+    - username: "babamul-usdf"
       topics: *communityReadonlyTopics
       groups:
-        - "babamul-idfint"
-    - username: "fink-idfint"
+        - "babamul-usdf"
+    - username: "fink-usdf"
       topics: *communityReadonlyTopics
       groups:
-        - "fink-idfint"
-    - username: "lasair-idfint"
+        - "fink-usdf"
+    - username: "lasair-usdf"
       topics: *communityReadonlyTopics
       groups:
-        - "lasair-idfint"
-    - username: "pittgoogle-idfint"
+        - "lasair-usdf"
+    - username: "pittgoogle-usdf"
       topics: *communityReadonlyTopics
       groups:
-        - "pittgoogle-idfint"
+        - "pittgoogle-usdf"
     - username: "poi-usdf"
       topics: *communityReadonlyTopics
       groups:
@@ -80,7 +86,7 @@ alert-database:
   ingester:
     # The image can use either a tag or a digest to determine which is being used.
     image:
-      tag: v3.4.0
+      tag: v4.1.0
 
     logLevel: verbose
 
@@ -91,7 +97,7 @@ alert-database:
     kafka:
       cluster: sasquatch
       topic:
-        - lsst-alerts-v10.0
+        - lsst-alerts-v11
 
   ingress:
     enabled: true
@@ -101,7 +107,7 @@ alert-stream-schema-sync:
   enabled: true
   schemaSync:
     image:
-      tag: tickets-DM-53520
+      tag: w.2026.19
 
 chronograf:
   enabled: false
@@ -111,6 +117,23 @@ influxdb:
 
 influxdb-enterprise-standby:
   enabled: false
+
+kafbat:
+  enabled: true
+  ingress:
+    enabled: true
+  kafka:
+    topicPrefixes:
+      - "alert"
+      - "lsst"
+      - "registry"
+  resources:
+    requests:
+      memory: 2Gi
+      cpu: 1
+    limits:
+      memory: 4Gi
+      cpu: 2
 
 kafdrop:
   enabled: false

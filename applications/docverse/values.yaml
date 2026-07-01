@@ -34,6 +34,34 @@ config:
   # -- Whether to send Slack alerts for unexpected failures
   slackAlerts: false
 
+  sentry:
+    # -- Whether to send error reports and tracing data to Sentry. Requires
+    # the sentry-dsn secret to be set in Vault.
+    enabled: false
+
+    # -- The percentage of requests that should be traced. This should be a
+    # float between 0 and 1.
+    tracesSampleRate: 0.0
+
+  metrics:
+    # -- Whether to enable sending application metrics events to Sasquatch
+    # over Kafka. When disabled, Docverse uses a no-op metrics manager.
+    enabled: false
+
+    # -- Name under which to log metrics. Generally there is no reason to
+    # change this.
+    application: "docverse"
+
+    events:
+      # -- Topic prefix for events. It may sometimes be useful to change this
+      # in development environments.
+      topicPrefix: "lsst.square.metrics.events"
+
+    schemaManager:
+      # -- URL of the Confluent-compatible schema registry server
+      # @default -- Sasquatch in the local cluster
+      registryUrl: "http://sasquatch-schema-registry.sasquatch.svc.cluster.local:8081"
+
   # -- Database URL for PostgreSQL
   databaseUrl: ""
 
@@ -44,9 +72,58 @@ config:
   # -- Whether to run Alembic schema migrations on install/upgrade
   updateSchema: false
 
+  # -- GitHub App ID for Docverse to use when accessing GitHub repositories. If
+  # not set, Docverse will operate in a limited mode without GitHub integration.
+  githubAppId: null
+
   # -- Usernames that have super admin (de facto admin in all organizations)
   superadminUsers:
     - "jonathansick"
+
+  keeperSync:
+    # -- Enable the Keeper-sync worker that consumes the
+    # `docverse:sync-queue` arq queue. Requires the docverse image to
+    # provide `docverse.worker.main.KeeperSyncWorkerSettings`.
+    enabled: false
+
+    # -- Per-job timeout, in seconds, for keeper-sync arq jobs.
+    jobTimeoutSeconds: 3600
+
+  maintenance:
+    # -- Enable the maintenance worker that consumes the
+    # `docverse:maintenance-queue` arq queue. Requires the docverse image to
+    # provide `docverse.worker.main.MaintenanceWorkerSettings`.
+    enabled: false
+
+    # -- Per-job timeout, in seconds, for maintenance-pool jobs (lifecycle
+    # evaluation and git ref audits).
+    jobTimeoutSeconds: 3600
+
+    # -- Whether to enable auditing the git ref lifecycle rule.
+    # Enabling this will cause docverse to make GitHub API calls to determine
+    # if the git ref associated with an edition still exists.
+    gitRefAuditEnabled: false
+
+  # -- Set true during a credential-encryption (Fernet) key rotation to deliver
+  # the retired key (DOCVERSE_CREDENTIAL_ENCRYPTION_KEY_RETIRED) to all pods so
+  # existing credentials can still be decrypted. Set back to false and remove the
+  # Vault key once all credentials have been re-encrypted.
+  credentialKeyRotation: false
+
+  reaperThresholds:
+    # -- Stuck-run reaper threshold, in seconds, for keeper-sync jobs.
+    keeperSyncSeconds: 21600
+    # -- Stuck-run reaper threshold, in seconds, for lifecycle_eval and
+    # git_ref_audit jobs (maintenance pool).
+    lifecycleSeconds: 21600
+    # -- Stuck-run reaper threshold, in seconds, for dashboard_build jobs.
+    dashboardBuildSeconds: 1800
+    # -- Stuck-run reaper threshold, in seconds, for publish_edition jobs.
+    publishEditionSeconds: 14400
+    # -- Stuck-run reaper threshold, in seconds, for build_processing jobs.
+    buildProcessingSeconds: 28800
+    # -- Stuck-run reaper threshold, in seconds, for dashboard_sync jobs.
+    dashboardSyncSeconds: 21600
 
 ingress:
   # -- Additional annotations for the ingress rule
@@ -83,6 +160,58 @@ workerResources:
     cpu: "50m"
     memory: "128Mi"
 
+syncWorker:
+  # -- Number of Keeper-sync worker pods to start
+  replicaCount: 1
+
+  # -- Resource limits and requests for the Keeper-sync worker pod
+  # @default -- See `values.yaml`
+  resources:
+    limits:
+      cpu: "1"
+      memory: "512Mi"
+    requests:
+      cpu: "50m"
+      memory: "128Mi"
+
+  # -- Affinity rules for the Keeper-sync worker pod
+  affinity: {}
+
+  # -- Node selection rules for the Keeper-sync worker pod
+  nodeSelector: {}
+
+  # -- Annotations for the Keeper-sync worker pod
+  podAnnotations: {}
+
+  # -- Tolerations for the Keeper-sync worker pod
+  tolerations: []
+
+maintenanceWorker:
+  # -- Number of maintenance worker pods to start
+  replicaCount: 1
+
+  # -- Resource limits and requests for the maintenance worker pod
+  # @default -- See `values.yaml`
+  resources:
+    limits:
+      cpu: "1"
+      memory: "512Mi"
+    requests:
+      cpu: "50m"
+      memory: "128Mi"
+
+  # -- Affinity rules for the maintenance worker pod
+  affinity: {}
+
+  # -- Node selection rules for the maintenance worker pod
+  nodeSelector: {}
+
+  # -- Annotations for the maintenance worker pod
+  podAnnotations: {}
+
+  # -- Tolerations for the maintenance worker pod
+  tolerations: []
+
 # -- Tolerations for the docverse deployment pod
 tolerations: []
 
@@ -96,7 +225,7 @@ cloudsql:
     repository: "gcr.io/cloudsql-docker/gce-proxy"
 
     # -- Cloud SQL Auth Proxy tag to use
-    tag: "1.37.14"
+    tag: "1.38.1"
 
     # -- Pull policy for Cloud SQL Auth Proxy images
     pullPolicy: "IfNotPresent"

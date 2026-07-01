@@ -2,7 +2,6 @@ ataos:
   image:
     revision: 0
     repository: ts-dockerhub.lsst.org/ataos
-    pullPolicy: Always
   resources:
     limits:
       cpu: 450m
@@ -16,21 +15,19 @@ atbuilding:
   image:
     revision: 0
     repository: ts-dockerhub.lsst.org/atbuilding
-    pullPolicy: Always
   resources:
     limits:
       cpu: 120m
-      memory: 350Mi
+      memory: 500Mi
     requests:
       cpu: 12m
-      memory: 170Mi
+      memory: 250Mi
 
 atdome:
   enabled: true
   image:
     revision: 0
     repository: ts-dockerhub.lsst.org/atdome
-    pullPolicy: Always
   resources:
     limits:
       cpu: 170m
@@ -43,7 +40,6 @@ atdometrajectory:
   image:
     revision: 0
     repository: ts-dockerhub.lsst.org/atdometrajectory
-    pullPolicy: Always
   resources:
     limits:
       cpu: 350m
@@ -56,7 +52,6 @@ atheaderservice:
   image:
     revision: 0
     repository: ts-dockerhub.lsst.org/headerservice
-    pullPolicy: Always
   env:
     URL_SPEC: --lfa_mode s3 --s3instance cp
     CAMERA: at
@@ -69,17 +64,16 @@ atheaderservice:
   resources:
     limits:
       cpu: 1000m
-      memory: 2.4Gi
+      memory: 3Gi
     requests:
       cpu: 100m
-      memory: 1.2Gi
+      memory: 1Gi
 
 athexapod:
   enabled: true
   image:
     revision: 0
     repository: ts-dockerhub.lsst.org/athexapod
-    pullPolicy: Always
   resources:
     limits:
       cpu: 200m
@@ -91,22 +85,20 @@ athexapod:
 atmcs:
   enabled: true
   image:
-    revision: 2
+    revision: 7
     repository: ts-dockerhub.lsst.org/atmcs
-    pullPolicy: Always
   resources:
     limits:
       cpu: 600m
       memory: 600Mi
     requests:
       cpu: 60m
-      memory: 200Mi
+      memory: 250Mi
 
 atoods:
   image:
-    revision: 0
+    revision: 4
     repository: ts-dockerhub.lsst.org/atoods
-    pullPolicy: Always
   env:
     CTRL_OODS_CONFIG_FILE: /etc/atoods.yaml
     LSST_RESOURCES_S3_PROFILE_butler: https://s3-butler.cp.lsst.org
@@ -138,7 +130,7 @@ atoods:
     limits:
       memory: 2Gi
     requests:
-      cpu: 14m
+      cpu: 600m
       memory: 1Gi
   configfile:
     path: /etc
@@ -184,9 +176,8 @@ atoods:
 atpneumatics:
   enabled: true
   image:
-    revision: 2
+    revision: 7
     repository: ts-dockerhub.lsst.org/at_pneumatics
-    pullPolicy: Always
   resources:
     limits:
       cpu: 200m
@@ -199,7 +190,6 @@ atptg:
   image:
     revision: 0
     repository: ts-dockerhub.lsst.org/ptkernel
-    pullPolicy: Always
   env:
     TELESCOPE: AT
     LSST_KAFKA_TLM_FLUSH_MS: 0
@@ -216,7 +206,6 @@ atspectrograph:
   image:
     revision: 0
     repository: ts-dockerhub.lsst.org/atspec
-    pullPolicy: Always
   resources:
     limits:
       cpu: 150m
@@ -230,7 +219,6 @@ pmd1:
   image:
     revision: 0
     repository: ts-dockerhub.lsst.org/pmd
-    pullPolicy: Always
   env:
     RUN_ARG: 1
   resources:

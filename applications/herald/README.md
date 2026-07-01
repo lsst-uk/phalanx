@@ -12,12 +12,17 @@ Rubin alert packet retrieval service
 |-----|------|---------|-------------|
 | affinity | object | `{}` | Affinity rules for the herald deployment pod |
 | autoscaling.enabled | bool | `false` | Enable autoscaling of the herald deployment |
-| autoscaling.maxReplicas | int | `4` | Maximum number of herald deployment pods |
+| autoscaling.maxReplicas | int | `20` | Maximum number of herald deployment pods |
 | autoscaling.minReplicas | int | `1` | Minimum number of herald deployment pods |
-| autoscaling.targetCPUUtilizationPercentage | int | `80` | Target CPU utilization as a percentage of requested CPU for autoscaling |
+| autoscaling.targetCPUUtilizationPercentage | int | `800` | Target CPU utilization as a percentage of requested CPU for autoscaling |
 | autoscaling.targetMemoryUtilizationPercentage | string | `""` | Target memory utilization as a percentage of requested memory for autoscaling |
 | config.logLevel | string | `"INFO"` | Logging level |
 | config.logProfile | string | `"production"` | Logging profile (`production` for JSON, `development` for human-friendly) |
+| config.metrics.application | string | `"herald"` | Name under which to log metrics. Generally there is no reason to change this. |
+| config.metrics.enabled | bool | `false` | Whether to enable sending metrics |
+| config.metrics.events.topicPrefix | string | `"lsst.square.metrics.events"` | Topic prefix for events. It may sometimes be useful to change this in development environments. |
+| config.metrics.schemaManager.registryUrl | string | Sasquatch in the local cluster | URL of the Confluent-compatible schema registry server |
+| config.metrics.schemaManager.suffix | string | `""` | Suffix to add to all registered subjects. This is sometimes useful for experimentation during development. |
 | config.pathPrefix | string | `"/api/alerts"` | URL path prefix |
 | config.s3AlertsBucket | string | `""` | S3 bucket name containing the alert archive packets |
 | config.s3AlertsPrefix | string | `"v2/alerts"` | S3 key prefix for alert packets. |

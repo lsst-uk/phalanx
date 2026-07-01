@@ -35,8 +35,11 @@ config:
       business:
         type: "NotebookRunnerCounting"
         options:
+          cell_execution_timeout: "1h"
           repo_url: "https://github.com/lsst-sqre/phalanx-test.git"
           repo_ref: "main"
+          execution_idle_time: 0
+          idle_time: 300
         restart: true
     - name: "tutorial"
       count: 1
@@ -50,6 +53,7 @@ config:
       business:
         type: "NotebookRunnerCounting"
         options:
+          cell_execution_timeout: "1h"
           repo_url: "https://github.com/lsst/tutorial-notebooks.git"
           repo_ref: "main"
           max_executions: 1

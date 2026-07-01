@@ -18,7 +18,7 @@ An API service for managing and rendering parameterized Jupyter notebooks.
 | cloudsql.enabled | bool | `false` | Enable the Cloud SQL Auth Proxy sidecar, used with Cloud SQL databases on Google Cloud |
 | cloudsql.image.pullPolicy | string | `"IfNotPresent"` | Pull policy for Cloud SQL Auth Proxy images |
 | cloudsql.image.repository | string | `"gcr.io/cloudsql-docker/gce-proxy"` | Cloud SQL Auth Proxy image to use |
-| cloudsql.image.tag | string | `"1.37.14"` | Cloud SQL Auth Proxy tag to use |
+| cloudsql.image.tag | string | `"1.38.1"` | Cloud SQL Auth Proxy tag to use |
 | cloudsql.instanceConnectionName | string | `""` | Instance connection name for a Cloud SQL PostgreSQL instance |
 | cloudsql.resources | object | See `values.yaml` | Resource requests and limits for Cloud SQL pod |
 | cloudsql.serviceAccount | string | `""` | The Google service account that has an IAM binding to the `times-square` Kubernetes service accounts and has the `cloudsql.client` role |
@@ -27,7 +27,7 @@ An API service for managing and rendering parameterized Jupyter notebooks.
 | config.enableGitHubApp | string | `"False"` | Toggle to enable the GitHub App functionality |
 | config.githubAppId | string | `""` | GitHub application ID |
 | config.githubCheckRunTimeout | string | `"3600"` | Timeout for GitHub check runs in seconds |
-| config.githubOrgs | string | `"lsst,lsst-sqre,lsst-dm,lsst-ts,lsst-sitcom,lsst-pst"` | GitHub organizations that can sync repos to Times Square (comma-separated). |
+| config.githubOrgs | string | `"lsst,lsst-sqre,lsst-dm,lsst-ts,lsst-so,lsst-pst"` | GitHub organizations that can sync repos to Times Square (comma-separated). |
 | config.htmlKeyMigration.dryRun | bool | `true` | Whether to run the HTML key migration job as a dry-run only |
 | config.htmlKeyMigration.enabled | bool | `false` | Whether to run the HTML key migration job as a pre-install/upgrade hook |
 | config.htmlKeyMigration.page | string | `""` | The name of the page to migrate, if set |
@@ -39,6 +39,10 @@ An API service for managing and rendering parameterized Jupyter notebooks.
 | config.profile | string | `"production"` | Run profile: "production" or "development" |
 | config.redisCacheUrl | string | Points to embedded Redis | URL for Redis html / noteburst job cache database |
 | config.redisQueueUrl | string | Points to embedded Redis | URL for Redis arq queue database |
+| config.renameGithubOwner.dryRun | bool | `false` | Whether to run the rename-github-owner job as a dry-run only |
+| config.renameGithubOwner.enabled | bool | `false` | Whether to deploy the on-demand `rename-github-owner` Job to rewrite the `github_owner` column on pages after a GitHub org/user rename. |
+| config.renameGithubOwner.new | string | `"lsst-so"` | Replacement `github_owner` value (passed as `--new`). |
+| config.renameGithubOwner.old | string | `"lsst-sitcom"` | Current `github_owner` value to rewrite (passed as `--old`). |
 | config.sentryTracesSampleRate | float | `0` |  |
 | config.updateSchema | bool | false to disable schema upgrades | Whether to run the database migration job |
 | config.worker.enableLivenessCheck | bool | `true` | Enable liveness checks for the arq queue |
@@ -56,7 +60,7 @@ An API service for managing and rendering parameterized Jupyter notebooks.
 | ingress.path | string | `"/times-square/api"` | Root URL path prefix for times-square API |
 | ingress.templateApiScope | string | `"exec:notebook"` | scope for using just the template engine |
 | nameOverride | string | `""` | Override the base name for resources |
-| nodeSelector | object | `{}` | Node selection rules for the times-square deployment pod |
+| nodeSelector | object | `{}` |  |
 | podAnnotations | object | `{}` | Annotations for the times-square deployment pod |
 | redis.affinity | object | `{}` | Affinity rules for the Redis pod |
 | redis.nodeSelector | object | `{}` | Node selection rules for the Redis pod |
