@@ -9,4 +9,4 @@ config:
     privateWorkarea:
       pvc:
         size: "5Gi"
-        storageClass: "standard-rwo"
+        storageClass: "ceph-hdd"
