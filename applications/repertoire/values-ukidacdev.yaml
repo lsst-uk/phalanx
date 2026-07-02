@@ -18,6 +18,7 @@ config:
   availableDatasets:
     - "dp1"
     - "macauff_gaiadr3xcatwise"
+    - "ivoa_obscore"
   tap:
     schemaVersion: "w.2026.26-dev.8e3187d"
     schemaSourceTemplate: "https://github.com/lsst-uk/sdm_schemas/archive/refs/tags/w.2026.26-dev.8e3187d.tar.gz"
@@ -26,6 +27,7 @@ config:
         schemas:
           - dp1
           - macauff_gaiadr3xcatwise
+          - ivoa_obscore
         enabled: true
         databaseUrl: "postgresql://tap@192.41.122.236:5432/tap"
         databasePasswordKey: "tap-database-password"
