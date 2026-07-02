@@ -6,7 +6,7 @@ config:
       nfs:
         path: "/portal/sharedWorkarea"
         server: "192.41.122.33"
-    privateWorkarea:
-      pvc:
-        size: "5Gi"
-        storageClass: "ceph-hdd"
+    # privateWorkarea:
+    #   pvc:
+    #     size: "5Gi"
+    #     storageClass: "ceph-hdd"
