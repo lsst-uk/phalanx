@@ -18,15 +18,17 @@ config:
   availableDatasets:
     - "dp1"
     - "macauff_gaiadr3xcatwise"
+    - "macauff_gaiadr3x2mass"
     - "ivoa_obscore"
   tap:
-    schemaVersion: "w.2026.26-dev.8e3187d"
-    schemaSourceTemplate: "https://github.com/lsst-uk/sdm_schemas/archive/refs/tags/w.2026.26-dev.8e3187d.tar.gz"
+    schemaVersion: "w.2026.29-dev.19238bc"
+    schemaSourceTemplate: "https://github.com/lsst-uk/sdm_schemas/archive/refs/tags/w.2026.29-dev.19238bc.tar.gz"
     servers:
       tap:
         schemas:
           - dp1
           - macauff_gaiadr3xcatwise
+          - macauff_gaiadr3x2mass
           - ivoa_obscore
         enabled: true
         databaseUrl: "postgresql://tap@192.41.122.236:5432/tap"
