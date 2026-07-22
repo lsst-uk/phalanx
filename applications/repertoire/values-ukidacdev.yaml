@@ -21,8 +21,8 @@ config:
     - "macauff_gaiadr3x2mass"
     - "ivoa_obscore"
   tap:
-    schemaVersion: "w.2026.29-dev.19238bc"
-    schemaSourceTemplate: "https://github.com/lsst-uk/sdm_schemas/archive/refs/tags/w.2026.29-dev.19238bc.tar.gz"
+    schemaVersion: "w.2026.29-dev.09d31e2"
+    schemaSourceTemplate: "https://github.com/lsst-uk/sdm_schemas/archive/refs/tags/w.2026.29-dev.09d31e2.tar.gz"
     servers:
       tap:
         schemas:
