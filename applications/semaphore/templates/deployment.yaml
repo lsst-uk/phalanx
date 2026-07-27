@@ -23,10 +23,19 @@ spec:
       affinity:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      {{- if .Values.cloudsql.enabled }}
+      serviceAccountName: "semaphore"
+      {{- else }}
       automountServiceAccountToken: false
+      {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           env:
+            - name: "SEMAPHORE_DATABASE_PASSWORD"
+              valueFrom:
+                secretKeyRef:
+                  name: "semaphore"
+                  key: "database-password"
             - name: "SEMAPHORE_GITHUB_WEBHOOK_SECRET"
               valueFrom:
                 secretKeyRef:
@@ -102,6 +111,10 @@ spec:
               drop:
               - "all"
             readOnlyRootFilesystem: true
+      {{- if .Values.cloudsql.enabled }}
+      initContainers:
+        {{- include "semaphore.cloudsqlSidecar" . | nindent 8 }}
+      {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

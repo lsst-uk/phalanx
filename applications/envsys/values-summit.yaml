@@ -1,11 +1,25 @@
+x-pod-antiaffinity:
+  &pod-antiaffinity
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+            - key: csc-name
+              operator: Exists
+          topologyKey: kubernetes.io/hostname
+
 automatic-transfer-switch-ess309:
   enabled: true
   classifier: ess309
   image:
-    revision: 3
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 309
+  <<: *pod-antiaffinity
   resources:
     requests:
       cpu: 19m
@@ -18,10 +32,11 @@ auxtel-ess201:
   enabled: true
   classifier: ess201
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 201
+  <<: *pod-antiaffinity
   resources:
     requests:
       cpu: 32m
@@ -34,10 +49,11 @@ auxtel-ess202:
   enabled: true
   classifier: ess202
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 202
+  <<: *pod-antiaffinity
   resources:
     requests:
       cpu: 1
@@ -50,10 +66,11 @@ auxtel-ess308:
   enabled: true
   classifier: ess308
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 308
+  <<: *pod-antiaffinity
   resources:
     requests:
       cpu: 19m
@@ -66,10 +83,11 @@ auxtel-ess204:
   enabled: true
   classifier: ess204
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 204
+  <<: *pod-antiaffinity
   resources:
     requests:
       cpu: 19m
@@ -86,6 +104,7 @@ calibhill-ess301:
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 301
+  <<: *pod-antiaffinity
   resources:
     requests:
       cpu: 30m
@@ -98,10 +117,11 @@ camera-ess111:
   enabled: true
   classifier: ess111
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 111
+  <<: *pod-antiaffinity
   resources:
     requests:
       cpu: 19m
@@ -114,10 +134,11 @@ cleanroom-ess109:
   enabled: true
   classifier: ess109
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 109
+  <<: *pod-antiaffinity
   resources:
     requests:
       cpu: 19m
@@ -133,6 +154,7 @@ dimm1:
     repository: ts-dockerhub.lsst.org/dimm
   env:
     RUN_ARG: 1
+  <<: *pod-antiaffinity
   resources:
     requests:
       cpu: 50m
@@ -148,6 +170,7 @@ dimm2:
     repository: ts-dockerhub.lsst.org/dimm
   env:
     RUN_ARG: 2
+  <<: *pod-antiaffinity
   resources:
     requests:
       cpu: 50m
@@ -168,6 +191,7 @@ dream:
     key: aws-access-key-id
   - name: AWS_SECRET_ACCESS_KEY
     key: aws-secret-access-key
+  <<: *pod-antiaffinity
   resources:
     requests:
       cpu: 70m
@@ -180,10 +204,11 @@ earthquake-ess302:
   enabled: true
   classifier: ess302
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 302
+  <<: *pod-antiaffinity
   resources:
     requests:
       cpu: 70m
@@ -195,8 +220,9 @@ earthquake-ess302:
 eas:
   enabled: true
   image:
-    revision: 6
+    revision: 9
     repository: ts-dockerhub.lsst.org/eas
+  <<: *pod-antiaffinity
   resources:
     requests:
       cpu: 120m
@@ -209,10 +235,11 @@ epm-ess303:
   enabled: true
   classifier: ess303
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 303
+  <<: *pod-antiaffinity
   resources:
     requests:
       cpu: 500m
@@ -225,10 +252,11 @@ epm-generator-ess305:
   enabled: true
   classifier: ess305
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 305
+  <<: *pod-antiaffinity
   resources:
     requests:
       cpu: 50m
@@ -241,10 +269,11 @@ epm-generator-ess306:
   enabled: true
   classifier: ess306
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 306
+  <<: *pod-antiaffinity
   resources:
     requests:
       cpu: 50m
@@ -260,6 +289,7 @@ hvac:
     repository: ts-dockerhub.lsst.org/hvac
   env:
     RUN_ARG: --state enabled
+  <<: *pod-antiaffinity
   resources:
     requests:
       cpu: 200m
@@ -272,10 +302,11 @@ louver-h1-ess441:
   enabled: true
   classifier: ess441
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 441
+  <<: *pod-antiaffinity
   resources:
     requests:
       cpu: 19m
@@ -288,10 +319,11 @@ louver-h1h2-ess442:
   enabled: true
   classifier: ess442
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 442
+  <<: *pod-antiaffinity
   resources:
     requests:
       cpu: 19m
@@ -304,10 +336,11 @@ louver-h2-ess443:
   enabled: true
   classifier: ess443
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 443
+  <<: *pod-antiaffinity
   resources:
     requests:
       cpu: 19m
@@ -320,10 +353,11 @@ m1m3-ess113:
   enabled: true
   classifier: ess113
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 113
+  <<: *pod-antiaffinity
   resources:
     requests:
       cpu: 19m
@@ -336,10 +370,11 @@ m1m3-ess114:
   enabled: true
   classifier: ess114
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 114
+  <<: *pod-antiaffinity
   resources:
     requests:
       cpu: 19m
@@ -352,10 +387,11 @@ m1m3-ess115:
   enabled: true
   classifier: ess115
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 115
+  <<: *pod-antiaffinity
   resources:
     requests:
       cpu: 19m
@@ -368,10 +404,11 @@ m1m3-ess116:
   enabled: true
   classifier: ess116
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 116
+  <<: *pod-antiaffinity
   resources:
     requests:
       cpu: 19m
@@ -384,10 +421,11 @@ m1m3-ess117:
   enabled: true
   classifier: ess117
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 117
+  <<: *pod-antiaffinity
   resources:
     requests:
       cpu: 19m
@@ -400,10 +438,11 @@ m2-ess106:
   enabled: true
   classifier: ess106
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 106
+  <<: *pod-antiaffinity
   resources:
     requests:
       cpu: 19m
@@ -416,10 +455,11 @@ m2-ess112:
   enabled: true
   classifier: ess112
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 112
+  <<: *pod-antiaffinity
   resources:
     requests:
       cpu: 19m
@@ -432,10 +472,11 @@ mtdome-ess404:
   enabled: true
   classifier: ess404
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 404
+  <<: *pod-antiaffinity
   resources:
     requests:
       cpu: 1
@@ -448,10 +489,11 @@ mtdome-ess405:
   enabled: true
   classifier: ess405
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 405
+  <<: *pod-antiaffinity
   resources:
     requests:
       cpu: 19m
@@ -464,10 +506,11 @@ partsens-ess127:
   enabled: true
   classifier: ess127
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 127
+  <<: *pod-antiaffinity
   resources:
     requests:
       cpu: 19m
@@ -480,10 +523,11 @@ partsens-ess128:
   enabled: true
   classifier: ess128
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 128
+  <<: *pod-antiaffinity
   resources:
     requests:
       cpu: 19m
@@ -496,10 +540,11 @@ partsens-ess129:
   enabled: true
   classifier: ess129
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 129
+  <<: *pod-antiaffinity
   resources:
     requests:
       cpu: 19m
@@ -512,7 +557,7 @@ ringss-ess304:
   enabled: true
   classifier: ess304
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 304
@@ -520,6 +565,7 @@ ringss-ess304:
   envSecrets:
   - name: RINGSS_PASSWORD
     key: soar-ringss-db-password
+  <<: *pod-antiaffinity
   resources:
     requests:
       cpu: 19m
@@ -532,10 +578,11 @@ tea-ess123:
   enabled: true
   classifier: ess123
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 123
+  <<: *pod-antiaffinity
   resources:
     requests:
       cpu: 19m
@@ -548,10 +595,11 @@ tea-ess124:
   enabled: true
   classifier: ess124
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 124
+  <<: *pod-antiaffinity
   resources:
     requests:
       cpu: 19m
@@ -564,10 +612,11 @@ tea-ess125:
   enabled: true
   classifier: ess125
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 125
+  <<: *pod-antiaffinity
   resources:
     requests:
       cpu: 19m
@@ -580,10 +629,11 @@ tea-ess126:
   enabled: true
   classifier: ess126
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 126
+  <<: *pod-antiaffinity
   resources:
     requests:
       cpu: 19m
@@ -596,10 +646,11 @@ tma-ess121:
   enabled: true
   classifier: ess121
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 121
+  <<: *pod-antiaffinity
   resources:
     requests:
       cpu: 19m
@@ -612,10 +663,11 @@ tma-ess122:
   enabled: true
   classifier: ess122
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 122
+  <<: *pod-antiaffinity
   resources:
     requests:
       cpu: 19m
@@ -628,10 +680,11 @@ tma-ess104:
   enabled: true
   classifier: ess104
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 104
+  <<: *pod-antiaffinity
   resources:
     requests:
       cpu: 1
@@ -644,10 +697,11 @@ tma-ess105:
   enabled: true
   classifier: ess105
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 105
+  <<: *pod-antiaffinity
   resources:
     requests:
       cpu: 19m
@@ -660,10 +714,11 @@ tma-ess110:
   enabled: true
   classifier: ess110
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 110
+  <<: *pod-antiaffinity
   resources:
     requests:
       cpu: 19m
@@ -676,10 +731,11 @@ ups-server-room1-ess310:
   enabled: true
   classifier: ess310
   image:
-    revision: 3
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 310
+  <<: *pod-antiaffinity
   resources:
     requests:
       cpu: 19m
@@ -692,10 +748,11 @@ ups-server-room2-ess311:
   enabled: true
   classifier: ess311
   image:
-    revision: 3
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 311
+  <<: *pod-antiaffinity
   resources:
     requests:
       cpu: 19m
@@ -713,6 +770,7 @@ weatherforecast:
   envSecrets:
   - name: METEOBLUE_API_KEY
     key: meteoblue-api-key
+  <<: *pod-antiaffinity
   resources:
     requests:
       cpu: 100m

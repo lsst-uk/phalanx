@@ -90,6 +90,11 @@ config:
     # Example: "dp1:dp1_pilot" dp1 queries execute against dp1_pilot.
     schemaMappings: ""
 
+    # -- Table name mappings for query rewriting
+    # Example: ["dp1.Object:dp1_pilot.Object"] rewrites references to
+    # dp1.Object so they query dp1_pilot.Object instead.
+    tableMappings: []
+
     image:
       # -- TAP image to use
       repository: "ghcr.io/lsst-sqre/lsst-tap-service"
@@ -98,7 +103,7 @@ config:
       pullPolicy: "IfNotPresent"
 
       # -- Tag of TAP image to use
-      tag: "3.18.0"
+      tag: "3.20.0"
 
     # -- Whether the Qserv database is password protected
     # @default -- false
@@ -124,7 +129,7 @@ config:
       pullPolicy: "IfNotPresent"
 
       # -- Tag of TAP image to use
-      tag: "3.18.0"
+      tag: "3.20.0"
 
   # -- Address to a MySQL database containing TAP schema data
   tapSchemaAddress: "cadc-tap-schema-db:3306"
@@ -203,14 +208,19 @@ config:
   # supported output format in the TAP capabilities.
   voParquet: false
 
+  # -- List of Qserv director tables for dependent upload partition detection.
+  # Format: ["database.table:idCol", ...]
+  uploadPartitionDirectors: []
+
   # -- Rules for renaming Columns
   urlRewrite:
 
     # -- Whether it is enabled
     enabled: true
 
-    # -- String with a comma-separated list of schema.table:column rules
-    rules: "ivoa.ObsCore:access_url"
+    # -- List of schema.table:column rules for URL rewriting
+    rules:
+      - "ivoa.ObsCore:access_url"
 
 mockdb:
   # -- Spin up a container to pretend to be the database.
@@ -363,7 +373,7 @@ uws:
     pullPolicy: "IfNotPresent"
 
     # -- Tag of UWS database image to use
-    tag: "3.18.0"
+    tag: "3.20.0"
 
   # -- Resource limits and requests for the UWS database pod
   # @default -- See `values.yaml`
