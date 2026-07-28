@@ -41,6 +41,11 @@ controller:
             serverPath: "/data/butler/rubin/lsdb_data/dp1"
             server: "192.41.122.33"
             type: "nfs"
+        - name: "lsdb-dp2"
+          source:
+            serverPath: "/data/butler/rubin/lsdb_data/dp2"
+            server: "192.41.122.33"
+            type: "nfs"
         - name: "cst-repos"
           source:
             serverPath: "/data/butler/rubin/cst_repos"
@@ -63,6 +68,8 @@ controller:
        # Change back when tutorial paths are updated
         - containerPath: "/rubin/lsdb_data"
           volumeName: "lsdb-dp1"
+          - containerPath: "/rubin/lsdb_data/dp2"
+          volumeName: "lsdb-dp2"
         - containerPath: "/rubin/cst_repos"
           volumeName: "cst-repos"
         - containerPath: "/rubin/rubin_sim_data"
