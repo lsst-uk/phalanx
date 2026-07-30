@@ -36,16 +36,6 @@ controller:
             serverPath: "/data/butler/rubin"
             server: "192.41.122.33"
             type: "nfs"
-        - name: "cst-repos"
-          source:
-            serverPath: "/data/butler/rubin/cst_repos"
-            server: "192.41.122.33"
-            type: "nfs"
-        - name: "rubin-sim-data"
-          source:
-            serverPath: "/data/butler/rubin/rubin_sim_data"
-            server: "192.41.122.33"
-            type: "nfs"
       volumeMounts:
         - containerPath: "/data"
           volumeName: "data"
@@ -55,10 +45,6 @@ controller:
           volumeName: "datasets"
         - containerPath: "/rubin"
           volumeName: "rubin"
-        - containerPath: "/rubin/cst_repos"
-          volumeName: "cst-repos"
-        - containerPath: "/rubin/rubin_sim_data"
-          volumeName: "rubin-sim-data"
 
 proxy:
   ingress:
