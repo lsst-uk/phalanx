@@ -5,6 +5,7 @@ vaultUrl: "https://vault-rsp.lsst.ac.uk"
 vaultPathPrefix: "secret/phalanx/ukidacdev"
 applications:
   mobu: false
+  datalinker: true
   nublado: true
   portal: true
   postgres: true
