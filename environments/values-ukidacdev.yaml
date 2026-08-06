@@ -4,16 +4,17 @@ appOfAppsName: "science-platform"
 vaultUrl: "https://vault-rsp.lsst.ac.uk"
 vaultPathPrefix: "secret/phalanx/ukidacdev"
 applications:
-  mobu: false
+  butler: true
   datalinker: true
+  mobu: false
   nublado: true
   portal: true
   postgres: true
-  squareone: true
-  tap: true
   qserv-kafka: true
+  sasquatch: true
+  semaphore: true
+  squareone: true
   strimzi: true
   strimzi-access-operator: true
   strimzi-registry-operator: true
-  sasquatch: true
-  semaphore: true
+  tap: true
