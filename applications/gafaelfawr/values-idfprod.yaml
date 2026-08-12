@@ -48,6 +48,7 @@ config:
         - "dp0.2"
         - "dp0.3"
         - "dp1"
+        - "dp2"
 
   # Enable metrics reporting.
   metrics:
@@ -99,6 +100,8 @@ config:
       - "g_rubin"
       - "g_users"
     "write:sasquatch":
+      - "g_admins"
+    "write:obsforge":
       - "g_admins"
 
   initialAdmins:

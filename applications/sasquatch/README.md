@@ -95,7 +95,7 @@ Rubin Observatory's telemetry service
 | kapacitor.existingSecret | string | `"sasquatch"` | Use `influxdb-user` and `influxdb-password` keys from this secret |
 | kapacitor.image.pullPolicy | string | `"IfNotPresent"` | Pull policy for Kapacitor |
 | kapacitor.image.repository | string | `"docker.io/library/kapacitor"` | Docker image to use for Kapacitor |
-| kapacitor.image.tag | string | `"1.8.5"` | Tag to use for Kapacitor |
+| kapacitor.image.tag | string | `"1.8.6"` | Tag to use for Kapacitor |
 | kapacitor.influxURL | string | `"http://sasquatch-influxdb.sasquatch:8086"` | InfluxDB connection URL |
 | kapacitor.persistence.enabled | bool | `true` | Whether to enable Kapacitor data persistence |
 | kapacitor.persistence.size | string | `"100Gi"` | Size of storage to request if enabled |
@@ -697,7 +697,7 @@ Rubin Observatory's telemetry service
 | rest-proxy.heapOptions | string | `"-Xms8192M -Xmx8192M"` | Kafka REST proxy JVM Heap Option |
 | rest-proxy.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
 | rest-proxy.image.repository | string | `"confluentinc/cp-kafka-rest"` | Kafka REST proxy image repository |
-| rest-proxy.image.tag | string | `"8.2.1"` | Kafka REST proxy image tag |
+| rest-proxy.image.tag | string | `"8.3.0"` | Kafka REST proxy image tag |
 | rest-proxy.ingress.annotations | object | `{"nginx.ingress.kubernetes.io/rewrite-target":"/$2"}` | Annotations that will be added to the Ingress resource |
 | rest-proxy.ingress.anonymous | bool | false | Whether to enable anonymous access to the REST proxy |
 | rest-proxy.ingress.enabled | bool | `false` | Whether to enable the ingress for the REST proxy |
@@ -716,7 +716,7 @@ Rubin Observatory's telemetry service
 | schema-registry.cluster.name | string | `"sasquatch"` | Name of the Strimzi cluster used by the Schema Registry. |
 | schema-registry.compatibilityLevel | string | `"none"` | Compatibility level for the Schema Registry. Options are: none, backward, backward_transitive, forward, forward_transitive, full, and full_transitive. |
 | schema-registry.image.repository | string | `"confluentinc/cp-schema-registry"` | Docker image for the Confluent Schema Registry. |
-| schema-registry.image.tag | string | `"8.2.1"` | Docker image tag for the Confluent Schema Registry. |
+| schema-registry.image.tag | string | `"8.3.0"` | Docker image tag for the Confluent Schema Registry. |
 | schema-registry.ingress.annotations | object | `{"nginx.ingress.kubernetes.io/rewrite-target":"/$2"}` | Annotations that will be added to the Ingress resource |
 | schema-registry.ingress.anonymous | bool | false | Whether to enable anonymous access to the Schema Registry |
 | schema-registry.ingress.enabled | bool | `false` | Whether to enable an ingress for the Schema Registry |
@@ -728,7 +728,7 @@ Rubin Observatory's telemetry service
 | schema-registry-remote.cluster.name | string | `"sasquatch"` | Name of the Strimzi cluster used by the Schema Registry. |
 | schema-registry-remote.compatibilityLevel | string | `"none"` | Compatibility level for the Schema Registry. Options are: none, backward, backward_transitive, forward, forward_transitive, full, and full_transitive. |
 | schema-registry-remote.image.repository | string | `"confluentinc/cp-schema-registry"` | Docker image for the Confluent Schema Registry. |
-| schema-registry-remote.image.tag | string | `"8.2.1"` | Docker image tag for the Confluent Schema Registry. |
+| schema-registry-remote.image.tag | string | `"8.3.0"` | Docker image tag for the Confluent Schema Registry. |
 | schema-registry-remote.ingress.annotations | object | `{"nginx.ingress.kubernetes.io/rewrite-target":"/$2"}` | Annotations that will be added to the Ingress resource |
 | schema-registry-remote.ingress.anonymous | bool | false | Whether to enable anonymous access to the Schema Registry |
 | schema-registry-remote.ingress.enabled | bool | `false` | Whether to enable an ingress for the Schema Registry |

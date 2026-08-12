@@ -60,7 +60,9 @@ config:
       docsUrl: "https://dp1.lsst.io/"
     dp2:
       description: >-
-        Data Preview 2.
+        Data Preview 2 contains image and catalog products from Rubin Science
+        Pipelines v30 processing of observations obtained with the LSST Camera
+        between April 2025 and January 2026.
       docsUrl: "https://dp2.lsst.io/"
     efd:
       description: "Engineering Field Database."
@@ -103,6 +105,15 @@ config:
           - "deep_coadd/band_i"
           - "deep_coadd/band_z"
           - "deep_coadd/band_y"
+      dp2:
+        paths:
+          - "color_gri"
+          - "color_u"
+          - "color_g"
+          - "color_r"
+          - "color_i"
+          - "color_z"
+          - "color_y"
 
     legacy:
       # -- If set, specifies the dataset that should be shown at the legacy
@@ -209,6 +220,7 @@ config:
         datasets:
           - "dp02"
           - "dp1"
+          - "dp2"
         template: "https://{{base_hostname}}/api/datalink"
         versions:
           datalink-links-1.1:
@@ -309,10 +321,18 @@ config:
         datasets:
           - "prompt"
         template: "https://{{base_hostname}}/api/ppdbtap"
+    repertoire:
+      - type: "internal"
+        name: "repertoire"
+        template: "https://{{base_hostname}}/repertoire"
+        openapi: "https://{{base_hostname}}/repertoire/openapi.json"
     semaphore:
       - type: "internal"
         name: "semaphore"
         template: "https://{{base_hostname}}/semaphore"
+        versions:
+          v1:
+            template: "https://{{base_hostname}}/semaphore/v1"
         openapi: "https://{{base_hostname}}/semaphore/openapi.json"
     sasquatch:
       - type: "ui"
@@ -320,13 +340,14 @@ config:
         template: "https://{{base_hostname}}/chronograf"
       - type: "ui"
         name: "kafdrop"
-        template: "https://{{base_hostname}}/chronograf"
+        template: "https://{{base_hostname}}/kafdrop"
     sia:
       - type: "data"
         name: "sia"
         datasets:
           - "dp02"
           - "dp1"
+          - "dp2"
         template: "https://{{base_hostname}}/api/sia/{{dataset}}"
         versions:
           sia-query-2.0:
@@ -397,6 +418,7 @@ config:
         datasets:
           - "dp02"
           - "dp1"
+          - "dp2"
         template: "https://{{base_hostname}}/api/cutout"
         versions:
           soda-async-1.0:
@@ -451,9 +473,9 @@ config:
   tap:
     # -- Default schema version for all TAP services (can be overridden
     # per-app)
-    schemaVersion: "releases/w.2026.17"
+    schemaVersion: "releases/EDP2-deploy-v2"
 
-    # -- Template for schema artifact URLs (use {schemaVersion} placeholder)
+    # -- Template for schema artifact URLs (use {version} placeholder)
     # @default -- GCS rubin-sdm-schemas-artifacts bucket
     schemaSourceTemplate: "gs://rubin-sdm-schemas-artifacts/{version}/schemas.tar.gz"
 
@@ -465,24 +487,25 @@ config:
       tap:
         enabled: false
         schemas:
-          - dp1
-          - ivoa_obscore
-          - dp02_dc2
+          - "dp2"
+          - "dp1"
+          - "ivoa_obscore"
+          - "dp02_dc2"
         databaseUrl: "postgresql://tap@127.0.0.1:5432/tap"
         databasePasswordKey: "tap-database-password"
 
       ssotap:
         enabled: false
         schemas:
-          - dp03_10yr
-          - dp03_1yr
+          - "dp03_10yr"
+          - "dp03_1yr"
         databaseUrl: "postgresql://ssotap@127.0.0.1:5432/ssotap"
         databasePasswordKey: "ssotap-database-password"
 
       livetap:
         enabled: false
         schemas:
-          - oga_live_obscore
+          - "oga_live_obscore"
         databaseUrl: "postgresql://livetap@127.0.0.1:5432/livetap"
         databasePasswordKey: "livetap-database-password"
 
@@ -496,7 +519,7 @@ cloudsql:
     repository: "gcr.io/cloudsql-docker/gce-proxy"
 
     # -- Cloud SQL Auth Proxy tag to use
-    tag: "1.38.1"
+    tag: "1.38.2"
 
     # -- Pull policy for Cloud SQL Auth Proxy images
     pullPolicy: "IfNotPresent"

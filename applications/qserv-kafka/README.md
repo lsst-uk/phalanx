@@ -10,6 +10,7 @@ Qserv Kafka bridge
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
+| config.backendApiTimeout | string | `"60s"` | Timeout for REST API calls in Safir `parse_timedelta` format. This includes time spent waiting for a connection if the maximum number of connections has been reached. |
 | config.consumerGroupId | string | `"qserv"` | Kafka consumer group ID |
 | config.jobCancelTopic | string | `"lsst.tap.job-delete"` | Kafka topic for query cancellation requests |
 | config.jobRunBatchSize | int | `10` | Maximum batch size for query execution requests. This should generally be the same as `qservRestMaxConnections`. |
@@ -31,18 +32,19 @@ Qserv Kafka bridge
 | config.qservPollInterval | string | `"1s"` | Interval at which Qserv is polled for query status in Safir `parse_timedelta` format |
 | config.qservRestMaxConnections | int | `15` | Maximum simultaneous connections to open to the REST API. This should be set to `jobRunBatchSize` plus some extra connections for the monitor and cancel jobs. |
 | config.qservRestSendApiVersion | bool | `true` | Whether to send the expected API version in REST API calls to Qserv |
-| config.qservRestTimeout | string | `"30s"` | Timeout for REST API calls in Safir `parse_timedelta` format. This includes time spent waiting for a connection if the maximum number of connections has been reached. |
 | config.qservRestUrl | string | None, must be set | URL to the Qserv REST API |
 | config.qservRestUsername | string | `nil` | Username for HTTP Basic Authentication for the Qserv REST API. If not null, the password will be assumed to be the same as the database password. |
 | config.qservRetryCount | int | `3` | How many times to retry after a Qserv API network failure |
 | config.qservRetryDelay | string | `"1s"` | How long to wait between retries after a Qserv API network failure in Safir `parse_timedelta` format |
-| config.qservUploadTimeout | string | `"5m"` | How long to allow for user table upload before timing out in Safir `parse_timedelta` format. |
+| config.qservUploadTimeout | string | `"30m"` | How long to allow for user table upload before timing out in Safir `parse_timedelta` format. |
 | config.redisMaxConnections | int | `15` | Size of the Redis connection pool. This should be set to `jobRunBatchSize` plus some extra connections for the monitor, cancel jobs. |
 | config.resultTimeout | int | 3600 (1 hour) | How long to wait for result processing (retrieval and upload) before timing out, in seconds. This doubles as the timeout forcibly terminating result worker pods. |
 | config.sentry.enabled | bool | `false` | Set to true to enable the Sentry integration. |
 | config.sentry.tracesSampleRate | float | `0` | The percentage of requests that should be traced. This should be a float between 0 and 1 |
 | config.slack.enabled | bool | `false` | Set to true to enable the Slack integration. If true, the slack-webhook secret must be provided. |
 | config.tapService | string | `"qserv"` | Name of the TAP service for which this Qserv Kafka instance is managing queries. This must match the name of the TAP service for the corresponding query quota in the Gafaelfawr configuration. |
+| config.uploadWorkerMaxJobs | int | `10` | Maximum number of arq jobs each upload worker can process simultaneously.. |
+| config.uploadWorkerTimeout | int | 900 (15 minutes) | How long to allow an upload worker to upload tables and submit the query to the backend before timing out, in seconds. |
 | frontend.affinity | object | `{}` | Affinity rules for the qserv-kafka frontend pod |
 | frontend.debug.disablePymalloc | bool | `false` |  |
 | frontend.debug.enabled | bool | `false` | Set to true to allow containers to run as root and to create and mount a debug PVC. Useful ro run debug containers to diagnose issues such as memory leaks. |
@@ -78,9 +80,16 @@ Qserv Kafka bridge
 | resultWorker.autoscaling.enabled | bool | `true` | Enable autoscaling of qserv-kafka result workers |
 | resultWorker.autoscaling.maxReplicas | int | `10` | Maximum number of qserv-kafka worker pods. Each replica will open database connections up to the configured pool size and overflow limits, so make sure the combined connections are under the postgres connection limit. |
 | resultWorker.autoscaling.minReplicas | int | `1` | Minimum number of qserv-kafka worker pods |
-| resultWorker.autoscaling.targetCPUUtilizationPercentage | int | `75` | Target CPU utilization of qserv-kafka worker pods. |
+| resultWorker.autoscaling.targetCPUUtilizationPercentage | int | `30` | Target CPU utilization of qserv-kafka worker pods. |
 | resultWorker.nodeSelector | object | `{}` | Node selection rules for the qserv-kafka worker pods |
 | resultWorker.podAnnotations | object | `{}` | Annotations for the qserv-kafka worker pods |
 | resultWorker.replicaCount | int | `1` | Number of result worker pods to start if autoscaling is disabled |
 | resultWorker.resources | object | See `values.yaml` | Resource limits and requests for the qserv-kafka worker pods |
 | resultWorker.tolerations | list | Tolerate GKE arm64 taint | Tolerations for the qserv-kafka worker pods |
+| uploadWorker.affinity | object | `{}` | Affinity rules for the qserv-kafka upload worker pods |
+| uploadWorker.allowRootDebug | bool | `false` | Whether to allow containers to run as root. Set to true to allow use of debug containers to diagnose issues such as memory leaks. |
+| uploadWorker.nodeSelector | object | `{}` | Node selection rules for the qserv-kafka upload worker pods |
+| uploadWorker.podAnnotations | object | `{}` | Annotations for the qserv-kafka upload worker pods |
+| uploadWorker.replicaCount | int | `1` | Number of upload worker pods to start |
+| uploadWorker.resources | object | See `values.yaml` | Resource limits and requests for the qserv-kafka upload worker pods |
+| uploadWorker.tolerations | list | Tolerate GKE arm64 taint | Tolerations for the qserv-kafka upload worker pods |

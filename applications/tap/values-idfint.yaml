@@ -9,7 +9,12 @@ cadc-tap:
 
     urlRewrite:
       enabled: true
-      rules: "ivoa.ObsCore:access_url, dp02_dc2_catalogs.ObsCore:access_url, dp1.ObsCore:access_url"
+      rules:
+        - "ivoa.ObsCore:access_url"
+        - "dp02_dc2_catalogs.ObsCore:access_url"
+        - "dp1.ObsCore:access_url"
+
+    datalinkPayloadUrl: "https://github.com/lsst/sdm_schemas/releases/download/EDP2-deploy-v2/datalink-snippets.zip"
 
   cloudsql:
     enabled: true

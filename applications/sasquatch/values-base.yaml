@@ -182,7 +182,7 @@ telegraf:
       enabled: true
       database: "efd"
       topicRegexps: |
-        [ "lsst.sal.ATCamera", "lsst.sal.ATHeaderService", "lsst.sal.ATOODS", "lsst.sal.ATSpectrograph" ]
+        [ "lsst.sal.ATHeaderService", "lsst.sal.ATOODS", "lsst.sal.ATSpectrograph", "lsst.sal.ATCamera" ]
     m1m3:
       enabled: true
       database: "efd"
@@ -269,11 +269,9 @@ telegraf:
         [ "lsst.sal.GCHeaderService", "lsst.sal.GenericCamera" ]
     lsstcam:
       enabled: true
-      metric_batch_size: 250
-      max_undelivered_messages: 5000
       database: "efd"
       topicRegexps: |
-        [ "lsst.sal.MTCamera", "lsst.sal.MTHeaderService", "lsst.sal.MTOODS", "lsst.sal.WFOODS" ]
+        [ "lsst.sal.MTHeaderService", "lsst.sal.MTOODS", "lsst.sal.WFOODS", "lsst.sal.MTCamera" ]
     calsys:
       enabled: true
       database: "efd"
@@ -301,7 +299,7 @@ telegraf:
       timestamp_format: "unix_ms"
       timestamp_field: "timestamp"
       tags: |
-        [ "Agent", "Aspic", "Axis", "Bay", "Canbus", "Cip", "Clamp", "Cold", "Controller", "Cryo", "Gateway", "Hardware", "Hip", "Hook", "Latch", "Location", "Ps", "RTD", "Raft", "Reb", "Segment", "Sensor", "Socket", "Source", "Truck", "VersionType" ]
+        [ "Agent", "Aspic", "Axis", "Bay", "Buffer", "Canbus", "Cip", "Clamp", "Cold", "Controller", "Cryo", "Gateway" , "Hardware", "Hip", "Hook", "Latch", "Location", "Ps", "RTD", "Raft", "Reb", "Segment", "Sensor", "Socket", "Source", "Truck", "VersionType" ]
       topicRegexps: |
         [ "lsst.MTCamera" ]
   resources:

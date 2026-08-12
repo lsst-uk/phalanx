@@ -14,7 +14,7 @@ Publish versioned docs
 | cloudsql.enabled | bool | `false` | Enable the Cloud SQL Auth Proxy sidecar, used with Cloud SQL databases on Google Cloud |
 | cloudsql.image.pullPolicy | string | `"IfNotPresent"` | Pull policy for Cloud SQL Auth Proxy images |
 | cloudsql.image.repository | string | `"gcr.io/cloudsql-docker/gce-proxy"` | Cloud SQL Auth Proxy image to use |
-| cloudsql.image.tag | string | `"1.38.1"` | Cloud SQL Auth Proxy tag to use |
+| cloudsql.image.tag | string | `"1.38.2"` | Cloud SQL Auth Proxy tag to use |
 | cloudsql.instanceConnectionName | string | `""` | Instance connection name for a Cloud SQL PostgreSQL instance |
 | cloudsql.resources | object | See `values.yaml` | Resource requests and limits for Cloud SQL Auth Proxy |
 | cloudsql.serviceAccount | string | `""` | The Google service account that has an IAM binding to the `docverse` Kubernetes service accounts and has the `cloudsql.client` role |
@@ -49,6 +49,7 @@ Publish versioned docs
 | global.repertoireUrl | string | Set by Argo CD | Base URL for Repertoire discovery API |
 | global.vaultSecretsPath | string | Set by Argo CD | Base path for Vault secrets |
 | image.pullPolicy | string | `"IfNotPresent"` | Pull policy for the docverse image |
+| image.pythonModule | string | `"docverse_server"` | Top-level Python module of the server in this image. Images built after the DM-55658 packaging restructure use "docverse_server"; earlier images use "docverse". Must match the deployed image tag. |
 | image.repository | string | `"ghcr.io/lsst-sqre/docverse"` | Image to use in the docverse deployment |
 | image.tag | string | The appVersion of the chart | Tag of image to use |
 | ingress.annotations | object | `{}` | Additional annotations for the ingress rule |

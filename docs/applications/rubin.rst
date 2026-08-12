@@ -11,6 +11,7 @@ Argo CD project: ``rubin``
 
    cm-service/index
    consdb/index
+   ephemcache/index
    exposurelog/index
    exposure-checker/index
    fastapi-bootcamp/index
@@ -30,3 +31,4 @@ Argo CD project: ``rubin``
    s3proxy/index
    schedview-snapshot/index
    schedview-static-pages/index
+   weatherbroadcaster/index
