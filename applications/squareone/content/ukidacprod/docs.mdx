@@ -86,9 +86,8 @@ services, and software.</Lede>
   <CardGroup>
    <a href="https://rsp.lsst.ac.uk/portal/app/">
      <Card>
-       Table of counterpart associations between Gaia DR3 and CatWISE2020.
-       Uses probabilistic cross-match algorithms as described by Wilson & Naylor (MNRAS, 2017, 2018a,b) and Wilson (RNAAS, 2022).
-       Sources are returned either as a pairing, in which the Gaia and WISE objects are the same astrophysical source detected twice, or as non-matches, with that particular object in one of the catalogues having a corresponding flux upper limits in the opposing catalogue, and entries include various pieces of metadata such as the probability of the match/non-match, likelihood of match on purely position or brightness grounds, and information on the level to which objects suffer contamination due to hidden and unresolved background sources.
+       Tables of counterpart associations between Gaia DR3 and CatWISE2020. Uses probabilistic cross-match algorithms of macauff, as described by Wilson & Naylor (MNRAS, 2017, 2018a,b) and Wilson (RNAAS, 2022). Sources are returned either as a pairing, in which the Gaia and WISE entries are the same astrophysical source detected twice, or as non-matches, with that particular object in one of the catalogues having a corresponding flux upper limits in the opposing catalogue. Join tables are supplemented include various pieces of metadata such as the probability of the match/non-match, likelihood of match on purely position or brightness grounds, and information on the level to which objects suffer contamination due to hidden and unresolved background sources.
+       Two sets of cross-match join tables are provided: one that includes the relative likelihoods of match association and non-match coincidence due to the photometric brightnesses of the objects in the two datasets, and hence source colour, and one that does not consider colour and solely uses the relative positions, astrometric uncertainties, and on-sky catalogue densities to determine the most likely match pairings. These are referred to as "astro_only" -- the without-photometry, astrometric-information-only match -- and "astro_photo" -- with-photometry, astrometric-and-photometric match -- respectively.
      </Card>
    </a>
   </CardGroup>
@@ -101,6 +100,12 @@ services, and software.</Lede>
         The VISTA-HSC fused dataset is designed to deliver pixel-matched images and multiband catalogues through the integration of data from the Visible and Infrared Survey Telescope for Astronomy (VISTA) in the near-infrared and the Hyper SuprimeCam (HSC) in the optical range. The LSST pipelines will handle the CCD processing of VISTA images, while the calibrated exposures from the final HSC PDR3 will be employed for merging with VISTA. This comprehensive dataset encompasses multiple VISTA surveys, with varying depths.
       </Card>
     </a>
+    <a href="https://github.com/lsst-uk/rsp-uk-notebooks/tree/main/HSC_VISTA_Tutorials">
+      <Card>
+        ### VISTA-HSC Tutorials
+        Tutorials for exploring the VISTA-HSC dataset on the Rubin Science Platform.
+      </Card>
+    </a>
   </CardGroup>
 
   ### ComCam-VISTA
@@ -109,6 +114,12 @@ services, and software.</Lede>
     <a href="https://community.lsst.org/t/lsst-dp1-vista-video-fusion-dataset-on-the-uk-rsp/12189">
       <Card>
         This dataset, available via the Notebooks service, is produced with the LSST–VISTA Fusion Pipeline for the DP1 ComCam–VISTA data in the Extended Chandra Deep Field South (ECDFS). The pipeline processes VISTA near-infrared imaging within an LSST-style framework and combines it with ComCam optical data in a common Butler environment for joint analysis. The main products are pixel-matched Coadd images and associated catalogue products across the available optical and near-infrared bands. These fused products enable consistent photometric analysis across wavelengths, making them particularly well suited for colour studies, SED-based analysis, and any science that benefits from uniform measurements over all bands. Tutorials are provided thought the Tutorials menu.
+      </Card>
+    </a>
+    <a href="https://github.com/lsst-uk/rsp-uk-notebooks/tree/main/ComCam_VISTA_Tutorials">
+      <Card>
+        ### ComCam-VISTA Tutorials
+        Tutorials for exploring the ComCam-VISTA dataset on the Rubin Science Platform.
       </Card>
     </a>
   </CardGroup>
