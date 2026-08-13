@@ -20,7 +20,7 @@ controller:
     fileserver:
       enabled: true
       nodeSelector:
-        node_pool: "user-lab-pool"
+        node_pool: "user-lab-pool-amd"
       tolerations:
         - key: "nublado.lsst.io/permitted"
           operator: "Exists"
@@ -29,6 +29,7 @@ controller:
         - containerPath: "/home"
           volumeName: "home"
     images:
+      recommendedTag: "r30_0_10_rsp2991"
       source:
         type: "google"
         location: "us-central1"
@@ -55,7 +56,7 @@ controller:
         TUTORIAL_NOTEBOOKS_CACHE_DIR: "/rubin/cst_repos/tutorial-notebooks"
       initContainers:
       nodeSelector:
-        node_pool: "user-lab-pool"
+        node_pool: "user-lab-pool-amd"
       secrets:
         - secretName: "nublado-lab-secret"
           secretKey: "rubin-epo-cit-sci-pipeline.json"
@@ -128,8 +129,8 @@ hub:
 
 jupyterhub:
   cull:
-    timeout: 90000  # 25 hours
-    maxAge: 432000  # 5 days
+    timeout: 90000 # 25 hours
+    maxAge: 432000 # 5 days
   hub:
     config:
       JupyterHub:
@@ -142,7 +143,7 @@ jupyterhub:
 
 purger:
   enabled: true
-  schedule: "27 05 * * 0"  # Sunday morning, 12:27 AM (UTC-5)
+  schedule: "27 05 * * 0" # Sunday morning, 12:27 AM (UTC-5)
   volumeName: "deleted-sundays"
   policy:
     directories:
@@ -164,14 +165,12 @@ cronjob:
     targetVolume:
       mountPath: "/rubin"
       volumeName: "rubin"
-    gid: 2000004
   artifacts:
     enabled: true
     gitTarget: "/rubin/cst_repos/tutorial-notebooks-data"
     targetVolume:
       mountPath: "/rubin"
       volumeName: "rubin"
-    gid: 2000004
 
 cloudsql:
   enabled: true

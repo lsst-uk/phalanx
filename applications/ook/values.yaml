@@ -88,9 +88,82 @@ config:
     # -- Kafka topic name for ingest events
     ingest: "lsst.square-events.ook.ingest"
 
+    # -- Kafka topic name for link-check execution requests
+    linkcheck: "lsst.square-events.ook.linkcheck"
+
   algolia:
     # -- Name of the Algolia index for documents
     documents_index: "documents_dev"
+
+  linkcheck:
+    # -- Total timeout applied to each link-check HTTP request
+    requestTimeout: "30s"
+
+    # -- Maximum number of concurrent link-check HTTP requests across all
+    # hosts
+    maxConcurrency: 10
+
+    # -- Minimum politeness interval between link-check requests to the same
+    # host
+    hostInterval: "1s"
+
+    # -- Override for the User-Agent header sent on every link-check request.
+    # Leave empty to use Ook's built-in browser-prefixed hybrid default, which
+    # carries the running Ook version and repo URL
+    userAgent: ""
+
+    # -- Age below which a URL's stored check result is considered fresh and
+    # is not rechecked on submission
+    freshnessTtl: "24h"
+
+    # -- Maximum number of unique canonical URLs accepted in a single
+    # link-check submission
+    maxUrlsPerCheck: 1000
+
+    # -- Minimum span of consecutive failures before a previously-OK link is
+    # declared broken instead of failing
+    brokenThreshold: "48h"
+
+    # -- Minimum number of consecutive failed attempts before a previously-OK
+    # link is declared broken instead of failing
+    brokenMinAttempts: 3
+
+    # -- Delays until the next recheck of a failing link, indexed by the
+    # number of consecutive failures so far
+    recheckIntervals:
+      - "1h"
+      - "4h"
+      - "24h"
+      - "48h"
+
+    # -- Delay until the next recheck of a broken link, revisited at this slow
+    # cadence so a since-fixed link can heal without waiting to be resubmitted
+    brokenRecheckInterval: "24h"
+
+    # -- Delay until the next recheck of a bot-blocked link, revisited at this
+    # near-term cadence because a block is inconclusive and tends to flap
+    blockedRecheckInterval: "1h"
+
+    # -- Age beyond which link-check submission records are purged by the
+    # scheduled linkcheck-recheck maintenance command
+    checkRetention: "30d"
+
+  intersphinx:
+    # -- Freshness TTL for cached intersphinx inventories. An inventory
+    # fetched within this window is served as a fresh cache hit; an older one
+    # is served stale on the request path while the refresh job revalidates
+    # it
+    ttl: "1h"
+
+    # -- Negative-cache TTL for cold-miss intersphinx inventory fetch
+    # failures. A repeat request inside this window returns the error without
+    # re-contacting upstream
+    negativeTtl: "5m"
+
+    # -- Active window for the intersphinx refresh job. The scheduled refresh
+    # only revalidates cached inventories requested by a client within this
+    # window; inventories last requested longer ago are skipped (not deleted)
+    activeWindow: "30d"
 
 audit:
   # -- Enable the audit job
@@ -149,6 +222,56 @@ ingestUpdated:
   # -- Affinity rules for Ook audit pods
   affinity: {}
 
+linkcheckRecheck:
+  # -- Enable the linkcheck-recheck job
+  enabled: false
+
+  # -- Cron schedule string for the ook linkcheck-recheck job (UTC)
+  schedule: "45 4 * * *"
+
+  # -- Time (second) to keep a finished job before cleaning up
+  ttlSecondsAfterFinished: 86400
+
+  # -- Resource limits and requests for Ook linkcheck-recheck pods
+  resources: {}
+
+  # -- Annotations for Ook linkcheck-recheck pods
+  podAnnotations: {}
+
+  # -- Node selection rules for Ook linkcheck-recheck pods
+  nodeSelector: {}
+
+  # -- Tolerations for Ook linkcheck-recheck pods
+  tolerations: []
+
+  # -- Affinity rules for Ook linkcheck-recheck pods
+  affinity: {}
+
+intersphinxRefresh:
+  # -- Enable the intersphinx-refresh job
+  enabled: false
+
+  # -- Cron schedule string for the ook intersphinx-refresh job (UTC)
+  schedule: "15 * * * *"
+
+  # -- Time (second) to keep a finished job before cleaning up
+  ttlSecondsAfterFinished: 86400
+
+  # -- Resource limits and requests for Ook intersphinx-refresh pods
+  resources: {}
+
+  # -- Annotations for Ook intersphinx-refresh pods
+  podAnnotations: {}
+
+  # -- Node selection rules for Ook intersphinx-refresh pods
+  nodeSelector: {}
+
+  # -- Tolerations for Ook intersphinx-refresh pods
+  tolerations: []
+
+  # -- Affinity rules for Ook intersphinx-refresh pods
+  affinity: {}
+
 ingestLsstTexmf:
   # -- Enable the ingest-lsst-texmf job
   enabled: false
@@ -187,7 +310,7 @@ cloudsql:
     repository: "gcr.io/cloudsql-docker/gce-proxy"
 
     # -- Cloud SQL Auth Proxy tag to use
-    tag: "1.38.1"
+    tag: "1.38.2"
 
     # -- Pull policy for Cloud SQL Auth Proxy images
     pullPolicy: "IfNotPresent"

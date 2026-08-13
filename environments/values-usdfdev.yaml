@@ -15,6 +15,7 @@ applications:
   consdbtap: true
   consdb: true
   datalinker: true
+  ephemcache: true
   exposure-checker: true
   exposurelog: true
   fov-quicklook: true
@@ -48,3 +49,4 @@ applications:
   strimzi: true
   tap: true
   times-square: true
+  weatherbroadcaster: true

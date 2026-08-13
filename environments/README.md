@@ -21,6 +21,7 @@
 | applications.datalinker | bool | `false` | Eanble the datalinker application |
 | applications.docverse | bool | `false` | Enable the docverse application |
 | applications.envsys | bool | `false` | Enable the envsys control system application |
+| applications.ephemcache | bool | `false` | Enable the ephemcache application |
 | applications.eups-distributor | bool | `false` | Enable the eups-distributor application |
 | applications.exposure-checker | bool | `false` | Enable the exposure-checker application |
 | applications.exposurelog | bool | `false` | Enable the exposurelog application |
@@ -90,10 +91,12 @@
 | applications.times-square | bool | `false` | Enable the times-square application |
 | applications.turborepo-cache | bool | `false` | Enable the turborepo-cache application |
 | applications.unfurlbot | bool | `false` | Enable the unfurlbot application |
+| applications.usertap | bool | `false` | Enable the usertap application |
 | applications.uws | bool | `false` | Enable the uws application. This includes the dmocps control system application. |
 | applications.vault | bool | `false` | Enable the vault application. This is the actual vault storage and there should only be one production and one development instance globally. |
 | applications.vault-secrets-operator | bool | `true` | Enable the vault-secrets-operator application. This is required for all environments. |
 | applications.vo-cutouts | bool | `false` | Enable the vo-cutouts application |
+| applications.weatherbroadcaster | bool | `false` | Enable the weatherbroadcaster application |
 | applications.wobbly | bool | `false` | Enable the wobbly application, required if the environment will be running any Safir-based UWS services |
 | butlerServerRepositories | object | None, must be set | Butler repositories that can be accessed via Butler server, as a dictionary from repository label to URI. |
 | controlSystem.appNamespace | string | None, must be set | Application namespacce for the control system deployment |
