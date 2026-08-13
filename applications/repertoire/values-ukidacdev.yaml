@@ -15,11 +15,23 @@ config:
         which objects suffer contamination due to hidden and unresolved
         background sources.
         docsUrl: "https://dp1.lsst.io/"
+    comcam_vista:
+      description: >-
+        This dataset is produced with the LSST–VISTA Fusion Pipeline for the DP1 ComCam–VISTA data in
+        the Extended Chandra Deep Field South (ECDFS). The pipeline processes VISTA near-infrared
+        imaging within an LSST-style framework and combines it with ComCam optical data in a common
+        Butler environment for joint analysis.
+        The main products are pixel-matched Coadd images and associated catalogue products across the
+        available optical and near-infrared bands. These fused products enable consistent photometric analysis
+        across wavelengths, making them particularly well suited for colour studies, SED-based analysis, and
+        any science that benefits from uniform measurements over all bands.
+        docsUrl: "https://community.lsst.org/t/lsst-dp1-vista-video-fusion-dataset-on-the-uk-rsp/12189"
   availableDatasets:
     - "dp1"
     - "macauff_gaiadr3xcatwise"
     - "macauff_gaiadr3x2mass"
     - "ivoa_obscore"
+    - "comcam_vista"
   tap:
     schemaVersion: "w.2026.29-dev.09d31e2"
     schemaSourceTemplate: "https://github.com/lsst-uk/sdm_schemas/archive/refs/tags/w.2026.29-dev.09d31e2.tar.gz"
