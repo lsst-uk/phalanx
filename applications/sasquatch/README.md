@@ -66,7 +66,7 @@ Rubin Observatory's telemetry service
 | influxdb.config.logging.format | string | `"json"` | Format to use for log messages |
 | influxdb.config.logging.level | string | `"debug"` | Logging level |
 | influxdb.enabled | bool | `true` | Whether InfluxDB is enabled |
-| influxdb.image.tag | string | `"1.12.3"` | InfluxDB image tag |
+| influxdb.image.tag | string | `"1.12.4"` | InfluxDB image tag |
 | influxdb.ingress.annotations | object | See `values.yaml` | Annotations to add to the ingress |
 | influxdb.ingress.className | string | `"nginx"` | Ingress class to use |
 | influxdb.ingress.enabled | bool | `false` | Whether to enable the InfluxDB ingress |
@@ -708,7 +708,7 @@ Rubin Observatory's telemetry service
 | rest-proxy.heapOptions | string | `"-Xms8192M -Xmx8192M"` | Kafka REST proxy JVM Heap Option |
 | rest-proxy.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
 | rest-proxy.image.repository | string | `"confluentinc/cp-kafka-rest"` | Kafka REST proxy image repository |
-| rest-proxy.image.tag | string | `"8.3.0"` | Kafka REST proxy image tag |
+| rest-proxy.image.tag | string | `"8.3.1"` | Kafka REST proxy image tag |
 | rest-proxy.ingress.annotations | object | `{"nginx.ingress.kubernetes.io/rewrite-target":"/$2"}` | Annotations that will be added to the Ingress resource |
 | rest-proxy.ingress.anonymous | bool | false | Whether to enable anonymous access to the REST proxy |
 | rest-proxy.ingress.enabled | bool | `false` | Whether to enable the ingress for the REST proxy |
@@ -727,7 +727,7 @@ Rubin Observatory's telemetry service
 | schema-registry.cluster.name | string | `"sasquatch"` | Name of the Strimzi cluster used by the Schema Registry. |
 | schema-registry.compatibilityLevel | string | `"none"` | Compatibility level for the Schema Registry. Options are: none, backward, backward_transitive, forward, forward_transitive, full, and full_transitive. |
 | schema-registry.image.repository | string | `"confluentinc/cp-schema-registry"` | Docker image for the Confluent Schema Registry. |
-| schema-registry.image.tag | string | `"8.3.0"` | Docker image tag for the Confluent Schema Registry. |
+| schema-registry.image.tag | string | `"8.3.1"` | Docker image tag for the Confluent Schema Registry. |
 | schema-registry.ingress.annotations | object | `{"nginx.ingress.kubernetes.io/rewrite-target":"/$2"}` | Annotations that will be added to the Ingress resource |
 | schema-registry.ingress.anonymous | bool | false | Whether to enable anonymous access to the Schema Registry |
 | schema-registry.ingress.enabled | bool | `false` | Whether to enable an ingress for the Schema Registry |
@@ -739,7 +739,7 @@ Rubin Observatory's telemetry service
 | schema-registry-remote.cluster.name | string | `"sasquatch"` | Name of the Strimzi cluster used by the Schema Registry. |
 | schema-registry-remote.compatibilityLevel | string | `"none"` | Compatibility level for the Schema Registry. Options are: none, backward, backward_transitive, forward, forward_transitive, full, and full_transitive. |
 | schema-registry-remote.image.repository | string | `"confluentinc/cp-schema-registry"` | Docker image for the Confluent Schema Registry. |
-| schema-registry-remote.image.tag | string | `"8.3.0"` | Docker image tag for the Confluent Schema Registry. |
+| schema-registry-remote.image.tag | string | `"8.3.1"` | Docker image tag for the Confluent Schema Registry. |
 | schema-registry-remote.ingress.annotations | object | `{"nginx.ingress.kubernetes.io/rewrite-target":"/$2"}` | Annotations that will be added to the Ingress resource |
 | schema-registry-remote.ingress.anonymous | bool | false | Whether to enable anonymous access to the Schema Registry |
 | schema-registry-remote.ingress.enabled | bool | `false` | Whether to enable an ingress for the Schema Registry |
