@@ -28,6 +28,7 @@ config:
         docsUrl: "https://community.lsst.org/t/lsst-dp1-vista-video-fusion-dataset-on-the-uk-rsp/12189"
   availableDatasets:
     - "dp1"
+    - "dp2"
     - "macauff_gaiadr3xcatwise"
     - "macauff_gaiadr3x2mass"
     - "ivoa_obscore"
@@ -39,6 +40,7 @@ config:
       tap:
         schemas:
           - dp1
+          - dp2
           - macauff_gaiadr3xcatwise
           - macauff_gaiadr3x2mass
           - ivoa_obscore
