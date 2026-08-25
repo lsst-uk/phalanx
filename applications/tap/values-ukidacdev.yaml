@@ -23,9 +23,9 @@ cadc-tap:
     gcsBucketType: "S3"
     jvmMaxHeapSize: "31G"
 
-    urlRewrite:
-      enabled: true
-      rules: "ivoa.ObsCore:access_url, dp02_dc2_catalogs.ObsCore:access_url, dp1.ObsCore:access_url"
+    # urlRewrite:
+    #   enabled: true
+    #   rules: "ivoa.ObsCore:access_url, dp02_dc2_catalogs.ObsCore:access_url, dp1.ObsCore:access_url"
 
     qserv:
       host: "192.41.122.106:30431"
