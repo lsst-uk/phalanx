@@ -125,6 +125,9 @@ applications:
   # -- Enable the muster application
   muster: false
 
+  # -- Enable the obsforgetap application
+  obsforgetap: false
+
   # -- Enable the prompt-pub application
   prompt-pub: false
 
@@ -265,6 +268,9 @@ applications:
 
   # -- Enable the simonyitel control system application
   simonyitel: false
+
+  # -- Enable the skyviewer application
+  skyviewer: false
 
   # -- Enable the ssotap application
   ssotap: false
