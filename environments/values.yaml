@@ -70,6 +70,9 @@ applications:
   # -- Enable the cm-service application
   cm-service: false
 
+  # -- Enable the conesearch application
+  conesearch: false
+
   # -- Enable the consdbtap application
   consdbtap: false
 
@@ -124,6 +127,9 @@ applications:
 
   # -- Enable the muster application
   muster: false
+
+  # -- Enable the obsforge application
+  obsforge: false
 
   # -- Enable the obsforgetap application
   obsforgetap: false

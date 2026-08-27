@@ -1,13 +1,11 @@
 replicaCount: 2
 
-# Use the CSI storage class so that we can use snapshots.
-redis:
-  persistence:
-    storageClass: "standard-rwo"
-
 config:
   allowSubdomains: true
   slackAlerts: true
+
+  metrics:
+    enabled: true
 
   sentry:
     enabled: true
@@ -43,10 +41,6 @@ config:
   oidcServer:
     enabled: true
 
-  # Enable metrics reporting.
-  metrics:
-    enabled: true
-
   # User quota settings for services.
   quota:
     default:
@@ -61,6 +55,10 @@ config:
     "admin:jupyterlab":
       - "g_admins"
     "admin:notifications":
+      - "g_admins"
+    "admin:oidc":
+      - "g_admins"
+    "admin:token":
       - "g_admins"
     "admin:userinfo":
       - "g_admins"
@@ -86,16 +84,12 @@ config:
     "write:obsforge":
       - "g_admins"
 
-  initialAdmins:
-    - "adam"
-    - "afausti"
-    - "danfuchs"
-    - "frossie"
-    - "jsick"
-    - "rra"
-    - "svoutsin"
-
 cloudsql:
   enabled: true
   instanceConnectionName: "science-platform-int-dc5d:us-central1:science-platform-int-8f439af2"
   serviceAccount: "gafaelfawr@science-platform-int-dc5d.iam.gserviceaccount.com"
+
+# Use the CSI storage class so that we can use snapshots.
+redis:
+  persistence:
+    storageClass: "standard-rwo"

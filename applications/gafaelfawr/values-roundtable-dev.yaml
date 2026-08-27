@@ -1,15 +1,8 @@
-# Use the CSI storage class so that we can use snapshots.
-redis:
-  persistence:
-    storageClass: "standard-rwo"
-
-cloudsql:
-  enabled: true
-  instanceConnectionName: "roundtable-dev-abe2:us-central1:roundtable-dev-572a252e"
-  serviceAccount: "gafaelfawr@roundtable-dev-abe2.iam.gserviceaccount.com"
-
 config:
   slackAlerts: false
+
+  metrics:
+    enabled: true
 
   sentry:
     enabled: true
@@ -21,27 +14,31 @@ config:
   oidcServer:
     enabled: true
 
-  # Enable metrics reporting.
-  metrics:
-    enabled: true
-
   knownScopes:
-    "write:git-lfs": >-
-      Can write objects to Git LFS storage bucket
-    "read:checkerboard": >-
-      Can query Checkerboard for user mappings
-    "exec:internal-tools": >-
-      Can use internal APIs
-    "write:turborepo": >-
-      Can read and write to the Turborepo remote cache
     "exec:docverse": >-
       Can access Docverse's as a user in an organization
+    "exec:internal-tools": >-
+      Can use internal APIs
     "exec:linkcheck": >-
       Can submit link-check requests to Ook
+    "read:checkerboard": >-
+      Can query Checkerboard for user mappings
     "write:intersphinx": >-
       Can read and refresh Ook's cached intersphinx inventories
+    "write:git-lfs": >-
+      Can write objects to Git LFS storage bucket
+    "write:turborepo": >-
+      Can read and write to the Turborepo remote cache
 
   groupMapping:
+    "admin:oidc":
+      - github:
+          organization: "lsst-sqre"
+          team: "square"
+    "admin:token":
+      - github:
+          organization: "lsst-sqre"
+          team: "square"
     "admin:userinfo":
       - github:
           organization: "lsst-sqre"
@@ -85,15 +82,6 @@ config:
           organization: "lsst-sqre"
           team: "square"
 
-  initialAdmins:
-    - "afausti"
-    - "athornton"
-    - "fajpunk"
-    - "frossie"
-    - "jonathansick"
-    - "rra"
-    - "stvoutsin"
-
   errorFooter: |
     To report problems or ask for help, contact #square-team on the Rubin
     Observatory Slack.
@@ -102,3 +90,13 @@ ingress:
   additionalHosts:
     - "git-lfs-dev.lsst.cloud"
     - "git-lfs-dev-rw.lsst.cloud"
+
+cloudsql:
+  enabled: true
+  instanceConnectionName: "roundtable-dev-abe2:us-central1:roundtable-dev-572a252e"
+  serviceAccount: "gafaelfawr@roundtable-dev-abe2.iam.gserviceaccount.com"
+
+# Use the CSI storage class so that we can use snapshots.
+redis:
+  persistence:
+    storageClass: "standard-rwo"

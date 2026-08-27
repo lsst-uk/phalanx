@@ -15,6 +15,7 @@
 | applications.cert-manager | bool | `true` | Enable the cert-manager application, required unless the environment makes separate arrangements to inject a current TLS certificate |
 | applications.checkerboard | bool | `false` | Enable the checkerboard application |
 | applications.cm-service | bool | `false` | Enable the cm-service application |
+| applications.conesearch | bool | `false` | Enable the conesearch application |
 | applications.consdbtap | bool | `false` | Enable the consdbtap application |
 | applications.control-system-test | bool | `false` | Enable the control-system-test application |
 | applications.csc-versions | bool | `false` | Enable the csc-versions application |
@@ -49,6 +50,7 @@
 | applications.noteburst | bool | `false` | Enable the noteburst application (required by times-square) |
 | applications.nublado | bool | `false` | Enable the nublado application (v3 of the Notebook Aspect) |
 | applications.nvr-control | bool | `false` | Enable the nvr-control application |
+| applications.obsforge | bool | `false` | Enable the obsforge application |
 | applications.obsforgetap | bool | `false` | Enable the obsforgetap application |
 | applications.obsloctap | bool | `false` | Enable the obsloctap application |
 | applications.obssys | bool | `false` | Enable the obssys control system application |
