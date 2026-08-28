@@ -31,7 +31,7 @@ cadc-tap:
       jdbcParams: "?enabledTLSProtocols=TLSv1.3"
       passwordEnabled: true
       image:
-        tag: "3.18.0"
+        tag: "3.25.0"
 
     kafka:
       enabled: true
