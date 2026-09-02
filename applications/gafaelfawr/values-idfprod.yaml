@@ -64,6 +64,8 @@ config:
         sia: 70
         tap: 1000
         vo-cutouts: 35
+      disk:
+        "/home": 52428800000
       notebook:
         cpu: 4.0
         memory: 32
@@ -78,6 +80,7 @@ config:
       - "g_admins"
     "admin:oidc":
       - "g_admins"
+      - "g_oidc_managers"
     "admin:token":
       - "g_admins"
     "admin:userinfo":
