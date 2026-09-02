@@ -8,10 +8,27 @@ config:
   oidcServer:
     enabled: true
 
-  updateSchema: false
+  updateSchema: true
+  
+  oidc:
+    clientId: "rsp-test"
+    audience: "rsp-test"
+    loginUrl: "https://aai-test.lsst.ac.uk/realms/lsst/protocol/openid-connect/auth"
+    tokenUrl: "https://aai-test.lsst.ac.uk/realms/lsst/protocol/openid-connect/token"
+    issuer: "https://aai-test.lsst.ac.uk/realms/lsst"
+    scopes:
+      - "openid"
+    usernameClaim: "preferred_username"
 
-  github:
-    clientId: "c4a5727c5788cc2d346e"
+  ldap:
+    url: "ldap://aai-test.lsst.ac.uk"
+    userDn: "cn=admin,dc=test,dc=lsst,dc=ac,dc=uk"
+    userBaseDn: "ou=users,dc=test,dc=lsst,dc=ac,dc=uk"
+    uidAttr: "uidNumber"
+    gidAttr: "gidNumber"
+    groupBaseDn: "ou=groups,dc=test,dc=lsst,dc=ac,dc=uk"
+    groupMemberAttr: "memberUid"
+    groupSearchByDn: false
 
   groupMapping:
     "admin:oidc":
@@ -23,34 +40,25 @@ config:
           organization: "lsp-uk"
           team: "dev"
     "admin:userinfo":
-      - github:
-          organization: "lsp-uk"
-          team: "dev"
+      - "rsp"
     "exec:admin":
-      - github:
-          organization: "lsp-uk"
-          team: "dev"
+      - "rsp"
     "exec:internal-tools":
-      - github:
-          organization: "lsp-uk"
-          team: "dev"
+      - "users"
+      - "rsp"
     "exec:notebook":
-      - github:
-          organization: "lsp-uk"
-          team: "dev"
+      - "rsp"
     "exec:portal":
-      - github:
-          organization: "lsp-uk"
-          team: "dev"
+      - "rsp"
     "exec:portal-admin":
-      - github:
-          organization: "lsp-uk"
-          team: "dev"
+      - "rsp"
     "read:image":
-      - github:
-          organization: "lsp-uk"
-          team: "dev"
+      - "rsp"
     "read:tap":
-      - github:
-          organization: "lsp-uk"
-          team: "dev"
+      - "rsp"
+
+  initialAdmins:
+    - "gpfrancis"
+    - "davedavemckay"
+    - "etoledor"
+  
