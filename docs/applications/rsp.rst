@@ -11,6 +11,7 @@ Argo CD project: ``rsp``
 
    bigquery-kafka/index
    butler/index
+   conesearch/index
    consdbtap/index
    datalinker/index
    fov-quicklook/index
@@ -21,6 +22,8 @@ Argo CD project: ``rsp``
    livetap/index
    noteburst/index
    nublado/index
+   obsforge/index
+   obsforgetap/index
    portal/index
    ppdbtap/index
    qserv-kafka/index
@@ -30,5 +33,6 @@ Argo CD project: ``rsp``
    ssotap/index
    tap/index
    times-square/index
+   usertap/index
    vo-cutouts/index
    wobbly/index

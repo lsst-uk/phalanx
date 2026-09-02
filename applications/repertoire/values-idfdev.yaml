@@ -3,6 +3,7 @@ config:
     - "dp02"
     - "dp03"
     - "dp1"
+    - "dp2"
     - "prompt"
   hips:
     legacy:
@@ -20,9 +21,14 @@ config:
   slackAlerts: true
   tap:
     servers:
-      tap:
+      ppdbtap:
         enabled: true
       ssotap:
+        enabled: true
+      tap:
+        enabled: true
+        schemaVersion: "tickets/DM-54475"
+      obsforgetap:
         enabled: true
   useSubdomains:
     - "nublado"

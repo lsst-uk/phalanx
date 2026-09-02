@@ -76,7 +76,7 @@ config:
       pullPolicy: "IfNotPresent"
 
       # -- Tag of TAP image to use
-      tag: "1.26.0"
+      tag: "1.26.1"
 
   qserv:
     # -- QServ hostname:port to connect to
@@ -90,6 +90,13 @@ config:
     # Example: "dp1:dp1_pilot" dp1 queries execute against dp1_pilot.
     schemaMappings: ""
 
+    # -- Table name mappings for query rewriting (as visible:backend pairs).
+    # The visible name is the Felis / TAP_SCHEMA table
+    # The backend name is the actual Qserv / BigQuery table name.
+    # Example: ["dp1.Object:dp1_pilot.Object"] rewrites references to
+    # dp1.Object so they query dp1_pilot.Object instead.
+    tableMappings: []
+
     image:
       # -- TAP image to use
       repository: "ghcr.io/lsst-sqre/lsst-tap-service"
@@ -98,7 +105,7 @@ config:
       pullPolicy: "IfNotPresent"
 
       # -- Tag of TAP image to use
-      tag: "3.18.0"
+      tag: "3.25.0"
 
     # -- Whether the Qserv database is password protected
     # @default -- false
@@ -124,7 +131,7 @@ config:
       pullPolicy: "IfNotPresent"
 
       # -- Tag of TAP image to use
-      tag: "3.18.0"
+      tag: "3.25.0"
 
   # -- Address to a MySQL database containing TAP schema data
   tapSchemaAddress: "cadc-tap-schema-db:3306"
@@ -142,7 +149,7 @@ config:
   gcsBucketType: "GCS"
 
   # -- Data Database name
-  database: "dp02"
+  database: "dp2"
 
   # -- Java heap size, which will set the maximum size of the heap. Otherwise
   # Java would determine it based on how much memory is available and black
@@ -199,9 +206,26 @@ config:
   # Leave empty to use the default (100000000).
   maxRec: ""
 
+  # -- Maximum execution duration for TAP queries in seconds.
+  # Also used for sizing the signed result upload URL's expiration
+  # Leave empty to use the default (14400, 4 hours).
+  maxExecutionDuration: ""
+
+  # -- Maximum UWS job destruction time in seconds.
+  # Leave empty to use the default (604800, 1 week).
+  maxDestruction: ""
+
+  # -- Maximum UWS job quote in seconds.
+  # Leave empty to use the default (86400, 24 hours).
+  maxQuote: ""
+
   # -- Whether to advertise VOParquet (application/vnd.apache.parquet) as a
   # supported output format in the TAP capabilities.
   voParquet: false
+
+  # -- List of Qserv director tables for dependent upload partition detection.
+  # Format: ["database.table:idCol", ...]
+  uploadPartitionDirectors: []
 
   # -- Rules for renaming Columns
   urlRewrite:
@@ -209,8 +233,9 @@ config:
     # -- Whether it is enabled
     enabled: true
 
-    # -- String with a comma-separated list of schema.table:column rules
-    rules: "ivoa.ObsCore:access_url"
+    # -- List of schema.table:column rules for URL rewriting
+    rules:
+      - "ivoa.ObsCore:access_url"
 
 mockdb:
   # -- Spin up a container to pretend to be the database.
@@ -363,7 +388,7 @@ uws:
     pullPolicy: "IfNotPresent"
 
     # -- Tag of UWS database image to use
-    tag: "3.18.0"
+    tag: "3.25.0"
 
   # -- Resource limits and requests for the UWS database pod
   # @default -- See `values.yaml`
@@ -402,7 +427,7 @@ cloudsql:
     repository: "gcr.io/cloudsql-docker/gce-proxy"
 
     # -- Cloud SQL Auth Proxy tag to use
-    tag: "1.38.1"
+    tag: "1.38.3"
 
     # -- Pull policy for Cloud SQL Auth Proxy images
     pullPolicy: "IfNotPresent"

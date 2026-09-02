@@ -125,7 +125,6 @@ spec:
                 -Dtapschemauser.url=jdbc:postgresql://localhost:5432/{{ .Values.tapSchema.database }}
                 {{- end }}
                 -Dtapschemauser.maxActive={{ .Values.tapSchema.tapuser.maxActive }}
-                -Dtapuser.maxActive={{ .Values.tapSchema.tapuser.maxActive }}
                 -Dtapadm.maxActive={{ .Values.tapSchema.tapadm.maxActive }}
                 -Dtapuser.maxActive={{ .Values.tapSchema.tapuser.maxActive }}
                 -Duws.username={{ .Values.uws.username }}
@@ -171,6 +170,9 @@ spec:
                 {{- if .Values.config.qserv.schemaMappings }}
                 -Dtap.schema.mappings={{ .Values.config.qserv.schemaMappings }}
                 {{- end }}
+                {{- if .Values.config.qserv.tableMappings }}
+                -Dtap.table.mappings={{ .Values.config.qserv.tableMappings | join "," }}
+                {{- end }}
                 {{- end }}
                 -Dgafaelfawr_url={{ .Values.global.baseUrl }}/auth/api/v1/user-info
                 -Dgcs_bucket={{ .Values.config.gcsBucket }}
@@ -194,14 +196,26 @@ spec:
                 {{- if .Values.config.maxRec }}
                 -Dtap.maxRec={{ .Values.config.maxRec }}
                 {{- end }}
+                {{- if .Values.config.maxExecutionDuration }}
+                -Dtap.maxExecutionDuration={{ .Values.config.maxExecutionDuration }}
+                {{- end }}
+                {{- if .Values.config.maxDestruction }}
+                -Dtap.maxDestruction={{ .Values.config.maxDestruction }}
+                {{- end }}
+                {{- if .Values.config.maxQuote }}
+                -Dtap.maxQuote={{ .Values.config.maxQuote }}
+                {{- end }}
                 {{- if .Values.config.voParquet }}
                 -Dtap.enableVOParquet=true
+                {{- end }}
+                {{- if .Values.config.uploadPartitionDirectors }}
+                -Dupload.partition.directors={{ .Values.config.uploadPartitionDirectors | join "," }}
                 {{- end }}
                 -Dbase_url={{ .Values.global.baseUrl }}
                 -Dpath_prefix=/api/{{ .Values.ingress.path }}
                 -Dca.nrc.cadc.util.PropertiesReader.dir=/config/
                 -Durl.rewrite.enabled={{ .Values.config.urlRewrite.enabled | default true }}
-                -Durl.rewrite.rules="{{ .Values.config.urlRewrite.rules | default "ivoa.ObsCore:access_url" }}"
+                -Durl.rewrite.rules="{{ .Values.config.urlRewrite.rules | default (list "ivoa.ObsCore:access_url") | join "," }}"
                 -Xmx{{ .Values.config.jvmMaxHeapSize }}
             - name: "CATALINA_BASE"
               value: "/var/lib/tomcat"

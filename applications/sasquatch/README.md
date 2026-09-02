@@ -66,7 +66,7 @@ Rubin Observatory's telemetry service
 | influxdb.config.logging.format | string | `"json"` | Format to use for log messages |
 | influxdb.config.logging.level | string | `"debug"` | Logging level |
 | influxdb.enabled | bool | `true` | Whether InfluxDB is enabled |
-| influxdb.image.tag | string | `"1.12.3"` | InfluxDB image tag |
+| influxdb.image.tag | string | `"1.12.4"` | InfluxDB image tag |
 | influxdb.ingress.annotations | object | See `values.yaml` | Annotations to add to the ingress |
 | influxdb.ingress.className | string | `"nginx"` | Ingress class to use |
 | influxdb.ingress.enabled | bool | `false` | Whether to enable the InfluxDB ingress |
@@ -95,7 +95,7 @@ Rubin Observatory's telemetry service
 | kapacitor.existingSecret | string | `"sasquatch"` | Use `influxdb-user` and `influxdb-password` keys from this secret |
 | kapacitor.image.pullPolicy | string | `"IfNotPresent"` | Pull policy for Kapacitor |
 | kapacitor.image.repository | string | `"docker.io/library/kapacitor"` | Docker image to use for Kapacitor |
-| kapacitor.image.tag | string | `"1.8.5"` | Tag to use for Kapacitor |
+| kapacitor.image.tag | string | `"1.8.6"` | Tag to use for Kapacitor |
 | kapacitor.influxURL | string | `"http://sasquatch-influxdb.sasquatch:8086"` | InfluxDB connection URL |
 | kapacitor.persistence.enabled | bool | `true` | Whether to enable Kapacitor data persistence |
 | kapacitor.persistence.size | string | `"100Gi"` | Size of storage to request if enabled |
@@ -145,6 +145,15 @@ Rubin Observatory's telemetry service
 | trickster.resources.requests | object | `{"cpu":"100m","memory":"256Mi"}` | Kubernetes resource requests and limits for Trickster |
 | alert-brokers.cluster.name | string | `"sasquatch"` | Name of the Strimzi cluster. Synchronize this with the cluster name in the parent Prompt Kafka chart. |
 | alert-database.fullnameOverride | string | `""` | Override the full name for resources (includes the release name) |
+| alert-database.ingester.autoscaling.activationLagThreshold | string | `"10"` | Minimum lag per partition required to activate scaling from zero. Only relevant when minReplicaCount is 0. |
+| alert-database.ingester.autoscaling.consumerGroup | string | `"alertdb-ingester"` | Kafka consumer group to monitor for lag. Must match the consumer group used by the ingester application. |
+| alert-database.ingester.autoscaling.cooldownPeriod | int | `300` | Period to wait after the last trigger fires before scaling down (seconds). |
+| alert-database.ingester.autoscaling.enabled | bool | `true` | Enable KEDA-based autoscaling for the ingester. When enabled, KEDA manages the replica count based on Kafka consumer group lag. |
+| alert-database.ingester.autoscaling.lagThreshold | string | `"100"` | Target lag (messages) per partition that triggers scaling. |
+| alert-database.ingester.autoscaling.maxReplicaCount | int | `10` | Maximum number of replicas the ingester can scale to. |
+| alert-database.ingester.autoscaling.minReplicaCount | int | `3` | Minimum number of replicas. Set to 0 to allow scale-to-zero. |
+| alert-database.ingester.autoscaling.offsetResetPolicy | string | `"latest"` | Kafka offset reset policy for the KEDA scaler if the consumer group has no committed offset. |
+| alert-database.ingester.autoscaling.pollingInterval | int | `30` | How often KEDA checks Kafka consumer group lag (seconds). |
 | alert-database.ingester.image.pullPolicy | string | `"IfNotPresent"` |  |
 | alert-database.ingester.image.repository | string | `"lsstdm/alert_database_ingester"` |  |
 | alert-database.ingester.image.tag | string | `""` |  |
@@ -153,6 +162,7 @@ Rubin Observatory's telemetry service
 | alert-database.ingester.kafka.topic | list | `["alerts-simulated"]` | Name of the topic which will holds alert data. |
 | alert-database.ingester.kafka.user | string | `"alert-database-ingester"` | The username of the Kafka user identity used to connect to the broker. |
 | alert-database.ingester.logLevel | string | `"verbose"` | set the log level of the application. can be 'info', or 'debug', or anything else to suppress logging. |
+| alert-database.ingester.replicas | int | `1` | Number of static replicas when autoscaling is disabled. |
 | alert-database.ingester.s3.alertBucket | string | `"rubin-alert-archive"` |  |
 | alert-database.ingester.s3.endpointURL | string | `"https://sdfdatas3.slac.stanford.edu/"` |  |
 | alert-database.ingester.s3.schemaBucket | string | `"rubin-alert-archive"` |  |
@@ -160,6 +170,7 @@ Rubin Observatory's telemetry service
 | alert-database.ingester.s3.usdf | bool | `true` |  |
 | alert-database.ingester.schemaRegistryUrl | string | `"http://sasquatch-schema-registry.sasquatch:8081"` | URL of a schema registry instance |
 | alert-database.ingester.serviceAccountName | string | `"alert-database-ingester"` | The name of the Kubernetes ServiceAccount (*not* the Google Cloud IAM service account!) which is used by the alert database ingester. |
+| alert-database.ingester.terminationGracePeriodSeconds | int | `60` | Seconds Kubernetes waits after SIGTERM before sending SIGKILL. Should be long enough for the ingester to finish processing its current batch, commit offsets, and leave the Kafka consumer group cleanly. |
 | alert-database.ingress.annotations."nginx.ingress.kubernetes.io/rewrite-target" | string | `"/$2"` |  |
 | alert-database.ingress.enabled | bool | `false` | Whether to create an ingress |
 | alert-database.ingress.host | string | None, must be set if the ingress is enabled | Hostname for the ingress |
@@ -697,7 +708,7 @@ Rubin Observatory's telemetry service
 | rest-proxy.heapOptions | string | `"-Xms8192M -Xmx8192M"` | Kafka REST proxy JVM Heap Option |
 | rest-proxy.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
 | rest-proxy.image.repository | string | `"confluentinc/cp-kafka-rest"` | Kafka REST proxy image repository |
-| rest-proxy.image.tag | string | `"8.2.1"` | Kafka REST proxy image tag |
+| rest-proxy.image.tag | string | `"8.3.1"` | Kafka REST proxy image tag |
 | rest-proxy.ingress.annotations | object | `{"nginx.ingress.kubernetes.io/rewrite-target":"/$2"}` | Annotations that will be added to the Ingress resource |
 | rest-proxy.ingress.anonymous | bool | false | Whether to enable anonymous access to the REST proxy |
 | rest-proxy.ingress.enabled | bool | `false` | Whether to enable the ingress for the REST proxy |
@@ -716,7 +727,7 @@ Rubin Observatory's telemetry service
 | schema-registry.cluster.name | string | `"sasquatch"` | Name of the Strimzi cluster used by the Schema Registry. |
 | schema-registry.compatibilityLevel | string | `"none"` | Compatibility level for the Schema Registry. Options are: none, backward, backward_transitive, forward, forward_transitive, full, and full_transitive. |
 | schema-registry.image.repository | string | `"confluentinc/cp-schema-registry"` | Docker image for the Confluent Schema Registry. |
-| schema-registry.image.tag | string | `"8.2.1"` | Docker image tag for the Confluent Schema Registry. |
+| schema-registry.image.tag | string | `"8.3.1"` | Docker image tag for the Confluent Schema Registry. |
 | schema-registry.ingress.annotations | object | `{"nginx.ingress.kubernetes.io/rewrite-target":"/$2"}` | Annotations that will be added to the Ingress resource |
 | schema-registry.ingress.anonymous | bool | false | Whether to enable anonymous access to the Schema Registry |
 | schema-registry.ingress.enabled | bool | `false` | Whether to enable an ingress for the Schema Registry |
@@ -728,7 +739,7 @@ Rubin Observatory's telemetry service
 | schema-registry-remote.cluster.name | string | `"sasquatch"` | Name of the Strimzi cluster used by the Schema Registry. |
 | schema-registry-remote.compatibilityLevel | string | `"none"` | Compatibility level for the Schema Registry. Options are: none, backward, backward_transitive, forward, forward_transitive, full, and full_transitive. |
 | schema-registry-remote.image.repository | string | `"confluentinc/cp-schema-registry"` | Docker image for the Confluent Schema Registry. |
-| schema-registry-remote.image.tag | string | `"8.2.1"` | Docker image tag for the Confluent Schema Registry. |
+| schema-registry-remote.image.tag | string | `"8.3.1"` | Docker image tag for the Confluent Schema Registry. |
 | schema-registry-remote.ingress.annotations | object | `{"nginx.ingress.kubernetes.io/rewrite-target":"/$2"}` | Annotations that will be added to the Ingress resource |
 | schema-registry-remote.ingress.anonymous | bool | false | Whether to enable anonymous access to the Schema Registry |
 | schema-registry-remote.ingress.enabled | bool | `false` | Whether to enable an ingress for the Schema Registry |
@@ -739,7 +750,8 @@ Rubin Observatory's telemetry service
 | schema-registry-remote.topic.name | string | `"registry-schemas"` | Name of the Kafka topic used by the Schema Registry to store schemas. |
 | scimma.cluster.name | string | `"sasquatch"` | Name of the Strimzi cluster. Synchronize this with the cluster name in the parent Sasquatch chart. |
 | square-events.cluster.name | string | `"sasquatch"` |  |
-| strimzi-kafka.broker.affinity | object | `{"podAntiAffinity":{"requiredDuringSchedulingIgnoredDuringExecution":[{"labelSelector":{"matchExpressions":[{"key":"app.kubernetes.io/name","operator":"In","values":["kafka"]}]},"topologyKey":"kubernetes.io/hostname"}]}}` | Affinity for broker pod assignment |
+| square-events.topics.slackViewSubmission.retentionMs | int | `1800000` | Retention period, in milliseconds, for the Slack `view_submission` interaction topic. These events drive project creation in templatebot, so retaining them well beyond the other Squarebot topics keeps the payload of a failed creation available for debugging and replay. |
+| strimzi-kafka.broker.affinity | object | `{"podAntiAffinity":{"requiredDuringSchedulingIgnoredDuringExecution":[{"labelSelector":{"matchExpressions":[{"key":"strimzi.io/pool-name","operator":"In","values":["kafka"]}]},"topologyKey":"kubernetes.io/hostname"}]}}` | Affinity for broker pod assignment |
 | strimzi-kafka.broker.backup | bool | `false` | Whether to label the broker PVCs for backup by k8up, enabled on the summit and base environments |
 | strimzi-kafka.broker.enabled | bool | `false` | Enable node pool for the kafka brokers |
 | strimzi-kafka.broker.name | string | `"kafka"` | Node pool name |
@@ -771,7 +783,7 @@ Rubin Observatory's telemetry service
 | strimzi-kafka.connect.image | string | `"ghcr.io/lsst-sqre/strimzi-0.47.0-kafka-4.0.0:tickets-DM-43491"` | Custom strimzi-kafka image with connector plugins used by sasquatch |
 | strimzi-kafka.connect.replicas | int | `3` | Number of Kafka Connect replicas to run |
 | strimzi-kafka.connect.resources | object | See `values.yaml` | Kubernetes requests and limits for Kafka Connect |
-| strimzi-kafka.controller.affinity | object | `{"podAntiAffinity":{"requiredDuringSchedulingIgnoredDuringExecution":[{"labelSelector":{"matchExpressions":[{"key":"app.kubernetes.io/name","operator":"In","values":["kafka"]}]},"topologyKey":"kubernetes.io/hostname"}]}}` | Affinity for controller pod assignment |
+| strimzi-kafka.controller.affinity | object | `{"podAntiAffinity":{"requiredDuringSchedulingIgnoredDuringExecution":[{"labelSelector":{"matchExpressions":[{"key":"strimzi.io/pool-name","operator":"In","values":["controller"]}]},"topologyKey":"kubernetes.io/hostname"}]}}` | Affinity for controller pod assignment |
 | strimzi-kafka.controller.backup | bool | `false` | Whether to label the controller PVCs for backup by k8up, enabled on the summit and base environments |
 | strimzi-kafka.controller.enabled | bool | `false` | Enable node pool for the kafka controllers |
 | strimzi-kafka.controller.nodeIds | string | `"[3,4,5]"` | IDs to assign to the controllers |
@@ -847,6 +859,7 @@ Rubin Observatory's telemetry service
 | telegraf.kafkaConsumers.test.collection_jitter | string | "0s" | Data collection jitter. This is used to jitter the collection by a random amount. Each plugin will sleep for a random time within jitter before collecting. |
 | telegraf.kafkaConsumers.test.compression_codec | int | 3 | Compression codec. 0 : None, 1 : Gzip, 2 : Snappy, 3 : LZ4, 4 : ZSTD |
 | telegraf.kafkaConsumers.test.consumer_fetch_default | string | "1MB" | Maximum amount of data the server should return for a fetch request. |
+| telegraf.kafkaConsumers.test.data_format | string | `"avro"` | Input data format. Supported values are `avro` and `json_v2`. |
 | telegraf.kafkaConsumers.test.database | string | `""` | Name of the InfluxDB v1 database to write to (required) |
 | telegraf.kafkaConsumers.test.debug | bool | false | Run Telegraf in debug mode. |
 | telegraf.kafkaConsumers.test.enabled | bool | `false` | Enable the Telegraf Kafka consumer. |
@@ -860,12 +873,22 @@ Rubin Observatory's telemetry service
 | telegraf.kafkaConsumers.test.offset | string | `"oldest"` | Kafka consumer offset. Possible values are `oldest` and `newest`. |
 | telegraf.kafkaConsumers.test.precision | string | "1us" | Data precision. |
 | telegraf.kafkaConsumers.test.replicaCount | int | `1` | Number of Telegraf Kafka consumer replicas. Increase this value to increase the consumer throughput. |
-| telegraf.kafkaConsumers.test.tags | list | `[]` | List of Avro fields to be recorded as InfluxDB tags.  The Avro fields specified as tags will be converted to strings before ingestion into InfluxDB. |
-| telegraf.kafkaConsumers.test.timestamp_field | string | `"private_efdStamp"` | Avro field to be used as the InfluxDB timestamp (optional).  If unspecified or set to the empty string, Telegraf will use the time it received the measurement. |
+| telegraf.kafkaConsumers.test.tags | list | `[]` | List of input fields to be recorded as InfluxDB tags.  The input fields specified as tags will be converted to strings before ingestion into InfluxDB. |
+| telegraf.kafkaConsumers.test.timestamp_field | string | `"private_efdStamp"` | Input field to be used as the InfluxDB timestamp (optional).  If unspecified or set to the empty string, Telegraf will use the time it received the measurement. |
 | telegraf.kafkaConsumers.test.timestamp_format | string | `"unix"` | Timestamp format. Possible values are `unix` (the default if unset) a timestamp in seconds since the Unix epoch, `unix_ms` (milliseconds), `unix_us` (microsseconds), or `unix_ns` (nanoseconds). |
-| telegraf.kafkaConsumers.test.topicRegexps | string | `"[ \".*Test\" ]\n"` | List of regular expressions to specify the Kafka topics consumed by this agent. |
+| telegraf.kafkaConsumers.test.topicRegexps | list | `[".*Test"]` | List of regular expressions to specify the Kafka topics consumed by this agent. |
 | telegraf.kafkaConsumers.test.union_field_separator | string | `""` | Union field separator: if a single Avro field is flattened into more than one InfluxDB field (e.g. an array `a`, with four members, would yield `a0`, `a1`, `a2`, `a3`; if the field separator were `_`, these would be `a_0`...`a_3`. |
 | telegraf.kafkaConsumers.test.union_mode | string | `"nullable"` | Union mode: this can be one of `flatten`, `nullable`, or `any`. See `values.yaml` for extensive discussion. |
+| telegraf.kafkaConsumers.test_json_v2.compression_codec | int | `3` |  |
+| telegraf.kafkaConsumers.test_json_v2.data_format | string | `"json_v2"` |  |
+| telegraf.kafkaConsumers.test_json_v2.database | string | `""` |  |
+| telegraf.kafkaConsumers.test_json_v2.enabled | bool | `false` |  |
+| telegraf.kafkaConsumers.test_json_v2.offset | string | `"oldest"` |  |
+| telegraf.kafkaConsumers.test_json_v2.replicaCount | int | `1` |  |
+| telegraf.kafkaConsumers.test_json_v2.tags[0] | string | `"tag"` |  |
+| telegraf.kafkaConsumers.test_json_v2.timestamp_field | string | `"timestamp"` |  |
+| telegraf.kafkaConsumers.test_json_v2.timestamp_format | string | `"unix"` |  |
+| telegraf.kafkaConsumers.test_json_v2.topicRegexps[0] | string | `".*JsonV2Test"` |  |
 | telegraf.kafkaVersion | string | `"4.0.0"` |  |
 | telegraf.nodeSelector | object | `{}` | Node labels for pod assignment |
 | telegraf.podAnnotations | object | `{}` | Annotations for the Telegraf pods |
@@ -873,6 +896,56 @@ Rubin Observatory's telemetry service
 | telegraf.registry.url | string | `"http://sasquatch-schema-registry.sasquatch:8081"` | Schema Registry URL |
 | telegraf.resources | object | See `values.yaml` | Kubernetes resources requests and limits |
 | telegraf.tolerations | list | `[]` | Tolerations for pod assignment |
+| telegraf-local.affinity | object | `{}` | Affinity for pod assignment |
+| telegraf-local.args | list | `[]` | Arguments passed to the Telegraf agent on startup |
+| telegraf-local.enabled | bool | `false` | Wether Telegraf is enabled |
+| telegraf-local.env | list | See `values.yaml` | Telegraf agent environment variables |
+| telegraf-local.envFromSecret | string | `""` | Name of the secret with values to be added to the environment. |
+| telegraf-local.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
+| telegraf-local.image.repo | string | `"docker.io/library/telegraf"` | Telegraf image repository |
+| telegraf-local.image.tag | string | The appVersion of the chart | Telegraf image tag |
+| telegraf-local.imagePullSecrets | list | `[]` | Secret names to use for Docker pulls |
+| telegraf-local.influxdb.urls | list | `["http://sasquatch-influxdb.sasquatch:8086"]` | URL of the InfluxDB v1 instance to write to |
+| telegraf-local.kafkaConsumers.test.collection_jitter | string | "0s" | Data collection jitter. This is used to jitter the collection by a random amount. Each plugin will sleep for a random time within jitter before collecting. |
+| telegraf-local.kafkaConsumers.test.compression_codec | int | 3 | Compression codec. 0 : None, 1 : Gzip, 2 : Snappy, 3 : LZ4, 4 : ZSTD |
+| telegraf-local.kafkaConsumers.test.consumer_fetch_default | string | "1MB" | Maximum amount of data the server should return for a fetch request. |
+| telegraf-local.kafkaConsumers.test.data_format | string | `"avro"` | Input data format. Supported values are `avro` and `json_v2`. |
+| telegraf-local.kafkaConsumers.test.database | string | `""` | Name of the InfluxDB v1 database to write to (required) |
+| telegraf-local.kafkaConsumers.test.debug | bool | false | Run Telegraf in debug mode. |
+| telegraf-local.kafkaConsumers.test.enabled | bool | `false` | Enable the Telegraf Kafka consumer. |
+| telegraf-local.kafkaConsumers.test.fields | list | `[]` | List of Avro fields to be recorded as InfluxDB fields.  If not specified, any Avro field that is not marked as a tag will become an InfluxDB field. |
+| telegraf-local.kafkaConsumers.test.flush_interval | string | "10s" | Data flushing interval for all outputs. Don’t set this below interval. Maximum flush_interval is flush_interval + flush_jitter |
+| telegraf-local.kafkaConsumers.test.flush_jitter | string | "0s" | Jitter the flush interval by a random amount. This is primarily to avoid large write spikes for users running a large number of telegraf instances. |
+| telegraf-local.kafkaConsumers.test.max_processing_time | string | "1s" | Maximum processing time for a single message. |
+| telegraf-local.kafkaConsumers.test.max_undelivered_messages | int | 10000 | Maximum number of undelivered messages. Should be a multiple of metric_batch_size, setting it too low may never flush the broker's messages. |
+| telegraf-local.kafkaConsumers.test.metric_batch_size | int | 1000 | Sends metrics to the output in batches of at most metric_batch_size metrics. |
+| telegraf-local.kafkaConsumers.test.metric_buffer_limit | int | 100000 | Caches metric_buffer_limit metrics for each output, and flushes this buffer on a successful write. This should be a multiple of metric_batch_size and could not be less than 2 times metric_batch_size. |
+| telegraf-local.kafkaConsumers.test.offset | string | `"oldest"` | Kafka consumer offset. Possible values are `oldest` and `newest`. |
+| telegraf-local.kafkaConsumers.test.precision | string | "1us" | Data precision. |
+| telegraf-local.kafkaConsumers.test.replicaCount | int | `1` | Number of Telegraf Kafka consumer replicas. Increase this value to increase the consumer throughput. |
+| telegraf-local.kafkaConsumers.test.tags | list | `[]` | List of input fields to be recorded as InfluxDB tags.  The input fields specified as tags will be converted to strings before ingestion into InfluxDB. |
+| telegraf-local.kafkaConsumers.test.timestamp_field | string | `"private_efdStamp"` | Input field to be used as the InfluxDB timestamp (optional).  If unspecified or set to the empty string, Telegraf will use the time it received the measurement. |
+| telegraf-local.kafkaConsumers.test.timestamp_format | string | `"unix"` | Timestamp format. Possible values are `unix` (the default if unset) a timestamp in seconds since the Unix epoch, `unix_ms` (milliseconds), `unix_us` (microsseconds), or `unix_ns` (nanoseconds). |
+| telegraf-local.kafkaConsumers.test.topicRegexps | list | `[".*Test"]` | List of regular expressions to specify the Kafka topics consumed by this agent. |
+| telegraf-local.kafkaConsumers.test.union_field_separator | string | `""` | Union field separator: if a single Avro field is flattened into more than one InfluxDB field (e.g. an array `a`, with four members, would yield `a0`, `a1`, `a2`, `a3`; if the field separator were `_`, these would be `a_0`...`a_3`. |
+| telegraf-local.kafkaConsumers.test.union_mode | string | `"nullable"` | Union mode: this can be one of `flatten`, `nullable`, or `any`. See `values.yaml` for extensive discussion. |
+| telegraf-local.kafkaConsumers.test_json_v2.compression_codec | int | `3` |  |
+| telegraf-local.kafkaConsumers.test_json_v2.data_format | string | `"json_v2"` |  |
+| telegraf-local.kafkaConsumers.test_json_v2.database | string | `""` |  |
+| telegraf-local.kafkaConsumers.test_json_v2.enabled | bool | `false` |  |
+| telegraf-local.kafkaConsumers.test_json_v2.offset | string | `"oldest"` |  |
+| telegraf-local.kafkaConsumers.test_json_v2.replicaCount | int | `1` |  |
+| telegraf-local.kafkaConsumers.test_json_v2.tags[0] | string | `"tag"` |  |
+| telegraf-local.kafkaConsumers.test_json_v2.timestamp_field | string | `"timestamp"` |  |
+| telegraf-local.kafkaConsumers.test_json_v2.timestamp_format | string | `"unix"` |  |
+| telegraf-local.kafkaConsumers.test_json_v2.topicRegexps[0] | string | `".*JsonV2Test"` |  |
+| telegraf-local.kafkaVersion | string | `"4.0.0"` |  |
+| telegraf-local.nodeSelector | object | `{}` | Node labels for pod assignment |
+| telegraf-local.podAnnotations | object | `{}` | Annotations for the Telegraf pods |
+| telegraf-local.podLabels | object | `{}` | Labels for the Telegraf pods |
+| telegraf-local.registry.url | string | `"http://sasquatch-schema-registry.sasquatch:8081"` | Schema Registry URL |
+| telegraf-local.resources | object | See `values.yaml` | Kubernetes resources requests and limits |
+| telegraf-local.tolerations | list | `[]` | Tolerations for pod assignment |
 | telegraf-standby.affinity | object | `{}` | Affinity for pod assignment |
 | telegraf-standby.args | list | `[]` | Arguments passed to the Telegraf agent on startup |
 | telegraf-standby.enabled | bool | `false` | Wether Telegraf is enabled |
@@ -886,6 +959,7 @@ Rubin Observatory's telemetry service
 | telegraf-standby.kafkaConsumers.test.collection_jitter | string | "0s" | Data collection jitter. This is used to jitter the collection by a random amount. Each plugin will sleep for a random time within jitter before collecting. |
 | telegraf-standby.kafkaConsumers.test.compression_codec | int | 3 | Compression codec. 0 : None, 1 : Gzip, 2 : Snappy, 3 : LZ4, 4 : ZSTD |
 | telegraf-standby.kafkaConsumers.test.consumer_fetch_default | string | "1MB" | Maximum amount of data the server should return for a fetch request. |
+| telegraf-standby.kafkaConsumers.test.data_format | string | `"avro"` | Input data format. Supported values are `avro` and `json_v2`. |
 | telegraf-standby.kafkaConsumers.test.database | string | `""` | Name of the InfluxDB v1 database to write to (required) |
 | telegraf-standby.kafkaConsumers.test.debug | bool | false | Run Telegraf in debug mode. |
 | telegraf-standby.kafkaConsumers.test.enabled | bool | `false` | Enable the Telegraf Kafka consumer. |
@@ -899,12 +973,22 @@ Rubin Observatory's telemetry service
 | telegraf-standby.kafkaConsumers.test.offset | string | `"oldest"` | Kafka consumer offset. Possible values are `oldest` and `newest`. |
 | telegraf-standby.kafkaConsumers.test.precision | string | "1us" | Data precision. |
 | telegraf-standby.kafkaConsumers.test.replicaCount | int | `1` | Number of Telegraf Kafka consumer replicas. Increase this value to increase the consumer throughput. |
-| telegraf-standby.kafkaConsumers.test.tags | list | `[]` | List of Avro fields to be recorded as InfluxDB tags.  The Avro fields specified as tags will be converted to strings before ingestion into InfluxDB. |
-| telegraf-standby.kafkaConsumers.test.timestamp_field | string | `"private_efdStamp"` | Avro field to be used as the InfluxDB timestamp (optional).  If unspecified or set to the empty string, Telegraf will use the time it received the measurement. |
+| telegraf-standby.kafkaConsumers.test.tags | list | `[]` | List of input fields to be recorded as InfluxDB tags.  The input fields specified as tags will be converted to strings before ingestion into InfluxDB. |
+| telegraf-standby.kafkaConsumers.test.timestamp_field | string | `"private_efdStamp"` | Input field to be used as the InfluxDB timestamp (optional).  If unspecified or set to the empty string, Telegraf will use the time it received the measurement. |
 | telegraf-standby.kafkaConsumers.test.timestamp_format | string | `"unix"` | Timestamp format. Possible values are `unix` (the default if unset) a timestamp in seconds since the Unix epoch, `unix_ms` (milliseconds), `unix_us` (microsseconds), or `unix_ns` (nanoseconds). |
-| telegraf-standby.kafkaConsumers.test.topicRegexps | string | `"[ \".*Test\" ]\n"` | List of regular expressions to specify the Kafka topics consumed by this agent. |
+| telegraf-standby.kafkaConsumers.test.topicRegexps | list | `[".*Test"]` | List of regular expressions to specify the Kafka topics consumed by this agent. |
 | telegraf-standby.kafkaConsumers.test.union_field_separator | string | `""` | Union field separator: if a single Avro field is flattened into more than one InfluxDB field (e.g. an array `a`, with four members, would yield `a0`, `a1`, `a2`, `a3`; if the field separator were `_`, these would be `a_0`...`a_3`. |
 | telegraf-standby.kafkaConsumers.test.union_mode | string | `"nullable"` | Union mode: this can be one of `flatten`, `nullable`, or `any`. See `values.yaml` for extensive discussion. |
+| telegraf-standby.kafkaConsumers.test_json_v2.compression_codec | int | `3` |  |
+| telegraf-standby.kafkaConsumers.test_json_v2.data_format | string | `"json_v2"` |  |
+| telegraf-standby.kafkaConsumers.test_json_v2.database | string | `""` |  |
+| telegraf-standby.kafkaConsumers.test_json_v2.enabled | bool | `false` |  |
+| telegraf-standby.kafkaConsumers.test_json_v2.offset | string | `"oldest"` |  |
+| telegraf-standby.kafkaConsumers.test_json_v2.replicaCount | int | `1` |  |
+| telegraf-standby.kafkaConsumers.test_json_v2.tags[0] | string | `"tag"` |  |
+| telegraf-standby.kafkaConsumers.test_json_v2.timestamp_field | string | `"timestamp"` |  |
+| telegraf-standby.kafkaConsumers.test_json_v2.timestamp_format | string | `"unix"` |  |
+| telegraf-standby.kafkaConsumers.test_json_v2.topicRegexps[0] | string | `".*JsonV2Test"` |  |
 | telegraf-standby.kafkaVersion | string | `"4.0.0"` |  |
 | telegraf-standby.nodeSelector | object | `{}` | Node labels for pod assignment |
 | telegraf-standby.podAnnotations | object | `{}` | Annotations for the Telegraf pods |

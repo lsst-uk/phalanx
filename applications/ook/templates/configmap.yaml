@@ -2,6 +2,16 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: "ook"
+  {{- if or .Values.config.updateSchema .Values.config.migrateCountryCodes }}
+  # The schema update and country code migration Jobs run as Helm pre-install
+  # and pre-upgrade hooks (Argo CD PreSync) and take their configuration from
+  # this ConfigMap, so it has to be created in the same phase at a lower hook
+  # weight. Otherwise those Jobs see the previous sync's configuration.
+  annotations:
+    helm.sh/hook: "pre-install,pre-upgrade"
+    helm.sh/hook-delete-policy: "before-hook-creation"
+    helm.sh/hook-weight: "0"
+  {{- end }}
   labels:
     {{- include "ook.labels" . | nindent 4 }}
 data:
@@ -10,4 +20,23 @@ data:
   SAFIR_PROFILE: "production"
   OOK_DATABASE_URL: {{ required "config.databaseUrl must be set" .Values.config.databaseUrl | quote }}
   OOK_INGEST_KAFKA_TOPIC: {{ .Values.config.topics.ingest | quote }}
+  OOK_LINKCHECK_KAFKA_TOPIC: {{ .Values.config.topics.linkcheck | quote }}
+  OOK_LINKCHECK_REQUEST_TIMEOUT: {{ .Values.config.linkcheck.requestTimeout | quote }}
+  OOK_LINKCHECK_MAX_CONCURRENCY: {{ .Values.config.linkcheck.maxConcurrency | quote }}
+  OOK_LINKCHECK_HOST_INTERVAL: {{ .Values.config.linkcheck.hostInterval | quote }}
+  OOK_LINKCHECK_FRESHNESS_TTL: {{ .Values.config.linkcheck.freshnessTtl | quote }}
+  OOK_LINKCHECK_MAX_URLS_PER_CHECK: {{ .Values.config.linkcheck.maxUrlsPerCheck | quote }}
+  OOK_LINKCHECK_BROKEN_THRESHOLD: {{ .Values.config.linkcheck.brokenThreshold | quote }}
+  OOK_LINKCHECK_BROKEN_MIN_ATTEMPTS: {{ .Values.config.linkcheck.brokenMinAttempts | quote }}
+  OOK_LINKCHECK_RECHECK_INTERVALS: {{ .Values.config.linkcheck.recheckIntervals | toJson | quote }}
+  OOK_LINKCHECK_BROKEN_RECHECK_INTERVAL: {{ .Values.config.linkcheck.brokenRecheckInterval | quote }}
+  OOK_LINKCHECK_BLOCKED_RECHECK_INTERVAL: {{ .Values.config.linkcheck.blockedRecheckInterval | quote }}
+  OOK_LINKCHECK_CHECK_RETENTION: {{ .Values.config.linkcheck.checkRetention | quote }}
+  {{- with .Values.config.linkcheck.userAgent }}
+  OOK_LINKCHECK_USER_AGENT: {{ . | quote }}
+  {{- end }}
+  OOK_OIDC_AUDIENCE: {{ printf "%s%s" (required "global.baseUrl must be set" .Values.global.baseUrl) .Values.ingress.path | quote }}
+  OOK_INTERSPHINX_TTL: {{ .Values.config.intersphinx.ttl | quote }}
+  OOK_INTERSPHINX_NEGATIVE_TTL: {{ .Values.config.intersphinx.negativeTtl | quote }}
+  OOK_INTERSPHINX_ACTIVE_WINDOW: {{ .Values.config.intersphinx.activeWindow | quote }}
   ALGOLIA_DOCUMENT_INDEX: {{ .Values.config.algolia.documentIndex | quote }}

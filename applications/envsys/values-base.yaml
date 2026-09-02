@@ -1,3 +1,18 @@
+aurora-cloud-sensor-ess307-sim:
+  enabled: false
+  classifier: ess307
+  image:
+    repository: ts-dockerhub.lsst.org/ess
+  env:
+    RUN_ARG: 307 --simulate
+  resources:
+    requests:
+      cpu: 19m
+      memory: 180Mi
+    limits:
+      cpu: 190m
+      memory: 360Mi
+
 automatic-transfer-switch-ess309-sim:
   enabled: true
   classifier: ess309

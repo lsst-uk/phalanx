@@ -1,0 +1,4 @@
+# USDF Prod config
+ingress:
+  auth:
+    enabled: false

@@ -248,6 +248,8 @@ manager:
       tolerations: []
       # -- Affinity rules for the LOVE manager producers pods
       affinity: {}
+      # -- Topology spread constraints for the LOVE manager producers pods
+      topologySpreadConstraints: []
       # -- Configuration for the LOVE manager producers pods readiness probe
       readinessProbe: {}
   # -- Configuration for the producers ports.
@@ -262,7 +264,7 @@ redis:
     # -- The redis image to use
     repository: redis
     # -- The tag to use for the redis image
-    tag: 8.8.0
+    tag: 8.10.1
     # -- The pull policy for the redis image
     pullPolicy: IfNotPresent
   envSecrets:

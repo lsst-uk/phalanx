@@ -35,7 +35,11 @@ config:
       business:
         type: "NotebookRunnerCounting"
         options:
-          cell_execution_timeout: "1h"
+          cell_execution_timeout: "1000s"
+          collection_rules:
+            - type: exclude_union_of
+              patterns:
+                - "sasquatch.ipynb"
           image:
             image_class: "latest-daily"
           repo_url: "https://github.com/lsst-sqre/phalanx-test.git"
@@ -57,11 +61,15 @@ config:
       business:
         type: "NotebookRunnerCounting"
         options:
-          repo_url: "https://github.com/lsst-sqre/phalanx-test.git"
-          cell_execution_timeout: "1h"
-          repo_ref: "main"
+          cell_execution_timeout: "1000s"
+          collection_rules:
+            - type: exclude_union_of
+              patterns:
+                - "sasquatch.ipynb"
           execution_idle_time: 0
           idle_time: 300
+          repo_ref: "main"
+          repo_url: "https://github.com/lsst-sqre/phalanx-test.git"
         restart: true
     - name: "tutorial"
       count: 1
@@ -75,14 +83,16 @@ config:
       business:
         type: "NotebookRunnerCounting"
         options:
-          cell_execution_timeout: "1h"
+          cell_execution_timeout: "1000s"
+          image:
+            image_class: "latest-daily"
           repo_url: "https://github.com/lsst/tutorial-notebooks.git"
           repo_ref: "main"
           max_executions: 1
         restart: true
     #- name: "tutorial-adhoc"
-    #  # Designed to let us take an arbitrary tag and see whether
-    #  # tutorials pass on it.  Just change the tag under options.image.tag.
+    #  # Designed to let us take an arbitrary tag and see whether tutorials
+    #  # pass on it. Just change the tag under options.image.tag.
     #  count: 1
     #  users:
     #    - username: "bot-mobu-adhoc"
@@ -97,7 +107,7 @@ config:
     #      cell_execution_timeout: "1h"
     #      image:
     #        image_class: "by-tag"
-    #        tag: "r29_2_0_rsp2590"
+    #        tag: "exp_r30_0_10_rc1_rsp2975_nojsd"
     #      repo_url: "https://github.com/lsst/tutorial-notebooks.git"
     #      repo_ref: "main"
     #      max_executions: 1

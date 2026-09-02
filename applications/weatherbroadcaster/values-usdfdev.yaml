@@ -1,0 +1,4 @@
+# USDF Dev config
+ingress:
+  auth:
+    enabled: false

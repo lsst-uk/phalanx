@@ -44,7 +44,7 @@ schema-registry:
 
 influxdb:
   image:
-    tag: 1.12.3
+    tag: 1.12.4
   ingress:
     enabled: false
     hostname: data-dev.lsst.cloud
@@ -56,7 +56,7 @@ customInfluxDBIngress:
 influxdb-enterprise:
   enabled: true
   image:
-    tag: 1.12.3
+    tag: 1.12.4
   license:
     secret:
       name: sasquatch
@@ -97,20 +97,33 @@ telegraf:
       enabled: true
       replicaCount: 1
       database: "lsst.example"
-      tags: |
-        [ "band", "instrument" ]
+      tags:
+        - "band"
+        - "instrument"
       timestamp_format: "unix_ms"
       timestamp_field: "timestamp"
-      topicRegexps: |
-        [ "lsst.example" ]
+      topicRegexps:
+        - "lsst.example"
+    examplejson:
+      enabled: true
+      replicaCount: 1
+      data_format: "json_v2"
+      database: "lsst.examplejson"
+      tags:
+        - "band"
+        - "instrument"
+      timestamp_format: "unix_ms"
+      timestamp_field: "timestamp"
+      topicRegexps:
+        - "lsst.examplejson"
     backpack:
       enabled: true
       replicaCount: 1
       database: "lsst.backpack"
       timestamp_format: "unix"
       timestamp_field: "timestamp"
-      topicRegexps: |
-        [ "lsst.backpack" ]
+      topicRegexps:
+        - "lsst.backpack"
 
 kafdrop:
   cmdArgs: "--message.format=AVRO --message.keyFormat=DEFAULT --topic.deleteEnabled=true --topic.createEnabled=true"
@@ -147,6 +160,7 @@ app-metrics:
   enabled: true
   apps:
     - bigquerykafka
+    - datalinker
     - gafaelfawr
     - herald
     - mobu

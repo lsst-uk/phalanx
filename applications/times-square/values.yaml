@@ -126,7 +126,7 @@ config:
 
   # -- Whether to run the database migration job
   # @default -- false to disable schema upgrades
-  updateSchema: false
+  updateSchema: true
 
   # -- URL for Redis html / noteburst job cache database
   # @default -- Points to embedded Redis
@@ -150,6 +150,10 @@ config:
 
   # -- Default execution timeout for notebooks in seconds
   defaultExecutionTimeout: "300" # 5 minutes
+
+  # -- Timeout for the shared HTTP client used for all outbound requests
+  # (GitHub API and Noteburst) in seconds
+  httpClientTimeout: "30"
 
   # Sentry tracing sample rate
   sentryTracesSampleRate: 0.0
@@ -202,7 +206,7 @@ cloudsql:
     repository: "gcr.io/cloudsql-docker/gce-proxy"
 
     # -- Cloud SQL Auth Proxy tag to use
-    tag: "1.38.1"
+    tag: "1.38.3"
 
     # -- Pull policy for Cloud SQL Auth Proxy images
     pullPolicy: "IfNotPresent"

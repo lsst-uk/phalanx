@@ -9,7 +9,8 @@ config:
   sentry:
     enabled: true
 
-  internalDatabase: true
+  databaseUrl: postgresql://gafaelfawr@rsp-db-rw.postgres-db:5432/gafaelfawr
+  updateSchema: true
 
   oidcServer:
     enabled: true
@@ -41,6 +42,9 @@ config:
     nameAttr: gecos
 
   groupMapping:
+    "admin:oidc":
+      - "rubinmgr"
+      - "unix-admin"
     "admin:token":
       - "rubinmgr"
       - "unix-admin"
@@ -254,12 +258,3 @@ config:
     "write:sasquatch":
       - "rubinmgr"
       - "unix-admin"
-
-  initialAdmins:
-    - "afausti"
-    - "athor"
-    - "frossie"
-    - "jonathansick"
-    - "rra"
-    - "ytl"
-    - "ppascual"

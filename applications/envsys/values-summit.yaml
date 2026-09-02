@@ -2,7 +2,7 @@ automatic-transfer-switch-ess309:
   enabled: true
   classifier: ess309
   image:
-    revision: 3
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 309
@@ -18,7 +18,7 @@ auxtel-ess201:
   enabled: true
   classifier: ess201
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 201
@@ -34,7 +34,7 @@ auxtel-ess202:
   enabled: true
   classifier: ess202
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 202
@@ -50,7 +50,7 @@ auxtel-ess308:
   enabled: true
   classifier: ess308
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 308
@@ -66,7 +66,7 @@ auxtel-ess204:
   enabled: true
   classifier: ess204
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 204
@@ -98,7 +98,7 @@ camera-ess111:
   enabled: true
   classifier: ess111
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 111
@@ -114,7 +114,7 @@ cleanroom-ess109:
   enabled: true
   classifier: ess109
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 109
@@ -180,7 +180,7 @@ earthquake-ess302:
   enabled: true
   classifier: ess302
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 302
@@ -195,7 +195,7 @@ earthquake-ess302:
 eas:
   enabled: true
   image:
-    revision: 6
+    revision: 9
     repository: ts-dockerhub.lsst.org/eas
   resources:
     requests:
@@ -209,7 +209,7 @@ epm-ess303:
   enabled: true
   classifier: ess303
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 303
@@ -225,7 +225,7 @@ epm-generator-ess305:
   enabled: true
   classifier: ess305
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 305
@@ -241,7 +241,7 @@ epm-generator-ess306:
   enabled: true
   classifier: ess306
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 306
@@ -272,7 +272,7 @@ louver-h1-ess441:
   enabled: true
   classifier: ess441
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 441
@@ -288,7 +288,7 @@ louver-h1h2-ess442:
   enabled: true
   classifier: ess442
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 442
@@ -304,7 +304,7 @@ louver-h2-ess443:
   enabled: true
   classifier: ess443
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 443
@@ -320,7 +320,7 @@ m1m3-ess113:
   enabled: true
   classifier: ess113
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 113
@@ -336,7 +336,7 @@ m1m3-ess114:
   enabled: true
   classifier: ess114
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 114
@@ -352,7 +352,7 @@ m1m3-ess115:
   enabled: true
   classifier: ess115
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 115
@@ -368,7 +368,7 @@ m1m3-ess116:
   enabled: true
   classifier: ess116
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 116
@@ -384,7 +384,7 @@ m1m3-ess117:
   enabled: true
   classifier: ess117
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 117
@@ -400,7 +400,7 @@ m2-ess106:
   enabled: true
   classifier: ess106
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 106
@@ -416,7 +416,7 @@ m2-ess112:
   enabled: true
   classifier: ess112
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 112
@@ -432,7 +432,7 @@ mtdome-ess404:
   enabled: true
   classifier: ess404
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 404
@@ -448,7 +448,7 @@ mtdome-ess405:
   enabled: true
   classifier: ess405
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 405
@@ -464,7 +464,7 @@ partsens-ess127:
   enabled: true
   classifier: ess127
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 127
@@ -480,7 +480,7 @@ partsens-ess128:
   enabled: true
   classifier: ess128
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 128
@@ -496,7 +496,7 @@ partsens-ess129:
   enabled: true
   classifier: ess129
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 129
@@ -512,7 +512,7 @@ ringss-ess304:
   enabled: true
   classifier: ess304
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 304
@@ -532,7 +532,7 @@ tea-ess123:
   enabled: true
   classifier: ess123
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 123
@@ -548,7 +548,7 @@ tea-ess124:
   enabled: true
   classifier: ess124
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 124
@@ -564,7 +564,7 @@ tea-ess125:
   enabled: true
   classifier: ess125
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 125
@@ -580,7 +580,7 @@ tea-ess126:
   enabled: true
   classifier: ess126
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 126
@@ -596,7 +596,7 @@ tma-ess121:
   enabled: true
   classifier: ess121
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 121
@@ -612,7 +612,7 @@ tma-ess122:
   enabled: true
   classifier: ess122
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 122
@@ -628,7 +628,7 @@ tma-ess104:
   enabled: true
   classifier: ess104
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 104
@@ -644,7 +644,7 @@ tma-ess105:
   enabled: true
   classifier: ess105
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 105
@@ -660,7 +660,7 @@ tma-ess110:
   enabled: true
   classifier: ess110
   image:
-    revision: 0
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 110
@@ -676,7 +676,7 @@ ups-server-room1-ess310:
   enabled: true
   classifier: ess310
   image:
-    revision: 3
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 310
@@ -692,7 +692,7 @@ ups-server-room2-ess311:
   enabled: true
   classifier: ess311
   image:
-    revision: 3
+    revision: 6
     repository: ts-dockerhub.lsst.org/ess
   env:
     RUN_ARG: 311

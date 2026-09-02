@@ -31,7 +31,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - uses: actions/setup-go@v6
+      - uses: actions/setup-go@v7
         with:
           go-version: '>=1.22'
 
@@ -41,7 +41,7 @@ jobs:
         env:
           GOBIN: /usr/local/bin/
 
-      - uses: astral-sh/setup-uv@v8.2.0
+      - uses: astral-sh/setup-uv@v10.0.1
 
       - name: Run linters
         run: uv run --only-group=tox tox run -e lint
@@ -59,7 +59,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - uses: astral-sh/setup-uv@v8.2.0
+      - uses: astral-sh/setup-uv@v10.0.1
         with:
           python-version: ${{ matrix.python }}
 
@@ -89,7 +89,7 @@ jobs:
       - name: Run helm unittest for sub-charts
         run: helm unittest applications/*/charts/*/tests/..
 
-      - uses: astral-sh/setup-uv@v8.2.0
+      - uses: astral-sh/setup-uv@v10.0.1
 
       - name: Run Phalanx Helm linter
         run: uv run --only-group=tox tox run -e phalanx-lint-change
@@ -120,9 +120,10 @@ jobs:
               - "applications/*/values.yaml"
               - "applications/argocd/values-*.yaml"
               - "applications/gafaelfawr/values-*.yaml"
+              - "applications/repertoire/values-*.yaml"
               - "environments/values-*.yaml"
-              - "requirements/*.txt"
               - "src/phalanx/**"
+              - "uv.lock"
             docs-specific:
               - "docs/**"
             minikube:
@@ -152,7 +153,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - uses: astral-sh/setup-uv@v8.2.0
+      - uses: astral-sh/setup-uv@v10.0.1
 
       - name: Download installer dependencies
         run: |
@@ -167,7 +168,7 @@ jobs:
       - uses: medyagh/setup-minikube@latest
         with:
           cpus: max
-          memory: 5500m  # Linux virtual machines have 7GB of RAM
+          memory: 13500m  # Linux virtual machines have 7GB of RAM
 
       - name: Test interaction with the cluster
         run: kubectl get nodes
@@ -208,7 +209,7 @@ jobs:
           # Ensure the documentation gets the right version.
           fetch-depth: 0
 
-      - uses: astral-sh/setup-uv@v8.2.0
+      - uses: astral-sh/setup-uv@v10.0.1
 
       - name: Install graphviz
         run: |

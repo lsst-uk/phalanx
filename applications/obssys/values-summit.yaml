@@ -60,16 +60,16 @@ atqueue:
         topologyKey: "kubernetes.io/hostname"
   resources:
     limits:
-      cpu: 8
+      cpu: 12
       memory: 48Gi
     requests:
-      cpu: 4
+      cpu: 8
       memory: 8Gi
 
 atscheduler:
   classifier: scheduler2
   image:
-    revision: 8
+    revision: 9
     repository: ts-dockerhub.lsst.org/scheduler
   env:
     INDEX: 2
@@ -177,13 +177,13 @@ mtqueue:
       cpu: 12
       memory: 48Gi
     requests:
-      cpu: 6
+      cpu: 8
       memory: 8Gi
 
 mtscheduler:
   classifier: scheduler1
   image:
-    revision: 8
+    revision: 9
     repository: ts-dockerhub.lsst.org/scheduler
   env:
     INDEX: 1
@@ -276,7 +276,7 @@ ocsqueue:
 ocsscheduler:
   classifier: scheduler3
   image:
-    revision: 8
+    revision: 9
     repository: ts-dockerhub.lsst.org/scheduler
   env:
     INDEX: 3
@@ -314,7 +314,7 @@ ocsscheduler:
 
 watcher:
   image:
-    revision: 3
+    revision: 9
     repository: ts-dockerhub.lsst.org/watcher
   envSecrets:
   - name: ESCALATION_KEY

@@ -1,3 +1,27 @@
+x-pod-antiaffinity:
+  &pod-antiaffinity
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+            - key: pod-template-hash
+              operator: Exists
+          topologyKey: kubernetes.io/hostname
+
+x-topology-spread:
+  &topology-spread
+  topologySpreadConstraints:
+  - maxSkew: 1
+    topologyKey: kubernetes.io/hostname
+    whenUnsatisfiable: ScheduleAnyway
+    labelSelector:
+      matchExpressions:
+      - key: pod-template-hash
+        operator: Exists
+
 audio-broadcaster:
   image:
     repository: ts-dockerhub.lsst.org/audio_broadcaster
@@ -25,6 +49,7 @@ audio-broadcaster:
   - name: tma1
     host: tma-rpi-audio01.cp.lsst.org
     port: 4444
+  <<: *pod-antiaffinity
   resources:
     requests:
       cpu: 5m
@@ -60,7 +85,7 @@ love-commander:
 x-manager-producer:
   &base-manager-producer
   image:
-    revision: 6
+    revision: 7
     repository: ts-dockerhub.lsst.org/love-manager
     pullPolicy: Always
   env:
@@ -94,6 +119,7 @@ x-manager-producer:
     AUTH_LDAP_BIND_PASSWORD: auth-ldap-bind-password
     DB_PASS: db-pass
     REDIS_PASS: redis-pass
+  <<: *topology-spread
   resources:
     requests:
       cpu: 150m
@@ -113,7 +139,7 @@ love-manager:
   manager:
     frontend:
       image:
-        revision: 6
+        revision: 7
         repository: ts-dockerhub.lsst.org/love-manager
         pullPolicy: Always
       env:
@@ -224,7 +250,7 @@ love-manager:
 love-nginx:
   image:
     repository: nginx
-    tag: 1.25.1
+    tag: 1.31.3
     pullPolicy: Always
   ingress:
     hostname: summit-lsp.lsst.codes
@@ -234,7 +260,7 @@ love-nginx:
   initContainers:
     frontend:
       image:
-        revision: 6
+        revision: 7
         repository: ts-dockerhub.lsst.org/love-frontend-k8s
         pullPolicy: Always
     manager:
@@ -490,6 +516,7 @@ love-producer:
     revision: 3
     repository: ts-dockerhub.lsst.org/love-producer
     pullPolicy: Always
+  <<: *topology-spread
   resources:
     requests:
       cpu: 10m

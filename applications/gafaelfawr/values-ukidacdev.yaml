@@ -31,6 +31,14 @@ config:
     groupSearchByDn: false
 
   groupMapping:
+    "admin:oidc":
+      - github:
+          organization: "lsp-uk"
+          team: "dev"
+    "admin:token":
+      - github:
+          organization: "lsp-uk"
+          team: "dev"
     "admin:userinfo":
       - "rsp"
     "exec:admin":
@@ -53,4 +61,4 @@ config:
     - "gpfrancis"
     - "davedavemckay"
     - "etoledor"
-    
+ 

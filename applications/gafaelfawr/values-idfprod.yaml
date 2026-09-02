@@ -8,6 +8,7 @@ redis:
 config:
   allowSubdomains: true
   slackAlerts: true
+  updateSchema: true
 
   sentry:
     enabled: true
@@ -48,6 +49,7 @@ config:
         - "dp0.2"
         - "dp0.3"
         - "dp1"
+        - "dp2"
 
   # Enable metrics reporting.
   metrics:
@@ -62,6 +64,8 @@ config:
         sia: 70
         tap: 1000
         vo-cutouts: 35
+      disk:
+        "/home": 52428800000
       notebook:
         cpu: 4.0
         memory: 32
@@ -73,6 +77,11 @@ config:
     "admin:jupyterlab":
       - "g_admins"
     "admin:notifications":
+      - "g_admins"
+    "admin:oidc":
+      - "g_admins"
+      - "g_oidc_managers"
+    "admin:token":
       - "g_admins"
     "admin:userinfo":
       - "g_admins"
@@ -100,15 +109,8 @@ config:
       - "g_users"
     "write:sasquatch":
       - "g_admins"
-
-  initialAdmins:
-    - "adam"
-    - "afausti"
-    - "danfuchs"
-    - "frossie"
-    - "jonathansick"
-    - "rra"
-    - "svoutsin"
+    "write:obsforge":
+      - "g_admins"
 
   errorFooter: |
     To report problems or ask for help, see the instructions at

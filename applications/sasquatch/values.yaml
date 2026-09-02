@@ -30,7 +30,7 @@ influxdb:
 
   image:
     # -- InfluxDB image tag
-    tag: "1.12.3"
+    tag: "1.12.4"
 
   livenessProbe:
     # -- Liveness probe initial delay in seconds
@@ -274,7 +274,7 @@ kapacitor:
     # -- Docker image to use for Kapacitor
     repository: docker.io/library/kapacitor
     # -- Tag to use for Kapacitor
-    tag: 1.8.5
+    tag: 1.8.6
     # -- Pull policy for Kapacitor
     pullPolicy: "IfNotPresent"
 
