@@ -56,9 +56,3 @@ config:
       - "rsp"
     "read:tap":
       - "rsp"
-
-  initialAdmins:
-    - "gpfrancis"
-    - "davedavemckay"
-    - "etoledor"
-  
