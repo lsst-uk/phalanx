@@ -34,8 +34,8 @@ config:
     - "ivoa_obscore"
     - "comcam_vista"
   tap:
-    schemaVersion: "w.2026.29-dev.09d31e2"
-    schemaSourceTemplate: "https://github.com/lsst-uk/sdm_schemas/archive/refs/tags/w.2026.29-dev.09d31e2.tar.gz"
+    schemaVersion: "w.2026.35-dev.3966031"
+    schemaSourceTemplate: "https://github.com/lsst-uk/sdm_schemas/archive/refs/tags/w.2026.35-dev.3966031.tar.gz"
     servers:
       tap:
         schemas:
