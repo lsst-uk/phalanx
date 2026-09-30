@@ -19,16 +19,27 @@ Publish versioned docs
 | cloudsql.resources | object | See `values.yaml` | Resource requests and limits for Cloud SQL Auth Proxy |
 | cloudsql.serviceAccount | string | `""` | The Google service account that has an IAM binding to the `docverse` Kubernetes service accounts and has the `cloudsql.client` role |
 | config.arqRedisUrl | string | Points to embedded Redis | URL for Redis arq queue database |
+| config.cdnPurgeEnabled | bool | `false` | Whether a long-profile edition publish is followed by a purge of the project's hostname from the Cloudflare edge cache. Leave this off until the Docverse Worker edge-caches edition responses: today a purge invalidates nothing while still spending calls against Cloudflare's per-account purge rate limit (5 per minute on the Free plan), which a keeper-sync backfill across many hostnames exceeds within seconds. Re-enabling is tracked in lsst-sqre/docverse#683. |
 | config.credentialKeyRotation | bool | `false` | Set true during a credential-encryption (Fernet) key rotation to deliver the retired key (DOCVERSE_CREDENTIAL_ENCRYPTION_KEY_RETIRED) to all pods so existing credentials can still be decrypted. Set back to false and remove the Vault key once all credentials have been re-encrypted. |
 | config.databaseUrl | string | `""` | Database URL for PostgreSQL |
 | config.githubAppId | string | `nil` | GitHub App ID for Docverse to use when accessing GitHub repositories. If not set, Docverse will operate in a limited mode without GitHub integration. |
+| config.keeperSync.copyRetryDelaySeconds | float | `30` | Seconds the keeper-sync worker waits before re-running a build copy that failed on a transport error at either end (an R2 outage that outlasted the per-object budget, or an LTD S3 timeout during a download). The copy is re-run exactly once; any other failure fails the edition as before. |
 | config.keeperSync.enabled | bool | `false` | Enable the Keeper-sync worker that consumes the `docverse:sync-queue` arq queue. Requires the docverse image to provide `docverse.worker.main.KeeperSyncWorkerSettings`. |
 | config.keeperSync.jobTimeoutSeconds | int | `3600` | Per-job timeout, in seconds, for keeper-sync arq jobs. |
+| config.keeperSync.uploadConcurrency | int | `32` | Process-wide cap on concurrent presigned uploads across every running keeper-sync job in the sync worker. Each concurrent upload holds one outbound connection, and the copy client keeps that many (plus 10 of headroom) connections alive, so this bounds the NAT source ports one sync-worker pod consumes. 32 fits the default 64 static Cloud NAT ports per GKE node; raise it toward `DOCVERSE_KEEPER_SYNC_MAX_JOBS` x `DOCVERSE_KEEPER_SYNC_COPY_CONCURRENCY` (80 at the defaults) once the Cloud NAT allocation is raised and the NAT drop logs stay at zero through a full backfill. |
+| config.keeperSync.uploadMaxAttempts | int | `6` | Attempts, including the first, that the keeper-sync worker spends on one presigned upload of a copied object before failing the build copy. Transport failures and retryable statuses (429, 5xx) share the budget; backoff starts at 0.5 s and doubles. At the default of 6 an object rides out an R2 connect outage of roughly 65 s. |
+| config.keeperSync.uploadMaxBackoffSeconds | float | `30` | Ceiling, in seconds, on any single wait between attempts of a keeper-sync presigned upload, including a server-requested `Retry-After`. At the default attempt count the exponential backoff peaks at 8 s, so this only bites for a longer `Retry-After`. |
 | config.logLevel | string | `"INFO"` | Logging level |
 | config.logProfile | string | `"production"` | Logging profile (`production` for JSON, `development` for human-friendly) |
+| config.maintenance.editionReconcileEnabled | bool | `true` | Enable the edition reconcile loop that re-drives editions whose recorded publish state has drifted from what the CDN serves. The cron stays registered either way; disabling only makes each tick a no-op. |
+| config.maintenance.editionReconcileMaxActionsPerJob | int | `100` | Maximum number of republish plus unpublish actions one per-org `edition_reconcile` job applies per tick; the remainder is reported as capped and picked up on the next tick. |
 | config.maintenance.enabled | bool | `false` | Enable the maintenance worker that consumes the `docverse:maintenance-queue` arq queue. Requires the docverse image to provide `docverse.worker.main.MaintenanceWorkerSettings`. |
 | config.maintenance.gitRefAuditEnabled | bool | `false` | Whether to enable auditing the git ref lifecycle rule. Enabling this will cause docverse to make GitHub API calls to determine if the git ref associated with an edition still exists. |
-| config.maintenance.jobTimeoutSeconds | int | `3600` | Per-job timeout, in seconds, for maintenance-pool jobs (lifecycle evaluation and git ref audits). |
+| config.maintenance.jobTimeoutSeconds | int | `3600` | Per-job timeout, in seconds, for maintenance-pool jobs (lifecycle evaluation, git ref audits, and purgatory cleanup). |
+| config.maintenance.purgatoryCleanupCronHour | int | `3` | UTC hour at which the daily purgatory_cleanup dispatcher cron runs. |
+| config.maintenance.purgatoryCleanupCronMinute | int | `23` | UTC minute of `purgatoryCleanupCronHour` at which the daily purgatory_cleanup dispatcher cron runs. |
+| config.maintenance.purgatoryCleanupEnabled | bool | `true` | Whether to run the daily purgatory_cleanup sweep that permanently deletes the object-store content (unpacked tree and staging tarball) of soft-deleted builds once the organization's purgatory retention has elapsed and stamps `date_purged` on the row. The cron is registered either way, so flipping this does not require a worker restart. |
+| config.maintenance.purgatoryCleanupMaxBuildsPerJob | int | `500` | Cap on the builds a single per-org purgatory_cleanup job reclaims per daily tick, oldest deletion first; anything past the cap is picked up by the next tick. |
 | config.metrics.application | string | `"docverse"` | Name under which to log metrics. Generally there is no reason to change this. |
 | config.metrics.enabled | bool | `false` | Whether to enable sending application metrics events to Sasquatch over Kafka. When disabled, Docverse uses a no-op metrics manager. |
 | config.metrics.events.topicPrefix | string | `"lsst.square.metrics.events"` | Topic prefix for events. It may sometimes be useful to change this in development environments. |
@@ -37,9 +48,11 @@ Publish versioned docs
 | config.reaperThresholds.buildProcessingSeconds | int | `28800` | Stuck-run reaper threshold, in seconds, for build_processing jobs. |
 | config.reaperThresholds.dashboardBuildSeconds | int | `1800` | Stuck-run reaper threshold, in seconds, for dashboard_build jobs. |
 | config.reaperThresholds.dashboardSyncSeconds | int | `21600` | Stuck-run reaper threshold, in seconds, for dashboard_sync jobs. |
+| config.reaperThresholds.editionReconcileSeconds | string | Derived by the server (`jobTimeoutSeconds` + 1800) | Stuck-run reaper threshold, in seconds, for edition_reconcile jobs. Leave unset to let the server derive it as `config.maintenance.jobTimeoutSeconds` plus a 1800 s margin; an explicit value must be strictly greater than that timeout or the server refuses to start. |
 | config.reaperThresholds.keeperSyncSeconds | int | `21600` | Stuck-run reaper threshold, in seconds, for keeper-sync jobs. |
 | config.reaperThresholds.lifecycleSeconds | int | `21600` | Stuck-run reaper threshold, in seconds, for lifecycle_eval and git_ref_audit jobs (maintenance pool). |
 | config.reaperThresholds.publishEditionSeconds | int | `14400` | Stuck-run reaper threshold, in seconds, for publish_edition jobs. |
+| config.reaperThresholds.purgatoryCleanupSeconds | int | `21600` | Stuck-run reaper threshold, in seconds, for purgatory_cleanup jobs (maintenance pool). |
 | config.sentry.enabled | bool | `false` | Whether to send error reports and tracing data to Sentry. Requires the sentry-dsn secret to be set in Vault. |
 | config.sentry.tracesSampleRate | float | `0` | The percentage of requests that should be traced. This should be a float between 0 and 1. |
 | config.slackAlerts | bool | `false` | Whether to send Slack alerts for unexpected failures |
@@ -80,8 +93,9 @@ Publish versioned docs
 | syncWorker.podAnnotations | object | `{}` | Annotations for the Keeper-sync worker pod |
 | syncWorker.replicaCount | int | `1` | Number of Keeper-sync worker pods to start |
 | syncWorker.resources | object | See `values.yaml` | Resource limits and requests for the Keeper-sync worker pod |
-| syncWorker.resources.limits.memory | string | `"1Gi"` | Higher than the other workers because keeper-sync buffers whole LTD objects in memory while copying builds, across several concurrent jobs. Measured worst-case RSS is about 200Mi. |
+| syncWorker.resources.limits.memory | string | `"2Gi"` | Higher than the other workers because keeper-sync buffers whole LTD objects in memory while copying builds, across several concurrent jobs. Measured idle RSS after a 477-project backfill is about 840Mi (roundtable-prod, 2026-09-23), so the previous 1Gi limit left almost no room for the next wave. |
 | syncWorker.tolerations | list | `[]` | Tolerations for the Keeper-sync worker pod |
 | tolerations | list | `[]` | Tolerations for the docverse deployment pod |
 | workerResources | object | See `values.yaml` | Resource limits and requests for the docverse worker pod |
+| workerResources.limits.memory | string | `"1Gi"` | The worker idles at roughly 480Mi after a keeper-sync backfill and was OOM-killed at 512Mi while running ten concurrent publish_edition and dashboard_build jobs (roundtable-prod, 2026-09-23). A killed worker strands in-flight publishes until the 4 h reaper runs, so leave headroom for a full burst. |
 | workerResources.requests.cpu | string | `"50m"` | GKE Autopilot requires a minimum CPU request of 50m |

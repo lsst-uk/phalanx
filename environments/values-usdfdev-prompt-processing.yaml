@@ -1,23 +1,33 @@
-fqdn: usdfdev-prompt-processing.slac.stanford.edu
-name: usdfdev-prompt-processing
-appOfAppsName: "science-platform"
+name: "usdfdev-prompt-processing"
+fqdn: "usdfdev-prompt-processing.slac.stanford.edu"
+title: "USDF Prompt Processing development"
+description: >-
+  A development environment for Prompt Processing at the United States Data
+  Facility (USDF) hosted at SLAC. This environment is used for testing and
+  development of the Prompt Processing software.
+
+appOfAppsName: "prompt-processing"
 vaultUrl: "https://vault.slac.stanford.edu"
-vaultPathPrefix: secret/rubin/usdf-prompt-processing-dev
+vaultPathPrefix: "secret/rubin/usdf-prompt-processing-dev"
 
 applications:
-  butler-writer-service: true
+  # This environment uses an ingress managed in a separate Kubernetes cluster,
+  # despite that configuration not being officially supported by Phalanx.
   cert-manager: false
-  gafaelfawr: true
   ingress-nginx: false
+  vault-secrets-operator: false
+
+  apdb-backups-gcp: true
+  butler-writer-service: true
   keda: true
   next-visit-fan-out: true
   prompt-kafka: true
   prompt-keda-hsc: true
   prompt-keda-latiss: true
   prompt-keda-lsstcam: true
+  prompt-pub: true
   prompt-redis: true
   sasquatch: true
   s3-file-notifications: true
   strimzi: true
   strimzi-registry-operator: true
-  vault-secrets-operator: false

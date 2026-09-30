@@ -10,7 +10,7 @@ import yaml
 from phalanx.factory import Factory
 from phalanx.models.applications import Project
 
-_ALLOW_DISABLED = {"production-tools"}
+_ALLOW_DISABLED = {"livetap", "production-tools"}
 """Temporary whitelist of applications not enabled anywhere."""
 
 _ALLOW_NO_SECRETS = {"next-visit-fan-out"}
@@ -80,6 +80,23 @@ def test_application_version() -> None:
         assert chart["version"] == "1.0.0", (
             f"Shared chart {shared_chart.name} has incorrect version"
         )
+
+
+def test_environment_config() -> None:
+    """Test that the environment fields are valid.
+
+    There are some constraints that we don't want to apply in the Pydantic
+    model because it makes it hard to load a partial values file and then
+    overrides that complete that file. Check those properties here instead.
+    """
+    factory = Factory(Path(__file__).parent.parent)
+    config_storage = factory.create_config_storage()
+    for env_name in config_storage.list_environments():
+        environment = config_storage.load_environment(env_name)
+        for field in ("name", "fqdn", "description"):
+            assert len(getattr(environment, field)) > 0, (
+                f"Environment {env_name} has empty {field}"
+            )
 
 
 def test_enviroments() -> None:

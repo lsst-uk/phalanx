@@ -37,6 +37,9 @@ argo-cd:
         p, role:developer, logs, get, */*, allow
         p, role:developer, logs, get, infrastructure/*, allow
 
+        p, role:drp, applications, *, drp/*, allow
+        p, role:drp, logs, get, drp/*, allow
+
         g, afausti@slac.stanford.edu, role:admin
         g, atani@slac.stanford.edu, role:admin
         g, athor@slac.stanford.edu, role:admin
@@ -64,6 +67,7 @@ argo-cd:
         g, couger01@slac.stanford.edu, role:developer
         g, cyab05@slac.stanford.edu, role:developer
         g, dirving@slac.stanford.edu, role:developer
+        g, guymw@slac.stanford.edu, role:developer
         g, fritzm@slac.stanford.edu, role:developer
         g, gmegias@slac.stanford.edu, role:developer
         g, hchiang2@slac.stanford.edu, role:developer
@@ -90,6 +94,8 @@ argo-cd:
         g, kpuri@slac.stanford.edu, role:developer
         g, youtsumi@slac.stanford.edu, role:developer
         g, eali@slac.stanford.edu, role:developer
+
+        g, tnoble@slac.stanford.edu, role:drp
       scopes: "[email]"
 
   server:
