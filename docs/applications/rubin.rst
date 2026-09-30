@@ -15,6 +15,7 @@ Argo CD project: ``rubin``
    exposurelog/index
    exposure-checker/index
    fastapi-bootcamp/index
+   log-explorer/index
    mpsky/index
    nvr-control/index
    rubin-rag/index
@@ -31,4 +32,6 @@ Argo CD project: ``rubin``
    s3proxy/index
    schedview-snapshot/index
    schedview-static-pages/index
+   skyviewer/index
+   so-evening-tailgate/index
    weatherbroadcaster/index

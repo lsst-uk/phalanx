@@ -16,9 +16,9 @@ Replicates data from the APDB to the PPDB
 | config.apdbConfig | string | `nil` | APDB config file resource |
 | config.apdbIndexUri | string | `"/sdf/group/rubin/shared/apdb_config/apdb-index.yaml"` | APDB index URI |
 | config.checkInterval | int | `300` | Time to wait before checking for new chunks, if no chunk appears |
-| config.cloudSql | object | `{"connectionName":"","dbName":"ppdb-chunk-tracking","enabled":"true","ipType":"public","user":""}` | CloudSQL Python Connector configuration |
+| config.cloudSql | object | `{"connectionName":"","dbName":"ppdb","enabled":"true","ipType":"public","user":""}` | CloudSQL Python Connector configuration |
 | config.cloudSql.connectionName | string | `""` | CloudSQL Connection Name |
-| config.cloudSql.dbName | string | `"ppdb-chunk-tracking"` | Database name to connect to |
+| config.cloudSql.dbName | string | `"ppdb"` | Database name to connect to |
 | config.cloudSql.enabled | string | `"true"` | Enable CloudSQL Python Connector |
 | config.cloudSql.ipType | string | `"public"` | Cloud SQL IP Type.  Set to Public since there is no interconnect or VPN to GCP |
 | config.cloudSql.user | string | `""` | Username in sa_name@project.iam format |
@@ -31,8 +31,10 @@ Replicates data from the APDB to the PPDB
 | config.pathPrefix | string | `"/ppdb-replication"` | URL path prefix |
 | config.ppdbConfig | string | `nil` | PPDB config file resource |
 | config.s3EndpointUrl | string | `"https://s3dfrgw.slac.stanford.edu"` | S3 endpoint URL |
-| config.uploadInterval | int | `0` | Time to wait between uploader file uploads |
+| config.sentry.enabled | bool | `true` | Whether to enable Sentry error reporting |
+| config.uploadInterval | int | `0` | Time to wait between uploading the files for one chunk |
 | config.waitInterval | int | `300` | Time to wait between uploader file scans |
+| global.environmentName | string | Set by Argo CD | Name of the Phalanx environment |
 | global.host | string | Set by Argo CD | Host name for ingress |
 | global.vaultSecretsPath | string | Set by Argo CD | Base path for Vault secrets |
 | image.pullPolicy | string | `"Always"` | Pull policy for the ppdb-replication image |

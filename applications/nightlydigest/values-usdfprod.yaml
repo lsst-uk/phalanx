@@ -1,7 +1,7 @@
 nightlydigest-nginx:
   image:
     repository: nginx
-    tag: 1.25.1
+    tag: 1.31.3
     pullPolicy: Always
   ingress:
     httpPath: /nightlydigest
@@ -74,6 +74,8 @@ nightlydigest-nginx:
 
 nightlydigest-backend:
   replicas: 4
+  uid: 73006
+  gid: 4085
   image:
     repository: ts-dockerhub.lsst.org/nightlydigest-backend
     tag: c0045.000

@@ -554,8 +554,10 @@ jupyterhub:
     # -- Whether to log out the user (from JupyterHub) when culling their lab
     users: false
 
-    # -- Whether to remove named servers when culling their lab
-    removeNamedServers: true
+    # -- Whether to remove named servers when culling their lab. This should
+    # be true, but Zero to JupyterHub doesn't handle the flag correctly and we
+    # don't use named servers anyway
+    removeNamedServers: false
 
     # -- Maximum age of a lab regardless of activity
     # @default -- 864000 (10 days)
@@ -570,7 +572,7 @@ jupyterhub:
       name: "ghcr.io/lsst-sqre/nublado-jupyterhub"
 
       # -- Tag of image to use for JupyterHub
-      tag: "15.1.0"
+      tag: "16.1.0"
 
     # -- Resource limits and requests
     # @default -- See `values.yaml`
@@ -753,7 +755,7 @@ cloudsql:
     pullPolicy: "IfNotPresent"
 
     # -- Cloud SQL Auth Proxy tag to use
-    tag: "1.38.2"
+    tag: "1.38.3"
 
   # -- Instance connection name for a Cloud SQL PostgreSQL instance
   # @default -- None, must be set if Cloud SQL Auth Proxy is enabled

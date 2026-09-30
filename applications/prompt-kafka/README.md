@@ -15,7 +15,7 @@ Kafka environment for Prompt Processing
 | strimzi-kafka.kafka.listeners.external.enabled | bool | `false` | Whether external listener is enabled |
 | strimzi-kafka.kafka.listeners.plain.enabled | bool | `true` | Whether internal plaintext listener is enabled |
 | strimzi-kafka.kafka.listeners.tls.enabled | bool | `true` | Whether internal TLS listener is enabled |
-| strimzi-kafka.kafka.version | string | `"4.0.0"` | Version of Kafka to deploy |
+| strimzi-kafka.kafka.version | string | `"4.1.0"` | Version of Kafka to deploy |
 | strimzi-registry-operator.clusterName | string | `"prompt-kafka"` | Name of the Strimzi Kafka cluster |
 | strimzi-registry-operator.clusterNamespace | string | `"prompt-kafka"` | Namespace where the Strimzi Kafka cluster is deployed |
 | strimzi-registry-operator.operatorNamespace | string | `"prompt-kafka"` | Namespace where the strimzi-registry-operator is deployed |
@@ -27,7 +27,7 @@ Kafka environment for Prompt Processing
 | kafdrop.host | string | `"localhost"` | The hostname to report for the RMI registry (used for JMX) |
 | kafdrop.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
 | kafdrop.image.repository | string | `"obsidiandynamics/kafdrop"` | Kafdrop Docker image repository |
-| kafdrop.image.tag | string | `"4.2.0"` | Kafdrop image version |
+| kafdrop.image.tag | string | `"4.3.0"` | Kafdrop image version |
 | kafdrop.ingress.annotations | object | `{}` | Additional ingress annotations |
 | kafdrop.ingress.enabled | bool | `false` | Whether to enable the ingress |
 | kafdrop.ingress.hostname | string | None, must be set if ingress is enabled | Ingress hostname |

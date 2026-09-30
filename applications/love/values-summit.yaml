@@ -11,6 +11,17 @@ x-pod-antiaffinity:
               operator: Exists
           topologyKey: kubernetes.io/hostname
 
+x-topology-spread:
+  &topology-spread
+  topologySpreadConstraints:
+  - maxSkew: 1
+    topologyKey: kubernetes.io/hostname
+    whenUnsatisfiable: ScheduleAnyway
+    labelSelector:
+      matchExpressions:
+      - key: pod-template-hash
+        operator: Exists
+
 audio-broadcaster:
   image:
     repository: ts-dockerhub.lsst.org/audio_broadcaster
@@ -108,7 +119,7 @@ x-manager-producer:
     AUTH_LDAP_BIND_PASSWORD: auth-ldap-bind-password
     DB_PASS: db-pass
     REDIS_PASS: redis-pass
-  <<: *pod-antiaffinity
+  <<: *topology-spread
   resources:
     requests:
       cpu: 150m
@@ -239,7 +250,7 @@ love-manager:
 love-nginx:
   image:
     repository: nginx
-    tag: 1.25.1
+    tag: 1.31.3
     pullPolicy: Always
   ingress:
     hostname: summit-lsp.lsst.codes
@@ -266,7 +277,6 @@ love-nginx:
     storageClass: rook-ceph-block
     accessMode: ReadWriteOnce
     claimSize: 2Gi
-  <<: *pod-antiaffinity
   resources:
     requests:
       cpu: 120m
@@ -473,7 +483,6 @@ love-nginx:
 
 x-love-producer-envsys-resources:
   &love-producer-envsys-resources
-  <<: *pod-antiaffinity
   resources:
     requests:
       cpu: 70m
@@ -484,7 +493,6 @@ x-love-producer-envsys-resources:
 
 x-love-producer-scripqueue-resources:
   &love-producer-scripqueue-resources
-  <<: *pod-antiaffinity
   resources:
     requests:
       cpu: 200m
@@ -495,7 +503,6 @@ x-love-producer-scripqueue-resources:
 
 x-love-producer-vms-resources:
   &love-producer-vms-resources
-  <<: *pod-antiaffinity
   resources:
     requests:
       cpu: 50m
@@ -509,7 +516,7 @@ love-producer:
     revision: 3
     repository: ts-dockerhub.lsst.org/love-producer
     pullPolicy: Always
-  <<: *pod-antiaffinity
+  <<: *topology-spread
   resources:
     requests:
       cpu: 10m

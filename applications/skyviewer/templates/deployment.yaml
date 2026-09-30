@@ -1,0 +1,139 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "skyviewer"
+  labels:
+    {{- include "skyviewer.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  # Recreate rather than RollingUpdate: a rolling update would briefly run
+  # two pods, doubling the memory requested for the tile cache. A few seconds
+  # of downtime on upgrade is acceptable for this tool.
+  strategy:
+    type: "Recreate"
+  selector:
+    matchLabels:
+      {{- include "skyviewer.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "skyviewer.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      automountServiceAccountToken: false
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: "http"
+              containerPort: 8080
+              protocol: "TCP"
+          env:
+            - name: "BASE_URL"
+              value: {{ printf "https://%s" .Values.global.host | quote }}
+            # NEXT_PUBLIC_ values are compiled into the client bundle at image
+            # build time. The server checks them at startup, so they must be
+            # set here and must match the values the image was built with.
+            - name: "NEXT_PUBLIC_BASE_PATH"
+              value: {{ .Values.ingress.path | quote }}
+            - name: "NEXT_PUBLIC_API_URL"
+              value: {{ required "config.apiUrl must be set" .Values.config.apiUrl | quote }}
+            - name: "NEXT_PUBLIC_ASTRO_API_URL"
+              value: {{ required "config.astroApiUrl must be set" .Values.config.astroApiUrl | quote }}
+            - name: "CLOUD_ENV"
+              value: {{ .Values.config.cloudEnv | quote }}
+            {{- if .Values.hipsData.enabled }}
+            - name: "HIPS_DATA_DIR"
+              value: {{ required "config.hipsDataDir must be set when hipsData.enabled is true" .Values.config.hipsDataDir | quote }}
+            {{- end }}
+            {{- with .Values.config.hipsSurvey }}
+            - name: "HIPS_SURVEY"
+              value: {{ . | quote }}
+            {{- end }}
+            {{- if ne .Values.config.tileCacheBytes "0" }}
+            - name: "HIPS_TILE_CACHE_BYTES"
+              value: {{ .Values.config.tileCacheBytes | quote }}
+            {{- end }}
+            # These tokens gate the CMS preview and revalidate routes, which
+            # are unused here, but the app requires them to be set.
+            - name: "CRAFT_SECRET_TOKEN"
+              valueFrom:
+                secretKeyRef:
+                  name: "skyviewer"
+                  key: "craft-secret-token"
+            - name: "CRAFT_REVALIDATE_SECRET_TOKEN"
+              valueFrom:
+                secretKeyRef:
+                  name: "skyviewer"
+                  key: "craft-revalidate-secret-token"
+          readinessProbe:
+            httpGet:
+              # Use the health route rather than a page path: rendering a
+              # page hits the CMS and can exceed the probe timeout, taking
+              # the only pod out of the Service. The 5s timeout is headroom
+              # over the 1s default for the same reason.
+              path: {{ printf "%s/api/health" .Values.ingress.path | quote }}
+              port: "http"
+            timeoutSeconds: 5
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - "all"
+            readOnlyRootFilesystem: true
+          volumeMounts:
+            - name: "cache"
+              mountPath: "/app/.next/cache"
+            - name: "tmp"
+              mountPath: "/tmp"
+            {{- if .Values.hipsData.enabled }}
+            {{- range .Values.hipsData.mounts }}
+            - name: {{ .name | quote }}
+              mountPath: {{ .mountPath | quote }}
+              readOnly: true
+            {{- end }}
+            {{- end }}
+      volumes:
+        - name: "cache"
+          emptyDir: {}
+        - name: "tmp"
+          emptyDir: {}
+        {{- if .Values.hipsData.enabled }}
+        {{- range .Values.hipsData.mounts }}
+        - name: {{ .name | quote }}
+          persistentVolumeClaim:
+            claimName: {{ .name | quote }}
+            readOnly: true
+        {{- end }}
+        {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        runAsNonRoot: true
+        # The nextjs user created by the image.
+        runAsUser: 1001
+        runAsGroup: 1001
+        {{- with .Values.hipsData.supplementalGroups }}
+        supplementalGroups:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}

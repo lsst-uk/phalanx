@@ -115,9 +115,12 @@ template:
 
 ---
 # The link-check submit-and-poll API requires the exec:linkcheck scope
-# (delegated to documentation CI via OOK_TOKEN). This covers POST
-# /ook/linkcheck/checks and GET /ook/linkcheck/checks/{id}; the submitting
-# client polls its own check with the same token. The other linkcheck read
+# (delegated to documentation CI via OOK_TOKEN). The Prefix path covers POST
+# /ook/linkcheck/checks, GET /ook/linkcheck/checks/{id}, and POST
+# /ook/linkcheck/checks/{id}/contributions; the submitting client polls its
+# own check and contributes results with the same token. The GitHub Actions
+# OIDC id-token a contribution carries attests provenance only — write
+# authorization is this scope. The other linkcheck read
 # endpoints (/ook/linkcheck/urls and /ook/linkcheck/projects/...) remain
 # anonymous via the catch-all ook ingress.
 apiVersion: gafaelfawr.lsst.io/v1alpha1
@@ -182,6 +185,59 @@ template:
         http:
           paths:
             - path: "{{ .Values.ingress.path }}/intersphinx/inventory"
+              pathType: "Prefix"
+              backend:
+                service:
+                  name: "ook"
+                  port:
+                    number: {{ .Values.service.port }}
+
+---
+# The intersphinx source registry and the manual intersphinx ingest trigger
+# require the exec:admin scope. Registering a site commits Ook to serving
+# links from it, so this is deliberately not the write:intersphinx scope that
+# only warms the inventory cache. Gafaelfawr gates by path, not by method, so
+# the registry's reads (GET /ook/intersphinx/sources and
+# GET /ook/intersphinx/sources/{id}) are admin-only along with its writes;
+# the links the registry produces are served anonymously from
+# /ook/links/domains/python via the catch-all ook ingress. The
+# /ook/ingest/intersphinx path is listed here so it wins the longest-prefix
+# match over the exec:internal-tools /ook/ingest rule in ook-admin above.
+apiVersion: gafaelfawr.lsst.io/v1alpha1
+kind: GafaelfawrIngress
+metadata:
+  name: "ook-intersphinx-admin"
+  labels:
+    {{- include "ook.labels" . | nindent 4 }}
+config:
+  loginRedirect: false
+  scopes:
+    all:
+      - "exec:admin"
+  service: "ook"
+template:
+  metadata:
+    name: "ook-intersphinx-admin"
+    {{- with .Values.ingress.annotations }}
+    annotations:
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
+  spec:
+    rules:
+      - host: {{ required "global.host must be set" .Values.global.host | quote }}
+        http:
+          paths:
+            - path: "{{ .Values.ingress.path }}/intersphinx/sources"
+              pathType: "Prefix"
+              backend:
+                service:
+                  name: "ook"
+                  port:
+                    number: {{ .Values.service.port }}
+      - host: {{ required "global.host must be set" .Values.global.host | quote }}
+        http:
+          paths:
+            - path: "{{ .Values.ingress.path }}/ingest/intersphinx"
               pathType: "Prefix"
               backend:
                 service:

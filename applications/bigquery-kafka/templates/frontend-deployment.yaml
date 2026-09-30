@@ -27,7 +27,6 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       automountServiceAccountToken: true
-      serviceAccountName: "bigquery-kafka"
       containers:
         - name: {{ .Chart.Name }}
           env:
@@ -83,6 +82,7 @@ spec:
         runAsUser: 1000
         runAsGroup: 1000
       {{- with .Values.frontend.tolerations }}
+      serviceAccountName: "bigquery-kafka"
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}

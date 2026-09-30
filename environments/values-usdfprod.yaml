@@ -1,5 +1,12 @@
 fqdn: "usdf-rsp.slac.stanford.edu"
 name: "usdfprod"
+title: "USDF RSP"
+titleLong: "Rubin US Data Facility RSP"
+description: >-
+  The production environment for the Rubin Science Platform at the United
+  States Data Facility (USDF) hosted at SLAC. It is used by project staff for
+  processing, calibration, testing, and other project activities.
+
 appOfAppsName: "science-platform"
 butlerServerRepositories:
   embargo: "https://usdf-rsp.slac.stanford.edu/api/butler/repo/embargo/butler.yaml"
@@ -19,7 +26,6 @@ applications:
   fov-quicklook: true
   grafana: true
   jira-data-proxy: true
-  livetap: true
   mobu: true
   narrativelog: true
   nightlydigest: true
@@ -29,13 +35,13 @@ applications:
   obsloctap: true
   plot-navigator: true
   portal: true
-  postgres: true
   ppdb-replication: true
   qserv-kafka: true
   rubintv: true
   s3proxy: true
   sasquatch: true
   semaphore: true
+  skyviewer: true
   squareone: true
   ssotap: true
   strimzi-access-operator: true
@@ -43,3 +49,4 @@ applications:
   strimzi: true
   tap: true
   times-square: true
+  weatherbroadcaster: true

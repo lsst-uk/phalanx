@@ -10,8 +10,9 @@ BigQuery Kafka bridge
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| config.backend | string | `"BigQuery"` | Database backend to use (Qserv or BigQuery) |
-| config.backendApiTimeout | string | `"30s"` | Timeout for backend API calls `parse_timedelta` format. Used for both QServ REST API and BigQuery API. |
+| config.arqFastMaxJobs | int | `50` | Maximum number of jobs each fast worker (used for I/O-intensive tasks) can process simultaneously |
+| config.arqSlowMaxJobs | int | `1` | Maximum number of jobs each slow worker (used for results processing) can process simultaneously |
+| config.backendApiTimeout | string | `"30s"` | Timeout for backend API calls in `parse_timedelta` format. |
 | config.backendPollInterval | string | `"1s"` | Interval at which the backend is polled for query status in Safir `parse_timedelta` format |
 | config.backendRetryCount | int | `3` | How many times to retry after a backend API network failure |
 | config.backendRetryDelay | string | `"1s"` | How long to wait between retries after a backend API network failure in Safir `parse_timedelta` format |
@@ -19,27 +20,39 @@ BigQuery Kafka bridge
 | config.bigqueryMaxBytesBilled | int | 1 GB | Maximum bytes that can be billed for a single BigQuery query. Queries exceeding this will fail. Set to null for no limit. |
 | config.bigqueryProject | string | None, must be set | GCP project ID containing the BigQuery datasets to query |
 | config.consumerGroupId | string | `"bigquery"` | Kafka consumer group ID |
-| config.gcpServiceAccount | string | None, must be set for BigQuery backend | GCP service account email for Workload Identity Format: {name}@{project-id}.iam.gserviceaccount.com |
+| config.gcpServiceAccount | string | None, must be set | GCP service account email for Workload Identity. Format: {name}@{project-id}.iam.gserviceaccount.com |
 | config.jobCancelTopic | string | `"lsst.ppdbtap.job-delete"` | Kafka topic for query cancellation requests |
-| config.jobRunBatchSize | int | `10` | Maximum batch size for query execution requests. This should generally be the same as `redisMaxConnections` minus a few for overhead. |
-| config.jobRunMaxBytes | int | 10MiB | Maximum size of a batch read from Kafka in bytes. Wide queries can be up to 500KiB in size, so this should be at least 500KiB * 10. |
+| config.jobRunBatchSize | int | `50` | Maximum batch size for query execution requests. This should generally be the same as `redisMaxConnections` minus a few for overhead. |
+| config.jobRunMaxBytes | int | 25MiB | Maximum size of a batch read from Kafka in bytes. Wide queries can be up to 500KiB in size, so this should be at least 500KiB * 10. |
 | config.jobRunTopic | string | `"lsst.ppdbtap.job-run"` | Kafka topic for query execution requests |
 | config.jobStatusTopic | string | `"lsst.ppdbtap.job-status"` | Kafka topic for query status |
 | config.logLevel | string | `"INFO"` | Logging level |
 | config.logProfile | string | `"production"` | Logging profile (`production` for JSON, `development` for human-friendly) |
 | config.maxResultBytes | int | 3GiB | Maximum bytes of encoded output to return per query. Results exceeding this will be truncated with an overflow marker. |
-| config.maxWorkerJobs | int | `2` | Maximum number of arq jobs each worker can process simultaneously |
 | config.metrics.application | string | `"bigquerykafka"` | Name under which to log metrics. Generally there is no reason to change this. |
 | config.metrics.enabled | bool | `false` | Whether to enable sending metrics |
 | config.metrics.events.topicPrefix | string | `"lsst.square.metrics.events"` | Topic prefix for events. It may sometimes be useful to change this in development environments. |
 | config.metrics.schemaManager.registryUrl | string | Sasquatch in the local cluster | URL of the Confluent-compatible schema registry server |
 | config.metrics.schemaManager.suffix | string | `""` | Suffix to add to all registered subjects. This is sometimes useful for experimentation during development. |
-| config.redisMaxConnections | int | `15` | Size of the Redis connection pool. This should be set to `jobRunBatchSize` plus some extra connections for the monitor, cancel jobs. |
+| config.parquetBatchCells | int | `250000` | Target number of cells (rows times columns) to accumulate before converting to an Arrow record batch when encoding Parquet. The per-result batch size in rows is this value divided by the column count. |
+| config.parquetRowGroupCells | int | `5000000` | Target number of cells (rows times columns) per Parquet row group. The per-result row group size in rows is this value divided by the column count, and never smaller than the batch size. |
+| config.redisMaxConnections | int | `55` | Size of the Redis connection pool. This should be set to `jobRunBatchSize` plus some extra connections for the monitor, cancel jobs. |
 | config.resultTimeout | int | 3600 (1 hour) | How long to wait for result processing (retrieval and upload) before timing out, in seconds. This doubles as the timeout forcibly terminating result worker pods. |
 | config.sentry.enabled | bool | `false` | Set to true to enable the Sentry integration. |
 | config.sentry.tracesSampleRate | float | `0` | The percentage of requests that should be traced. This should be a float between 0 and 1 |
 | config.slack.enabled | bool | `false` | Set to true to enable the Slack integration. If true, the slack-webhook secret must be provided. |
-| config.tapService | string | `"bigquery"` | Name of the TAP service for which this BigQuery Kafka instance is managing queries. This must match the name of the TAP service for the corresponding query quota in the Gafaelfawr configuration. |
+| config.tapService | string | `"ppdb"` | Name of the TAP service for which this BigQuery Kafka instance is managing queries. This must match the name of the TAP service for the corresponding query quota in the Gafaelfawr configuration. |
+| fastWorker.affinity | object | `{}` | Affinity rules for the bigquery-kafka fast worker pods |
+| fastWorker.allowRootDebug | bool | `false` | Whether to allow containers to run as root. Set to true to allow use of debug containers to diagnose issues such as memory leaks. |
+| fastWorker.autoscaling.enabled | bool | `true` | Enable autoscaling of bigquery-kafka fast workers |
+| fastWorker.autoscaling.maxReplicas | int | `10` | Maximum number of bigquery-kafka fast worker pods. Each replica will open database connections up to the configured pool size and overflow limits, so make sure the combined connections are under the connection limit. |
+| fastWorker.autoscaling.minReplicas | int | `1` | Minimum number of bigquery-kafka fast worker pods |
+| fastWorker.autoscaling.targetCPUQuantity | string | `"750m"` | Target absolute CPU usage value of bigquery-kafka fast worker pods. |
+| fastWorker.nodeSelector | object | `{}` | Node selection rules for the bigquery-kafka fast worker pods |
+| fastWorker.podAnnotations | object | `{}` | Annotations for the bigquery-kafka fast worker pods |
+| fastWorker.replicaCount | int | `1` | Number of fast worker pods to start |
+| fastWorker.resources | object | See `values.yaml` | Resource limits and requests for the bigquery-kafka fast worker pods |
+| fastWorker.tolerations | list | Tolerate GKE arm64 taint | Tolerations for the bigquery-kafka fast worker pods |
 | frontend.affinity | object | `{}` | Affinity rules for the bigquery-kafka frontend pod |
 | frontend.debug.disablePymalloc | bool | `false` |  |
 | frontend.debug.enabled | bool | `false` | Set to true to allow containers to run as root and to create and mount a debug PVC. Useful ro run debug containers to diagnose issues such as memory leaks. |
@@ -65,19 +78,19 @@ BigQuery Kafka bridge
 | redis.config.secretName | string | `"bigquery-kafka"` | Name of secret containing Redis password |
 | redis.persistence.accessMode | string | `"ReadWriteOnce"` | Access mode of storage to request |
 | redis.persistence.enabled | bool | `true` | Whether to persist Redis storage. Setting this to false will use `emptyDir` and lose track of all queries on restart. Only use this for a test deployment. |
-| redis.persistence.size | string | `"100Mi"` | Amount of persistent storage to request |
+| redis.persistence.size | string | `"1Gi"` | Amount of persistent storage to request |
 | redis.persistence.storageClass | string | `nil` | Class of storage to request |
 | redis.persistence.volumeClaimName | string | `nil` | Use an existing PVC, not dynamic provisioning. If this is set, the size, storageClass, and accessMode settings are ignored. |
 | redis.resources | object | See `values.yaml` | Resource limits and requests for the Redis pod |
 | redis.tolerations | list | Tolerate GKE arm64 taint | Tolerations for the bigquery-kafka Redis pod |
-| resultWorker.affinity | object | `{}` | Affinity rules for the bigquery-kafka worker pods |
-| resultWorker.allowRootDebug | bool | `false` | Whether to allow containers to run as root. Set to true to allow use of debug containers to diagnose issues such as memory leaks. |
-| resultWorker.autoscaling.enabled | bool | `true` | Enable autoscaling of bigquery-kafka result workers |
-| resultWorker.autoscaling.maxReplicas | int | `10` | Maximum number of bigquery-kafka worker pods. Each replica will open database connections up to the configured pool size and overflow limits, so make sure the combined connections are under the postgres connection limit. |
-| resultWorker.autoscaling.minReplicas | int | `1` | Minimum number of bigquery-kafka worker pods |
-| resultWorker.autoscaling.targetCPUUtilizationPercentage | int | `75` | Target CPU utilization of bigquery-kafka worker pods. |
-| resultWorker.nodeSelector | object | `{}` | Node selection rules for the bigquery-kafka worker pods |
-| resultWorker.podAnnotations | object | `{}` | Annotations for the bigquery-kafka worker pods |
-| resultWorker.replicaCount | int | `1` | Number of result worker pods to start if autoscaling is disabled |
-| resultWorker.resources | object | See `values.yaml` | Resource limits and requests for the bigquery-kafka worker pods |
-| resultWorker.tolerations | list | Tolerate GKE arm64 taint | Tolerations for the bigquery-kafka worker pods |
+| slowWorker.affinity | object | `{}` | Affinity rules for the bigquery-kafka slow worker pods |
+| slowWorker.allowRootDebug | bool | `false` | Whether to allow containers to run as root. Set to true to allow use of debug containers to diagnose issues such as memory leaks. |
+| slowWorker.autoscaling.enabled | bool | `true` | Enable autoscaling of bigquery-kafka slow workers |
+| slowWorker.autoscaling.maxReplicas | int | `10` | Maximum number of bigquery-kafka slow worker pods. Each replica will open database connections up to the configured pool size and overflow limits, so make sure the combined connections are under the postgres connection limit. |
+| slowWorker.autoscaling.minReplicas | int | `1` | Minimum number of bigquery-kafka slow worker pods |
+| slowWorker.autoscaling.targetCPUQuantity | string | `"500m"` | Target absolute CPU usage value of bigquery-kafka slow worker pods. |
+| slowWorker.nodeSelector | object | `{}` | Node selection rules for the bigquery-kafka slow worker pods |
+| slowWorker.podAnnotations | object | `{}` | Annotations for the bigquery-kafka slow worker pods |
+| slowWorker.replicaCount | int | `1` | Number of slow worker pods to start if autoscaling is disabled |
+| slowWorker.resources | object | See `values.yaml` | Resource limits and requests for the bigquery-kafka slow worker pods |
+| slowWorker.tolerations | list | Tolerate GKE arm64 taint | Tolerations for the bigquery-kafka slow worker pods |

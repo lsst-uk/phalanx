@@ -5,6 +5,7 @@
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | appOfAppsName | string | `"app-of-apps"` | Name of the parent Argo CD app-of-apps that manages all the applications enabled for this environment |
+| applications.apdb-backups-gcp | bool | `false` | Enable the apdb-backups-gcp application |
 | applications.argo-workflows | bool | `false` | Enable the argo-workflows application |
 | applications.argocd | bool | `true` | Enable the Argo CD application. This must be enabled for all environments and is present here only because it makes parsing easier |
 | applications.atlantis | bool | `false` | Enable the atlantis application |
@@ -15,6 +16,7 @@
 | applications.cert-manager | bool | `true` | Enable the cert-manager application, required unless the environment makes separate arrangements to inject a current TLS certificate |
 | applications.checkerboard | bool | `false` | Enable the checkerboard application |
 | applications.cm-service | bool | `false` | Enable the cm-service application |
+| applications.conesearch | bool | `false` | Enable the conesearch application |
 | applications.consdbtap | bool | `false` | Enable the consdbtap application |
 | applications.control-system-test | bool | `false` | Enable the control-system-test application |
 | applications.csc-versions | bool | `false` | Enable the csc-versions application |
@@ -40,6 +42,7 @@
 | applications.jira-data-proxy | bool | `false` | Enable the jira-data-proxy application |
 | applications.keda | bool | `false` | Enable the keda application |
 | applications.livetap | bool | `false` | Enable the livetap application |
+| applications.log-explorer | bool | `false` | Enable the log-explorer application |
 | applications.love | bool | `false` | Enable the love control system application |
 | applications.mobu | bool | `false` | Enable the mobu application |
 | applications.mpsky | bool | `false` | Enable the mpsky application |
@@ -49,10 +52,13 @@
 | applications.noteburst | bool | `false` | Enable the noteburst application (required by times-square) |
 | applications.nublado | bool | `false` | Enable the nublado application (v3 of the Notebook Aspect) |
 | applications.nvr-control | bool | `false` | Enable the nvr-control application |
+| applications.obsforge | bool | `false` | Enable the obsforge application |
+| applications.obsforgetap | bool | `false` | Enable the obsforgetap application |
 | applications.obsloctap | bool | `false` | Enable the obsloctap application |
 | applications.obssys | bool | `false` | Enable the obssys control system application |
 | applications.onepassword-connect | bool | `false` | Enable the onepassword-connect application |
 | applications.ook | bool | `false` | Enable the ook application |
+| applications.opensearch-operator | bool | `false` | Enable the opensearch-operator application |
 | applications.plot-navigator | bool | `false` | Enable the plot-navigator application |
 | applications.portal | bool | `false` | Enable the portal application |
 | applications.postgres | bool | `false` | Enable the in-cluster PostgreSQL server. Use of this server is discouraged in favor of using infrastructure SQL, but will remain supported for use cases such as minikube test deployments. |
@@ -80,6 +86,8 @@
 | applications.semaphore | bool | `false` | Enable the semaphore application |
 | applications.sia | bool | `false` | Enable the sia over butler application |
 | applications.simonyitel | bool | `false` | Enable the simonyitel control system application |
+| applications.skyviewer | bool | `false` | Enable the skyviewer application |
+| applications.so-evening-tailgate | bool | `false` | Enable the so-evening-tailgate application |
 | applications.squarebot | bool | `false` | Enable the squarebot application |
 | applications.squareone | bool | `false` | Enable the squareone application |
 | applications.ssotap | bool | `false` | Enable the ssotap application |
@@ -108,11 +116,14 @@
 | controlSystem.siteTag | string | None, must be set | Site tag for the control system deployment |
 | controlSystem.topicName | string | `"sal"` | Topic name tag for the control system deployment |
 | defaultComputeClass | string | `nil` | Whether to deploy workloads using Autopilot or Standard mode. If this is null, the workloads will use the compute class that corresponds to the cluster type. Here's an [example of setting an Autopilot compute class](https://cloud.google.com/kubernetes-engine/docs/how-to/autopilot-classes-standard-clusters#built-in-class) |
+| description | string | None, must be set | Description of the environment |
 | fqdn | string | None, must be set | Fully-qualified domain name where the environment is running |
 | name | string | None, must be set | Name of the environment |
 | namespaceLabels | object | `{}` | Add labels for application namespaces |
 | repoUrl | string | `"https://github.com/lsst-sqre/phalanx.git"` | URL of the repository for all applications |
 | revisions | object | `{}` | Mapping of applications to branches to run some applications from revisions other than main |
 | targetRevision | string | `"main"` | Revision of repository to use for all applications unless overridden by branches below |
+| title | string | Value of `name` | Short human-readable title for the environment |
+| titleLong | string | Value of `title` | Longer one-line human-readable title for the environment |
 | vaultPathPrefix | string | None, must be set | Prefix for Vault secrets for this environment |
 | vaultUrl | string | `"https://vault.lsst.cloud/"` | URL of Vault server for this environment |
