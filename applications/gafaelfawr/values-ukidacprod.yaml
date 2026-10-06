@@ -8,7 +8,7 @@ config:
   oidcServer:
     enabled: true
 
-  updateSchema: true
+  updateSchema: false
   
   oidc:
     clientId: "rsp-test"
