@@ -7,6 +7,7 @@ rubintv:
   frontend:
     debug: true
     image:
+      repository: ghcr.io/lsst-ts/rubintv-v3
       tag: deploy
       pullPolicy: Always
     env:
@@ -19,11 +20,15 @@ rubintv:
     - name: RAPID_ANALYSIS_LOCATION
       value: "USDF"
     - name: DDV_DEPLOY_BRANCH
-      value: &dbE "deploy-slac"
+      value: "main"
     - name: DDV_BASE_HREF
       value: "/rubintv/ddv/"
     - name: DDV_CLIENT_WS_ADDRESS
       value: "rubintv/ws/ddv"
+    - name: RUBINTV_CONSDB_URL
+      value: "http://consdb-pq.consdb:8080/consdb/query"
+    - name: RUBINTV_GUIDE_INSTRUMENTS
+      value: '["lsstcam","latiss"]'
     pvcMountpoint:
     - name: rubintv-scratch
       persistentVolumeClaim:
@@ -58,7 +63,7 @@ rubintv:
     - name: PGUSER
       value: "rubin"
     - name: DEPLOY_BRANCH
-      value: *dbE
+      value: "deploy-slac"
     - name: RA_PULL_DIRECTORIES
       value: "rubintv_analysis_service"
     pvcMountpoint:

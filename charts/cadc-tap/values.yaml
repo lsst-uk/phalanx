@@ -70,13 +70,13 @@ config:
 
     image:
       # -- TAP image to use
-      repository: "ghcr.io/lsst-sqre/tap-postgres-service"
+      repository: "ghcr.io/lsst-sqre/lsst-tap-service"
 
       # -- Pull policy for the TAP image
       pullPolicy: "IfNotPresent"
 
-      # -- Tag of TAP image to use
-      tag: "1.26.0"
+      # -- Tag of TAP image to use.
+      tag: "3.28.0"
 
   qserv:
     # -- QServ hostname:port to connect to
@@ -105,9 +105,10 @@ config:
       pullPolicy: "IfNotPresent"
 
       # -- Tag of TAP image to use
-      tag: "3.25.0"
+      tag: "3.28.0"
 
-    # -- Whether the Qserv database is password protected
+    # -- Whether the Qserv database is password protected. Only used for
+    # direct-to-Qserv execution (`config.kafka.enabled: false`).
     # @default -- false
     passwordEnabled: false
 
@@ -123,6 +124,12 @@ config:
     # -- Schema name for table mappings (optional)
     schema: ""
 
+    # -- Table name mappings for query rewriting (as visible:backend pairs).
+    # There is no built-in default mapping for any table, so
+    # every table queryable through this schema must have an entry here.
+    # Example: ["ppdb.mpc_orbits:`ppdb-dev-5c07.ppdb_public.mpc_orbits`"]
+    tableMappings: []
+
     image:
       # -- TAP image to use
       repository: "ghcr.io/lsst-sqre/lsst-tap-service"
@@ -131,7 +138,7 @@ config:
       pullPolicy: "IfNotPresent"
 
       # -- Tag of TAP image to use
-      tag: "3.25.0"
+      tag: "3.28.0"
 
   # -- Address to a MySQL database containing TAP schema data
   tapSchemaAddress: "cadc-tap-schema-db:3306"
@@ -191,7 +198,9 @@ config:
     # @default -- "tap"
     consumerGroupId: "tap"
 
-    # -- Whether kafka is enabled
+    # -- Whether kafka is enabled. For the `qserv` backend this also selects the
+    # execution mode: `true` dispatches queries to qserv-kafka, `false` runs the
+    # legacy direct-to-Qserv mode.
     enabled: false
 
   # -- Output limit value for TAP queries advertised in capabilities.
@@ -209,7 +218,7 @@ config:
   # -- Maximum execution duration for TAP queries in seconds.
   # Also used for sizing the signed result upload URL's expiration
   # Leave empty to use the default (14400, 4 hours).
-  maxExecutionDuration: ""
+  maxExecutionDuration: "43200"
 
   # -- Maximum UWS job destruction time in seconds.
   # Leave empty to use the default (604800, 1 week).
@@ -300,7 +309,12 @@ tapSchema:
     # -- Maximum active connections (maxIdle will be set to this value)
     maxActive: 2
 
-  # -- Connection pool configuration for jdbc/tapuser (query planning and tap_upload)
+  # -- Connection pool configuration for jdbc/tapschemauser
+  tapschemauser:
+    # -- Maximum active connections (maxIdle will be set to this value)
+    maxActive: 3
+
+  # -- Connection pool configuration for jdbc/tapuser
   tapuser:
     # -- Maximum active connections (maxIdle will be set to this value)
     maxActive: 3
@@ -388,7 +402,7 @@ uws:
     pullPolicy: "IfNotPresent"
 
     # -- Tag of UWS database image to use
-    tag: "3.25.0"
+    tag: "3.27.0"
 
   # -- Resource limits and requests for the UWS database pod
   # @default -- See `values.yaml`

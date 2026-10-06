@@ -3,6 +3,10 @@
 # Override strimzi-kafka subchart configuration.
 strimzi-kafka: {}
 
+gafaelfawrServiceToken:
+  # -- Whether to create a Gafaelfawr service token for Sasquatch
+  enabled: false
+
 alert-brokers:
   # -- Whether to enable the alert-brokers subchart
   enabled: false
@@ -188,7 +192,11 @@ influxdb-enterprise-standby:
 influxdb-enterprise-active:
   # -- Whether to enable influxdb-enterprise-active
   enabled: false
-  #
+
+influxdb-users:
+  # -- Whether to enable management of additional InfluxDB users
+  enabled: false
+
 kafka-connect-manager:
   # -- Whether to enable the Kafka Connect Manager
   enabled: false
@@ -211,10 +219,10 @@ chronograf:
 
   image:
     # -- Docker image to use for Chronograf
-    repository: "quay.io/influxdb/chronograf"
+    repository: "docker.io/library/chronograf"
 
     # -- Docker tag to use for Chronograf
-    tag: 1.10.9
+    tag: 1.11.5
 
   updateStrategy:
     # -- Deployment strategy, use recreate with persistence enabled
@@ -274,7 +282,7 @@ kapacitor:
     # -- Docker image to use for Kapacitor
     repository: docker.io/library/kapacitor
     # -- Tag to use for Kapacitor
-    tag: 1.8.6
+    tag: 1.8.7
     # -- Pull policy for Kapacitor
     pullPolicy: "IfNotPresent"
 
@@ -368,6 +376,10 @@ prompt-processing:
 
 control-system:
   # -- Whether to enable the control-system subchart
+  enabled: false
+
+obsforge:
+  # -- Whether to enable the obsforge subchart
   enabled: false
 
 obsloctap:

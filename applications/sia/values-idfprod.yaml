@@ -1,13 +1,9 @@
 replicaCount: 4
 
 config:
-  datasets:
-    - "dp02"
-    - "dp1"
-    - "dp2"
   metrics:
     enabled: true
-
   sentry:
     enabled: true
     tracesSampleRate: 0.1
+  slackAlerts: true

@@ -1,4 +1,4 @@
-# These four settings should be set in each environment values-*.yaml file.
+# Settings for each environment.
 
 # -- Name of the environment
 # @default -- None, must be set
@@ -7,6 +7,18 @@ name: ""
 # -- Fully-qualified domain name where the environment is running
 # @default -- None, must be set
 fqdn: ""
+
+# -- Short human-readable title for the environment
+# @default -- Value of `name`
+title: null
+
+# -- Longer one-line human-readable title for the environment
+# @default -- Value of `title`
+titleLong: null
+
+# -- Description of the environment
+# @default -- None, must be set
+description: ""
 
 # -- Name of the parent Argo CD app-of-apps that manages all the applications
 # enabled for this environment
@@ -17,8 +29,14 @@ appOfAppsName: "app-of-apps"
 # @default -- None, must be set
 butlerServerRepositories: {}
 
+# -- Whether to deploy workloads using Autopilot or Standard mode. If this is
+# null, the workloads will use the compute class that corresponds to the
+# cluster type. Here's an [example of setting an Autopilot compute
+# class](https://cloud.google.com/kubernetes-engine/docs/how-to/autopilot-classes-standard-clusters#built-in-class)
+defaultComputeClass: null
+
 # -- URL of the repository for all applications
-repoUrl: https://github.com/lsst-sqre/phalanx.git
+repoUrl: "https://github.com/lsst-sqre/phalanx.git"
 
 # -- Revision of repository to use for all applications unless overridden by
 # branches below
@@ -31,13 +49,10 @@ vaultUrl: "https://vault.lsst.cloud/"
 # @default -- None, must be set
 vaultPathPrefix: ""
 
-# -- Whether to deploy workloads using Autopilot or Standard mode. If this is
-# null, the workloads will use the compute class that corresponds to the
-# cluster type. Here's an [example of setting an Autopilot compute
-# class](https://cloud.google.com/kubernetes-engine/docs/how-to/autopilot-classes-standard-clusters#built-in-class)
-defaultComputeClass: null
-
 applications:
+  # -- Enable the apdb-backups-gcp application
+  apdb-backups-gcp: false
+
   # -- Enable the argo-workflows application
   argo-workflows: false
 
@@ -125,6 +140,9 @@ applications:
   # -- Enable the hoverdrive application
   hoverdrive: false
 
+  # -- Enable the log-explorer application
+  log-explorer: false
+
   # -- Enable the muster application
   muster: false
 
@@ -133,6 +151,12 @@ applications:
 
   # -- Enable the obsforgetap application
   obsforgetap: false
+
+  # -- Enable the opensearch-cluster application
+  opensearch-cluster: false
+
+  # -- Enable the opensearch-operator application
+  opensearch-operator: false
 
   # -- Enable the prompt-pub application
   prompt-pub: false
@@ -146,6 +170,12 @@ applications:
   # -- Enable the Repertoire application. This provides service discovery for
   # many other Phalanx applications, all of which assume that it is running.
   repertoire: true
+
+  # -- Enable the river application
+  river: false
+
+  # -- Enable the river-next application
+  river-next: false
 
   # -- Enable the rubin-rag application
   rubin-rag: false
@@ -269,6 +299,7 @@ applications:
   # -- Enable the schedview-static-pages application
   schedview-static-pages: false
 
+
   # -- Enable the sia over butler application
   sia: false
 
@@ -277,6 +308,9 @@ applications:
 
   # -- Enable the skyviewer application
   skyviewer: false
+
+  # -- Enable the so-evening-tailgate application
+  so-evening-tailgate: false
 
   # -- Enable the ssotap application
   ssotap: false

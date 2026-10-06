@@ -257,7 +257,13 @@ watcher:
   resources:
     limits:
       cpu: 3
-      memory: 2Gi
+      memory: 3Gi
     requests:
-      cpu: 240m
-      memory: 1Gi
+      cpu: 800m
+      memory: 2Gi
+  nfsMountpoint:
+  - name: obs-env
+    containerPath: /net/obs-env
+    readOnly: true
+    server: nfs-obsenv.ls.lsst.org
+    serverPath: /obs-env
