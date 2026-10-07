@@ -1,7 +1,7 @@
 cadc-tap:
   tapSchema:
     type: "external"
-    database: "tap_prod"
+    database: "tap"
     username: "tap"
     useVaultPassword: true
     external:
