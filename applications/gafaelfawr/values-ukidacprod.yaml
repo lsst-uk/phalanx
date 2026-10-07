@@ -9,50 +9,50 @@ config:
     enabled: true
 
   updateSchema: true
-  
-  oidc:
-    clientId: "rsp-test"
-    audience: "rsp-test"
-    loginUrl: "https://aai-test.lsst.ac.uk/realms/lsst/protocol/openid-connect/auth"
-    tokenUrl: "https://aai-test.lsst.ac.uk/realms/lsst/protocol/openid-connect/token"
-    issuer: "https://aai-test.lsst.ac.uk/realms/lsst"
-    scopes:
-      - "openid"
-    usernameClaim: "preferred_username"
 
-  ldap:
-    url: "ldap://aai-test.lsst.ac.uk"
-    userDn: "cn=admin,dc=test,dc=lsst,dc=ac,dc=uk"
-    userBaseDn: "ou=users,dc=test,dc=lsst,dc=ac,dc=uk"
-    uidAttr: "uidNumber"
-    gidAttr: "gidNumber"
-    groupBaseDn: "ou=groups,dc=test,dc=lsst,dc=ac,dc=uk"
-    groupMemberAttr: "memberUid"
-    groupSearchByDn: false
+  github:
+    clientId: "10172b4db1b67ee31620"
 
+
+# Support generating user metadata for CADC authentication code.
+#  cadcBaseUuid: "4cb5f948-aad9-466c-837b-5eae565b0a77"
+
+# Allow access by GitHub team.
   groupMapping:
-    "admin:oidc":
-      - github:
-          organization: "lsp-uk"
-          team: "dev"
-    "admin:token":
-      - github:
-          organization: "lsp-uk"
-          team: "dev"
     "admin:userinfo":
-      - "rsp"
+      - github:
+          organization: "lsp-uk"
+          team: "dev"
     "exec:admin":
-      - "rsp"
+      - github:
+          organization: "lsp-uk"
+          team: "dev"
     "exec:internal-tools":
-      - "users"
-      - "rsp"
+      - github:
+          organization: "lsp-uk"
+          team: "dev"
     "exec:notebook":
-      - "rsp"
+      - github:
+          organization: "lsp-uk"
+          team: "dev"
     "exec:portal":
-      - "rsp"
+      - github:
+          organization: "lsp-uk"
+          team: "dev"
     "exec:portal-admin":
-      - "rsp"
+      - github:
+          organization: "lsp-uk"
+          team: "dev"
     "read:image":
-      - "rsp"
+      - github:
+          organization: "lsp-uk"
+          team: "dev"
     "read:tap":
-      - "rsp"
+      - github:
+          organization: "lsp-uk"
+          team: "dev"
+
+  initialAdmins:
+    - "gpfrancis"
+    - "etoledor"
+    - "davedavemckay"
