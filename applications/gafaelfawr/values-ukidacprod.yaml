@@ -52,7 +52,3 @@ config:
           organization: "lsp-uk"
           team: "dev"
 
-  initialAdmins:
-    - "gpfrancis"
-    - "aibsen"
-    - "davedavemckay"
