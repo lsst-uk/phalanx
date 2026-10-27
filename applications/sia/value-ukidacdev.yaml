@@ -1,0 +1,8 @@
+replicaCount: 4
+
+config:
+  metrics:
+    enabled: true
+  sentry:
+    enabled: false
+  slackAlerts: true
