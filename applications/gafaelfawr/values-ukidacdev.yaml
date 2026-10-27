@@ -3,6 +3,7 @@ redis:
     enabled: false
 
 config:
+  updateSchema: true
   internalDatabase: true
 
   oidcServer:
