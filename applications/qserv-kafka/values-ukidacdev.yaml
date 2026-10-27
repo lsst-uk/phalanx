@@ -10,3 +10,6 @@ resultWorker:
   allowRootDebug: true
   autoscaling:
     maxReplicas: 50
+redis:
+  persistence:
+    enabled: false
