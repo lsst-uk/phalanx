@@ -1,3 +1,4 @@
 config:
   metrics:
     enabled: true
+  databaseUrl: "postgresql://192.41.122.236:5432/wobbly"
