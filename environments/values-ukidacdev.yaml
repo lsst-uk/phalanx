@@ -22,8 +22,11 @@ applications:
   repertoire: true
   sasquatch: true
   semaphore: true
+  sia: true
   squareone: true
   strimzi: true
   strimzi-access-operator: true
   strimzi-registry-operator: true
   tap: true
+  vo-cutouts: true
+  wobbly: true
