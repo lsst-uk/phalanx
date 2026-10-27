@@ -192,7 +192,11 @@ influxdb-enterprise-standby:
 influxdb-enterprise-active:
   # -- Whether to enable influxdb-enterprise-active
   enabled: false
-  #
+
+influxdb-users:
+  # -- Whether to enable management of additional InfluxDB users
+  enabled: false
+
 kafka-connect-manager:
   # -- Whether to enable the Kafka Connect Manager
   enabled: false
@@ -215,10 +219,10 @@ chronograf:
 
   image:
     # -- Docker image to use for Chronograf
-    repository: "quay.io/influxdb/chronograf"
+    repository: "docker.io/library/chronograf"
 
     # -- Docker tag to use for Chronograf
-    tag: 1.10.9
+    tag: 1.11.5
 
   updateStrategy:
     # -- Deployment strategy, use recreate with persistence enabled

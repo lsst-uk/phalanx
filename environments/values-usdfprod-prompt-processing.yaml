@@ -18,8 +18,10 @@ applications:
 
   apdb-backups-gcp: true
   butler-writer-service: true
+  ephemcache: true
   gafaelfawr: true
   keda: true
+  mpsky: true
   next-visit-fan-out: true
   prompt-kafka: true
   prompt-keda-latiss: false

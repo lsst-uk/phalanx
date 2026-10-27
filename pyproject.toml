@@ -14,6 +14,7 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.15",
     "Intended Audience :: Developers",
     "Operating System :: POSIX",
     "Private :: Do Not Upload",
@@ -57,22 +58,22 @@ dev = [
     "pytest-cov",
     "pytest-sugar",
     "pytest-mock",
+    "uv",
 ]
 docs = [
     "autodoc-pydantic",
-    "documenteer[guide]>=2",
+    "documenteer[guide]==2.5.0b4",
     "sphinx-click",
-    "sphinx-diagrams",
+    "diagrams",
     "sphinx-jinja",
 ]
 lint = [
-    "prek!=0.4.2",  # https://github.com/j178/prek/issues/2127
+    "prek>0.4.2",
     "ruff>=0.15",
-    "uv",
 ]
-tox = [
-    "tox>=4.24",
-    "tox-uv-bare>=1.25",
+nox = [
+    "nox",
+    "nox-uv",
 ]
 typing = [
     "mypy",
@@ -131,7 +132,6 @@ warn_unused_ignores = true
 init_forbid_extra = true
 init_typed = true
 warn_required_dynamic_aliases = true
-warn_untyped_fields = true
 
 [tool.pytest.ini_options]
 # The python_files setting is not for test detection (pytest will pick up any

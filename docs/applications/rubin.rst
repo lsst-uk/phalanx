@@ -27,6 +27,7 @@ Argo CD project: ``rubin``
    ppdb-replication/index
    production-tools/index
    rapid-analysis/index
+   river-next/index
    rubintv/index
    rubintv-dev/index
    s3proxy/index
@@ -35,3 +36,4 @@ Argo CD project: ``rubin``
    skyviewer/index
    so-evening-tailgate/index
    weatherbroadcaster/index
+   weathernbeats/index

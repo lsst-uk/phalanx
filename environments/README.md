@@ -41,7 +41,6 @@
 | applications.ingress-nginx | bool | `true` | Enable the ingress-nginx application. This is required for all environments, but is still configurable because currently USDF uses an unsupported configuration with ingress-nginx deployed in a different cluster. |
 | applications.jira-data-proxy | bool | `false` | Enable the jira-data-proxy application |
 | applications.keda | bool | `false` | Enable the keda application |
-| applications.livetap | bool | `false` | Enable the livetap application |
 | applications.log-explorer | bool | `false` | Enable the log-explorer application |
 | applications.love | bool | `false` | Enable the love control system application |
 | applications.mobu | bool | `false` | Enable the mobu application |
@@ -58,6 +57,7 @@
 | applications.obssys | bool | `false` | Enable the obssys control system application |
 | applications.onepassword-connect | bool | `false` | Enable the onepassword-connect application |
 | applications.ook | bool | `false` | Enable the ook application |
+| applications.opensearch-cluster | bool | `false` | Enable the opensearch-cluster application |
 | applications.opensearch-operator | bool | `false` | Enable the opensearch-operator application |
 | applications.plot-navigator | bool | `false` | Enable the plot-navigator application |
 | applications.portal | bool | `false` | Enable the portal application |
@@ -73,6 +73,7 @@
 | applications.prompt-redis | bool | `false` | Enable the prompt-redis application |
 | applications.qserv-kafka | bool | `false` | Enable the qserv-kafka application |
 | applications.repertoire | bool | `true` | Enable the Repertoire application. This provides service discovery for many other Phalanx applications, all of which assume that it is running. |
+| applications.river-next | bool | `false` | Enable the river-next application |
 | applications.rubin-rag | bool | `false` | Enable the rubin-rag application |
 | applications.rubin-too-producer | bool | `false` | Enable the rubin-too-producer application |
 | applications.rubintv | bool | `false` | Enable the rubintv application |
@@ -105,6 +106,7 @@
 | applications.vault-secrets-operator | bool | `true` | Enable the vault-secrets-operator application. This is required for all environments. |
 | applications.vo-cutouts | bool | `false` | Enable the vo-cutouts application |
 | applications.weatherbroadcaster | bool | `false` | Enable the weatherbroadcaster application |
+| applications.weathernbeats | bool | `false` | Enable the weathernbeats application |
 | applications.wobbly | bool | `false` | Enable the wobbly application, required if the environment will be running any Safir-based UWS services |
 | butlerServerRepositories | object | None, must be set | Butler repositories that can be accessed via Butler server, as a dictionary from repository label to URI. |
 | controlSystem.appNamespace | string | None, must be set | Application namespacce for the control system deployment |

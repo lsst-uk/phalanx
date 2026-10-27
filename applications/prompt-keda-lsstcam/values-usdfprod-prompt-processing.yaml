@@ -1,7 +1,7 @@
 prompt-keda:
   image:
     pullPolicy: IfNotPresent
-    tag: 15.2.0
+    tag: 16.1.0
 
   alerts:
     username: prompt-alert
@@ -21,7 +21,7 @@ prompt-keda:
         # Dense dithered star field calibrations
         - survey: BLOCK-365
           pipelines: &std-main-pipelines
-          - ${PROMPT_PROCESSING_DIR}/pipelines/LSSTCam/ApPipe.yaml
+          - ${PROMPT_PROCESSING_DIR}/pipelines/LSSTCam/ApPipe-noAssociation.yaml
           - ${PROMPT_PROCESSING_DIR}/pipelines/LSSTCam/SingleFrame.yaml
           - ${PROMPT_PROCESSING_DIR}/pipelines/LSSTCam/Isr.yaml
         # FBS Pre-Operations Survey
@@ -62,9 +62,9 @@ prompt-keda:
         # Don't preprocess anything unknown
         - {pipelines: []}
     preloadPadding: 50.1
-    centralRepo: s3://rubin-summit-users
-    readRepo: s3://rubin-summit-users/butler-readonly.yaml
-    localRepoConfig: s3://rubin-summit-users/config/prompt_processing.yaml
+    centralRepo: s3://rubin-summit-users/butler_future.yaml
+    readRepo: s3://rubin-summit-users/butler_readonly_future.yaml
+    localRepoConfig: s3://rubin-summit-users/config/prompt_processing_future.yaml
     exportTypes: |-
       - ".*_(config|metadata|log)"
       - "packages"
@@ -99,7 +99,7 @@ prompt-keda:
 
   raw_microservice: http://172.24.5.158:8080/presence
 
-  mpSky_service: http://usdf-mpsky.sdf.slac.stanford.edu/ephemerides/
+  mpSky_service: http://mpsky.mpsky/ephemerides/
 
   iers_cache: s3://rubin-summit-users/iers-cache.zip
 

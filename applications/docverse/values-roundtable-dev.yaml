@@ -7,12 +7,17 @@ config:
     - "jonathansick"
   keeperSync:
     enabled: true
+    pushHotPathEnabled: true
   maintenance:
     enabled: true
     gitRefAuditEnabled: true
   sentry:
     enabled: true
   metrics:
+    enabled: true
+  memoryDiagnostics:
+    # Sampler stays on; tracemalloc was only for the lsst-sqre/docverse#753
+    # dev runs, all recorded on lsst-sqre/docverse#751.
     enabled: true
 
 cloudsql:

@@ -14,15 +14,43 @@ cadc-tap:
       enabled: true
       rules: "ivoa.ObsCore:access_url"
 
+    gcsUploadBucket: "rubin-tap-uploads-int-us"
+    gcsUploadWorkloadIdentity: true
+
     bigquery:
       project: "ppdb-int-6c62"
       dataset: "ppdb_public"
       schema: "ppdb"
 
+      upload:
+        project: "science-platform-int-dc5d"
+
+      geoPointTables:
+        - "ppdb.DiaObject"
+        - "ppdb.DiaSource"
+        - "ppdb.DiaForcedSource"
+        - "dp2_prompt.DiaObject"
+        - "dp2_prompt.DiaSource"
+        - "dp2_prompt.ForcedSourceOnDiaObject"
+
       tableMappings:
         - "ppdb.DiaObject:`ppdb-int-6c62.ppdb_public.DiaObject`"
         - "ppdb.DiaSource:`ppdb-int-6c62.ppdb_public.DiaSource`"
         - "ppdb.DiaForcedSource:`ppdb-int-6c62.ppdb_public.DiaForcedSource`"
+        - "ppdb.SSObservation:`ppdb-int-6c62.ppdb_public.SSObservation`"
+        - "ppdb.NearbySSO:`ppdb-int-6c62.ppdb_public.NearbySSO`"
+        - "ppdb.SSObject:`ppdb-int-6c62.ppdb_public.SSObject`"
+        - "ppdb.mpc_orbits:`ppdb-int-6c62.ppdb_public.mpc_orbits`"
+        - "ppdb.current_identifications:`ppdb-int-6c62.ppdb_public.current_identifications`"
+        - "ppdb.numbered_identifications:`ppdb-int-6c62.ppdb_public.numbered_identifications`"
+        - "dp2_prompt.DiaObject:`ppdb-int-6c62.dp2_prompt.DiaObject`"
+        - "dp2_prompt.DiaSource:`ppdb-int-6c62.dp2_prompt.DiaSource`"
+        - "dp2_prompt.ForcedSourceOnDiaObject:`ppdb-int-6c62.dp2_prompt.ForcedSourceOnDiaObject`"
+        - "dp2_prompt.SSObject:`ppdb-int-6c62.dp2_prompt.SSObject`"
+        - "dp2_prompt.SSSource:`ppdb-int-6c62.dp2_prompt.SSSource`"
+        - "dp2_prompt.mpc_orbits:`ppdb-int-6c62.dp2_prompt.mpc_orbits`"
+        - "dp2_prompt.current_identifications:`ppdb-int-6c62.dp2_prompt.current_identifications`"
+        - "dp2_prompt.numbered_identifications:`ppdb-int-6c62.dp2_prompt.numbered_identifications`"
 
   cloudsql:
     enabled: true

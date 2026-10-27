@@ -115,8 +115,24 @@ spec:
               value: "95.04, -25.0 EQ_J2000"
             - name: PROPS_OP_hips_defHipsSources_label
               value: "Rubin Featured"
+            - name: PROPS_OP_dataServiceOptions_enumConfig_columnNames_0
+              value: "refBand"
+            - name: PROPS_OP_dataServiceOptions_enumConfig_columnNames_1
+              value: "lsst_band"
             - name: PROPS_OP_hips_adhocMocSource_label
               value: "Rubin Featured MOC"
+            - name: PROPS_OP_dataServiceOptions_enumConfig_order_0
+              value: "u"
+            - name: PROPS_OP_dataServiceOptions_enumConfig_order_1
+              value: "g"
+            - name: PROPS_OP_dataServiceOptions_enumConfig_order_2
+              value: "r"
+            - name: PROPS_OP_dataServiceOptions_enumConfig_order_3
+              value: "i"
+            - name: PROPS_OP_dataServiceOptions_enumConfig_order_4
+              value: "z"
+            - name: PROPS_OP_dataServiceOptions_enumConfig_order_5
+              value: "y"
             - name: PROPS_inventory.serverURLAry
               value: "[\"https://raw.githubusercontent.com/lsst-sqre/portal-config/refs/heads/main/dce-searchPage-idf.xml\"]"
             - name: PROPS_uws.history.svcs
@@ -210,17 +226,6 @@ spec:
                                "label": "LSST DP0.3 SSO",
                                "serviceId": "RubinDp03SSO",
                                "value": "{{ .Values.global.baseUrl }}/api/{{ .Values.config.ssotap}}",
-                               "hipsUrl": "{{ .Values.global.baseUrl }}/api/hips/images/color_gri",
-                               "centerWP": "0;0;ECL",
-                               "fovDeg": 10
-                            }
-                            {{- end }}
-                            {{- if .Values.config.livetap }}
-                            ,
-                            {
-                               "label": "LSST Live ObsCore",
-                               "serviceId": "RubinLiveObsCore",
-                               "value": "{{ .Values.global.baseUrl }}/api/{{ .Values.config.livetap }}",
                                "hipsUrl": "{{ .Values.global.baseUrl }}/api/hips/images/color_gri",
                                "centerWP": "0;0;ECL",
                                "fovDeg": 10

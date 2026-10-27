@@ -152,6 +152,9 @@ applications:
   # -- Enable the obsforgetap application
   obsforgetap: false
 
+  # -- Enable the opensearch-cluster application
+  opensearch-cluster: false
+
   # -- Enable the opensearch-operator application
   opensearch-operator: false
 
@@ -167,6 +170,10 @@ applications:
   # -- Enable the Repertoire application. This provides service discovery for
   # many other Phalanx applications, all of which assume that it is running.
   repertoire: true
+
+
+  # -- Enable the river-next application
+  river-next: false
 
   # -- Enable the rubin-rag application
   rubin-rag: false
@@ -194,9 +201,6 @@ applications:
 
   # -- Enable the keda application
   keda: false
-
-  # -- Enable the livetap application
-  livetap: false
 
   # -- Enable the love control system application
   love: false
@@ -290,6 +294,7 @@ applications:
   # -- Enable the schedview-static-pages application
   schedview-static-pages: false
 
+
   # -- Enable the sia over butler application
   sia: false
 
@@ -362,6 +367,9 @@ applications:
 
   # -- Enable the vo-cutouts application
   vo-cutouts: false
+
+  # -- Enable the weathernbeats application
+  weathernbeats: false
 
   # -- Enable the wobbly application, required if the environment will be
   # running any Safir-based UWS services

@@ -39,6 +39,13 @@ Nightlydigest logging and reporting service
 | nightlydigest-backend.image.tag | int | `nil` | The cycle revision to add to the image tag. |
 | nightlydigest-backend.namespace | string | `"nightlydigest"` | The overall namespace for the application. |
 | nightlydigest-backend.nodeSelector | object | `{}` | Node selection rules applied to the pod. |
+| nightlydigest-backend.producer | object | `{"enabled":false,"gcpBucketName":"default","gcpProjectId":"default","lookbackDays":7,"restartPolicy":"Never","schedule":"0 * * * *"}` | Configuration for the Nightly Digest Producer component. |
+| nightlydigest-backend.producer.enabled | bool | `false` | If the Nightly Digest Producer component should be enabled. |
+| nightlydigest-backend.producer.gcpBucketName | string | `"default"` | GCP bucket name for the Nightly Digest Producer component. |
+| nightlydigest-backend.producer.gcpProjectId | string | `"default"` | GCP project ID for the Nightly Digest Producer component. |
+| nightlydigest-backend.producer.lookbackDays | int | `7` | The amount of days to include in the lookback window |
+| nightlydigest-backend.producer.restartPolicy | string | `"Never"` | The cron job restart policy type |
+| nightlydigest-backend.producer.schedule | string | `"0 * * * *"` | The cron job schedule in cron format |
 | nightlydigest-backend.replicas | int | `1` | The number of replicas for the backend deployment. |
 | nightlydigest-backend.resources | object | `{}` | Resource specifications applied to the pod. |
 | nightlydigest-backend.tolerations | list | `[]` | Toleration specifications applied to the pod. |
@@ -46,7 +53,7 @@ Nightlydigest logging and reporting service
 | nightlydigest-nginx.affinity | object | `{}` | Affinity rules for the NGINX pod |
 | nightlydigest-nginx.image.pullPolicy | string | `"IfNotPresent"` | The pull policy on the NGINX image |
 | nightlydigest-nginx.image.repository | string | `"nginx"` | The NGINX image to use |
-| nightlydigest-nginx.image.tag | string | `"1.31.6"` | The tag to use for the NGINX image |
+| nightlydigest-nginx.image.tag | string | `"1.31.8"` | The tag to use for the NGINX image |
 | nightlydigest-nginx.imagePullSecrets | list | `[]` | The list of pull secrets needed for the images. If this section is used, each object listed can have the following attributes defined: _name_ (The label identifying the pull-secret to use) |
 | nightlydigest-nginx.ingress.annotations | object | `{}` | Annotations for the NGINX ingress |
 | nightlydigest-nginx.ingress.className | string | `"nginx"` | Assign the Ingress class name |

@@ -27,15 +27,10 @@ Administrators operate infrastructure, manage secrets, and are involved in the d
 
    upgrade-windows
    sync-argo-cd
-   add-new-secret
-   update-a-secret
-   sync-secrets
-   audit-secrets
-   update-pull-secret
-   migrating-secrets
+   secrets/index
    application-branch
    set-quotas
-   op-run-phalanx-cli
+   data-release
 
 .. toctree::
    :caption: Troubleshooting

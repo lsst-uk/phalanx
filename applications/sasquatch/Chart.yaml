@@ -29,6 +29,9 @@ dependencies:
     alias: influxdb-enterprise-active
     condition: influxdb-enterprise-active.enabled
     version: 1.0.0
+  - name: influxdb-users
+    condition: influxdb-users.enabled
+    version: 1.0.0
   - name: kafka-connect-manager
     alias: kafka-connect-manager
     condition: kafka-connect-manager.enabled
@@ -123,7 +126,7 @@ dependencies:
     repository: oci://ghcr.io/trickstercache/charts
   - name: redis
     condition: redis.enabled
-    version: 1.2.1
+    version: 1.2.2
     repository: "https://lsst-sqre.github.io/charts/"
   - name: alert-brokers
     condition: alert-brokers.enabled

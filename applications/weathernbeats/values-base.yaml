@@ -1,0 +1,6 @@
+config:
+  lsstSite: "base"
+
+efdCredentials:
+  containerPath: "/etc/weathernbeats/efd"
+  secretFilename: ".efdauth.json"

@@ -2,22 +2,22 @@ name: CI
 
 env:
   # Version of Argo CD to use for the installer.
-  ARGO_CD_VERSION: "3.0.6"
+  ARGO_CD_VERSION: "3.5.6"
 
   # Version of helm to use for linting.
-  HELM_VERSION: "v4.3.0"
+  HELM_VERSION: "v4.3.1"
 
   # Version of helm-docs to use for linting.
   HELM_DOCS_VERSION: "1.14.2"
 
   # Version of the Helm unittest plugin for Helm tests.
-  HELM_UNITTEST_VERSION: "1.1.2"
+  HELM_UNITTEST_VERSION: "1.2.1"
 
   # Version of kube-linter to use for linting rendered resources.
   KUBE_LINTER_VERSION: "0.8.3"
 
   # Version of Vault client to use for the installer.
-  VAULT_VERSION: "1.19.5"
+  VAULT_VERSION: "2.2.1"
 
 "on":
   merge_group: {}
@@ -44,10 +44,10 @@ jobs:
         env:
           GOBIN: /usr/local/bin/
 
-      - uses: astral-sh/setup-uv@v10.2.0
+      - uses: astral-sh/setup-uv@v10.3.2
 
       - name: Run linters
-        run: uv run --only-group=tox tox run -e lint
+        run: uv run --only-group=nox nox -s lint
 
   test:
     runs-on: ubuntu-latest
@@ -58,16 +58,17 @@ jobs:
         python:
           - "3.13"
           - "3.14"
+          - "3.15"
 
     steps:
       - uses: actions/checkout@v7
 
-      - uses: astral-sh/setup-uv@v10.2.0
+      - uses: astral-sh/setup-uv@v10.3.2
         with:
           python-version: ${{ matrix.python }}
 
       - name: Run Python tests
-        run: uv run --only-group=tox tox run -e typing,py,coverage-report
+        run: uv run --only-group=nox nox -s typing test coverage-report
 
   helm:
     runs-on: ubuntu-latest
@@ -80,8 +81,6 @@ jobs:
       - uses: azure/setup-helm@v5
         with:
           version: ${{ env.HELM_VERSION }}
-          # Used to query GitHub for the latest Helm release.
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install helm-unittest plugin
         run: helm plugin install oci://ghcr.io/helm-unittest/helm-unittest/unittest:${{ env.HELM_UNITTEST_VERSION }} --verify=false
@@ -98,10 +97,10 @@ jobs:
           https://github.com/stackrox/kube-linter/releases/download/v${{ env.KUBE_LINTER_VERSION }}/kube-linter-linux.tar.gz
           | sudo tar -xz -C /usr/local/bin kube-linter
 
-      - uses: astral-sh/setup-uv@v10.2.0
+      - uses: astral-sh/setup-uv@v10.3.2
 
       - name: Run Phalanx Helm linter
-        run: uv run --only-group=tox tox run -e phalanx-lint
+        run: uv run --only-group=nox nox -s phalanx-lint
 
   changes:
     runs-on: ubuntu-latest
@@ -147,65 +146,18 @@ jobs:
               - "src/phalanx/**"
               - "uv.lock"
 
-  minikube:
-    name: Test deploy
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-
-    needs: [test, helm, changes]
-    if: >-
-      (github.event_name == 'workflow_dispatch')
-      || (needs.changes.outputs.minikube == 'true'
-          && github.event_name != 'push'
-          && !startsWith(github.head_ref, 'dependabot/'))
-
-    steps:
-      - uses: actions/checkout@v7
-
-      - uses: astral-sh/setup-uv@v10.2.0
-
-      - name: Download installer dependencies
-        run: |
-          curl -sSL -o /tmp/vault.zip https://releases.hashicorp.com/vault/${{ env.VAULT_VERSION }}/vault_${{ env.VAULT_VERSION }}_linux_amd64.zip
-          unzip /tmp/vault.zip
-          sudo mv vault /usr/local/bin/vault
-          sudo chmod +x /usr/local/bin/vault
-          sudo curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/download/v${{ env.ARGO_CD_VERSION }}/argocd-linux-amd64
-          sudo chmod +x /usr/local/bin/argocd
-          sudo apt-get install socat
-
-      - uses: medyagh/setup-minikube@latest
-        with:
-          cpus: max
-          memory: 13500m  # Linux virtual machines have 7GB of RAM
-
-      - name: Test interaction with the cluster
-        run: kubectl get nodes
-
-      - name: Run Phalanx installer
-        run: >
-          uv run --only-group=tox tox run -e install --
-          --force-noninteractive
-          --vault-role-id=${{ secrets.MINIKUBE_VAULT_ROLE_ID }}
-          --vault-secret-id=${{ secrets.MINIKUBE_VAULT_SECRET_ID }}
-          minikube
-
-      - name: Get final list of resources
-        run: |
-          kubectl get all -A
-          kubectl get ingress -A
-
-      - name: Wait for all applications to be healthy
-        timeout-minutes: 15
-        run: |
-          argocd app wait -l "argocd.argoproj.io/instance=science-platform" \
-            --port-forward \
-            --port-forward-namespace argocd \
-            --timeout 300
-
   docs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+
+    # pull-requests: write lets the Docverse upload step post (and update
+    # in place) a comment on ticket-branch pull requests linking to the
+    # edition preview. Without it the action skips the comment with a
+    # warning.
+    permissions:
+      contents: read
+      id-token: write
+      pull-requests: write
 
     needs: changes
     if: >-
@@ -218,7 +170,7 @@ jobs:
           # Ensure the documentation gets the right version.
           fetch-depth: 0
 
-      - uses: astral-sh/setup-uv@v10.2.0
+      - uses: astral-sh/setup-uv@v10.3.2
 
       - name: Install graphviz
         run: |
@@ -226,19 +178,26 @@ jobs:
           sudo apt-get install -y graphviz
 
       - name: Build documentation
-        run: uv run --only-group=tox tox run -e docs
+        run: uv run --only-group=nox nox -s docs
+        env:
+          OOK_TOKEN: ${{ secrets.OOK_TOKEN }}
 
       # Upload docs:
       # - on pushes to main if *any* documentation content might have changed
       # - on workflow dispatches if any documentation content might have changed
       # - on pushes to tickets/ branches if docs/ directory content changed
-      - name: Upload to LSST the Docs
-        uses: lsst-sqre/ltd-upload@v1
+      #
+      # Fork and dependabot pull requests are excluded by the branch-name
+      # checks since they cannot read the DOCVERSE_TOKEN secret.
+      - name: Upload to Docverse
+        uses: lsst-sqre/docverse-upload@v1
         with:
-          project: "phalanx"
-          dir: "docs/_build/html"
-          username: ${{ secrets.LTD_USERNAME }}
-          password: ${{ secrets.LTD_PASSWORD }}
+          org: rubin
+          project: phalanx
+          dir: docs/_build/html
+          token: ${{ secrets.DOCVERSE_TOKEN }}
+          github-token: ${{ github.token }}
+          comment-on-pr: "true"
         if: >-
           (github.event_name == 'push' && github.ref_name == 'main')
           || (github.event_name == 'workflow_dispatch')

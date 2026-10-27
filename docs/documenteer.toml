@@ -72,19 +72,17 @@ ignore = [
     "^https://roundtable.lsst.cloud",
     "^https://rsp.lsst.ac.uk",
     "^https://rsp-test.lsst.ac.uk",
+    "^https://ruka.lsst.codes",
     "^https://summit-lsp.lsst.codes",
     "^https://tacc-spherex.lsst.cloud",
     "^https://tacc-spherex-dev.lsst.cloud",
     "^https://tucson-teststand.lsst.codes",
-    "^https://usdf-cm-dev.slac.stanford.edu",
-    "^https://usdf-cm.slac.stanford.edu",
     "^https://usdfdev-prompt-processing.slac.stanford.edu",
     "^https://usdfprod-prompt-processing.slac.stanford.edu",
     "^https://usdf-rapid-analysis.slac.stanford.edu",
     "^https://usdf-rsp-dev.slac.stanford.edu",
     "^https://usdf-rsp-int.slac.stanford.edu",
     "^https://usdf-rsp.slac.stanford.edu",
-    "^https://usdf-tel-rsp.slac.stanford.edu",
     # Other URLs protected by authentication.
     "^https://id-dev.lsst.cloud/",
     "^https://id-int.lsst.cloud/",
@@ -95,3 +93,12 @@ ignore = [
     # StackOverflow doesn't seem to like link checkers.
     "^https://stackoverflow.com/questions/",
 ]
+
+[sphinx.redirects]
+"admin/add-new-secret.rst" = "admin/secrets/add-new-secret.rst"
+"admin/audit-secrets.rst" = "admin/secrets/audit-secrets.rst"
+"admin/migrating-secrets.rst" = "admin/secrets/migrating-secrets.rst"
+"admin/op-run-phalanx-cli.rst" = "admin/secrets/op-run-phalanx-cli.rst"
+"admin/sync-secrets.rst" = "admin/secrets/sync-secrets.rst"
+"admin/update-a-secret.rst" = "admin/secrets/update-a-secret.rst"
+"admin/update-pull-secret.rst" = "admin/secrets/update-pull-secret.rst"

@@ -21,9 +21,9 @@ prompt-keda:
       preprocessing: |-
         - survey: SURVEY
           pipelines: ['${PROMPT_PROCESSING_DIR}/pipelines/LSSTCam/dev/Preprocessing.yaml']
-    centralRepo: s3://rubin-pp-dev-users/central_repo_2
+    centralRepo: s3://rubin-pp-dev-users/central_repo_2/butler_future.yaml
     repoWait: 5
-    localRepoConfig: s3://rubin-pp-dev-users/central_repo_2/config/compression.yaml
+    localRepoConfig: s3://rubin-pp-dev-users/central_repo_2/config/compression_future.yaml
 
   s3:
     imageBucket: rubin-pp-dev
@@ -38,7 +38,7 @@ prompt-keda:
 
   imageNotifications:
     kafkaClusterAddress: s3-file-notifications-kafka-external-bootstrap.s3-file-notifications:9094
-    topic: prompt-processing-dev-20260925d
+    topic: prompt-processing-dev-20261002
 
   apdb:
     config: s3://rubin-pp-dev-users/apdb_config/cassandra/pp_apdb_lsstcam-dev.yaml
