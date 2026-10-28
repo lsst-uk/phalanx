@@ -12,7 +12,7 @@ vaultUrl: "https://vault-rsp.lsst.ac.uk"
 vaultPathPrefix: "secret/phalanx/ukidacdev"
 
 applications:
-  butler: false
+  butler: true
   datalinker: true
   mobu: false
   nublado: true
