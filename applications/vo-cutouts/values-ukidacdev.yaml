@@ -1,3 +1,5 @@
+# This seems to be very GCS-dependent
+
 config:
   # serviceAccount: "vo-cutouts@science-platform-stable-6994.iam.gserviceaccount.com"
   storageBucketUrl: "https://somerville.ed.ac.uk:6780/vo-cutouts"
