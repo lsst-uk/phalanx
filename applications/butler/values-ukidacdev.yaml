@@ -5,10 +5,11 @@ config:
   # butler-registry-dp02-dev Google Cloud SQL instance in science-platform-dev
   # dp02PostgresUri: postgresql://butler@dp02.rsp-sql-dev.internal:5432/dp02
   # dp1PostgresUri: postgresql://butler@dp1.rsp-sql-dev.internal:5432/dp1
+  dp1PostgresUri: "postgresql://butler_user:{{ butler_user_password }}@10.72.0.54:5432/dp1v2"
   s3EndpointUrl: "https://somerville.ed.ac.uk:6780"
   repositories:
     dp1:
-      config_uri: "file:///data/butler/dp1/butler.yaml"
+      config_uri: "s3://s3-dp1-v2-butler-repo-bucket/dp1v2/butler.yaml"
       authorized_groups: ["*"]
   shareNubladoSecrets: true
   enableSentry: false
