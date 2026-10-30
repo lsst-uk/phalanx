@@ -1,5 +1,5 @@
 config:
-  databaseUrl: postgresql://semaphore@postgres-external-rsp:5432/semaphore
-  enableGithubApp: true
-  githubAppId: "3796384"
-  updateSchema: false
+  databaseUrl: postgresql://semaphore@192.41.122.236:5432/semaphore
+  enableGithubApp: true
+  githubAppId: "3796384"
+  updateSchema: true
