@@ -24,11 +24,12 @@ Rubin Observatory's telemetry service
 | app-metrics.enabled | bool | `false` | Enable the app-metrics subchart with topic, user, and telegraf configurations |
 | backpack.enabled | bool | `false` | Whether to enable the backpack subchart |
 | backup.enabled | bool | `false` | Whether to enable the backups subchart |
+| benchmark.enabled | bool | `false` |  |
 | chronograf.enabled | bool | `true` | Whether to enable Chronograf |
 | chronograf.env | object | See `values.yaml` | Additional environment variables for Chronograf |
 | chronograf.envFromSecret | string | `"sasquatch"` | Name of secret to use. The keys `generic_client_id`, `generic_client_secret`, and `token_secret` should be set. |
 | chronograf.image.repository | string | `"docker.io/library/chronograf"` | Docker image to use for Chronograf |
-| chronograf.image.tag | string | `"1.11.5"` | Docker tag to use for Chronograf |
+| chronograf.image.tag | string | `"1.11.6"` | Docker tag to use for Chronograf |
 | chronograf.ingress.className | string | `"nginx"` | Ingress class to use |
 | chronograf.ingress.enabled | bool | `false` | Whether to enable the Chronograf ingress |
 | chronograf.ingress.hostname | string | None, must be set if the ingress is enabled | Hostname of the ingress |
@@ -235,6 +236,7 @@ Rubin Observatory's telemetry service
 | backup.restore.enabled | bool | `false` | Whether to enable the restore deployment |
 | backup.schedule | string | "0 3 * * *" | Schedule for executing the sasquatch backup script |
 | backup.tolerations | list | `[]` | Tolerations for the backups deployment pod |
+| benchmark.cluster.name | string | `"sasquatch"` | Name of the Strimzi cluster. Synchronize this with the cluster name in the parent Sasquatch chart. |
 | consdb.cluster.name | string | `"sasquatch"` | Name of the Strimzi cluster. Synchronize this with the cluster name in the parent Sasquatch chart. |
 | control-system.cluster.name | string | `"sasquatch"` | Name of the Strimzi cluster. Synchronize this with the cluster name in the parent Sasquatch chart. |
 | control-system.topics | list | `[]` | Create lsst.s3.* related topics for the ts-salkafka user. |
@@ -589,7 +591,7 @@ Rubin Observatory's telemetry service
 | kafdrop.host | string | `"localhost"` | The hostname to report for the RMI registry (used for JMX) |
 | kafdrop.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
 | kafdrop.image.repository | string | `"obsidiandynamics/kafdrop"` | Kafdrop Docker image repository |
-| kafdrop.image.tag | string | `"4.3.0"` | Kafdrop image version |
+| kafdrop.image.tag | string | `"4.3.1"` | Kafdrop image version |
 | kafdrop.ingress.annotations | object | `{}` | Additional ingress annotations |
 | kafdrop.ingress.enabled | bool | `false` | Whether to enable the ingress |
 | kafdrop.ingress.path | string | `"/kafdrop"` | Ingress path |
@@ -620,7 +622,7 @@ Rubin Observatory's telemetry service
 | kafdrop-remote.host | string | `"localhost"` | The hostname to report for the RMI registry (used for JMX) |
 | kafdrop-remote.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
 | kafdrop-remote.image.repository | string | `"obsidiandynamics/kafdrop"` | Kafdrop Docker image repository |
-| kafdrop-remote.image.tag | string | `"4.3.0"` | Kafdrop image version |
+| kafdrop-remote.image.tag | string | `"4.3.1"` | Kafdrop image version |
 | kafdrop-remote.ingress.annotations | object | `{}` | Additional ingress annotations |
 | kafdrop-remote.ingress.enabled | bool | `false` | Whether to enable the ingress |
 | kafdrop-remote.ingress.path | string | `"/kafdrop"` | Ingress path |
@@ -723,7 +725,7 @@ Rubin Observatory's telemetry service
 | rest-proxy.heapOptions | string | `"-Xms8192M -Xmx8192M"` | Kafka REST proxy JVM Heap Option |
 | rest-proxy.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
 | rest-proxy.image.repository | string | `"confluentinc/cp-kafka-rest"` | Kafka REST proxy image repository |
-| rest-proxy.image.tag | string | `"8.3.2"` | Kafka REST proxy image tag |
+| rest-proxy.image.tag | string | `"8.4.0"` | Kafka REST proxy image tag |
 | rest-proxy.ingress.annotations | object | `{"nginx.ingress.kubernetes.io/rewrite-target":"/$2"}` | Annotations that will be added to the Ingress resource |
 | rest-proxy.ingress.anonymous | bool | false | Whether to enable anonymous access to the REST proxy |
 | rest-proxy.ingress.enabled | bool | `false` | Whether to enable the ingress for the REST proxy |
@@ -743,7 +745,7 @@ Rubin Observatory's telemetry service
 | schema-registry.compatibilityLevel | string | `"none"` | Compatibility level for the Schema Registry. Options are: none, backward, backward_transitive, forward, forward_transitive, full, and full_transitive. |
 | schema-registry.groupId | string | The chart fullname | Kafka consumer group ID used by this Schema Registry cluster. Defaults to the chart fullname so that multiple Registry clusters can share Kafka. |
 | schema-registry.image.repository | string | `"confluentinc/cp-schema-registry"` | Docker image for the Confluent Schema Registry. |
-| schema-registry.image.tag | string | `"8.3.1"` | Docker image tag for the Confluent Schema Registry. |
+| schema-registry.image.tag | string | `"8.4.0"` | Docker image tag for the Confluent Schema Registry. |
 | schema-registry.ingress.annotations | object | `{"nginx.ingress.kubernetes.io/rewrite-target":"/$2"}` | Annotations that will be added to the Ingress resource |
 | schema-registry.ingress.anonymous | bool | false | Whether to enable anonymous access to the Schema Registry |
 | schema-registry.ingress.enabled | bool | `false` | Whether to enable an ingress for the Schema Registry |
@@ -756,7 +758,7 @@ Rubin Observatory's telemetry service
 | schema-registry-remote.compatibilityLevel | string | `"none"` | Compatibility level for the Schema Registry. Options are: none, backward, backward_transitive, forward, forward_transitive, full, and full_transitive. |
 | schema-registry-remote.groupId | string | The chart fullname | Kafka consumer group ID used by this Schema Registry cluster. Defaults to the chart fullname so that multiple Registry clusters can share Kafka. |
 | schema-registry-remote.image.repository | string | `"confluentinc/cp-schema-registry"` | Docker image for the Confluent Schema Registry. |
-| schema-registry-remote.image.tag | string | `"8.3.1"` | Docker image tag for the Confluent Schema Registry. |
+| schema-registry-remote.image.tag | string | `"8.4.0"` | Docker image tag for the Confluent Schema Registry. |
 | schema-registry-remote.ingress.annotations | object | `{"nginx.ingress.kubernetes.io/rewrite-target":"/$2"}` | Annotations that will be added to the Ingress resource |
 | schema-registry-remote.ingress.anonymous | bool | false | Whether to enable anonymous access to the Schema Registry |
 | schema-registry-remote.ingress.enabled | bool | `false` | Whether to enable an ingress for the Schema Registry |
@@ -885,6 +887,7 @@ Rubin Observatory's telemetry service
 | telegraf.kafkaConsumers.test.flush_jitter | string | "0s" | Jitter the flush interval by a random amount. This is primarily to avoid large write spikes for users running a large number of telegraf instances. |
 | telegraf.kafkaConsumers.test.max_processing_time | string | "1s" | Maximum processing time for a single message. |
 | telegraf.kafkaConsumers.test.max_undelivered_messages | int | 10000 | Maximum number of undelivered messages. Should be a multiple of metric_batch_size, setting it too low may never flush the broker's messages. |
+| telegraf.kafkaConsumers.test.measurementRenameRegex | list | `[]` | List of regular expression renames applied to measurement names before writing to InfluxDB. Each entry has a `pattern` and a `replacement`. |
 | telegraf.kafkaConsumers.test.metric_batch_size | int | 1000 | Sends metrics to the output in batches of at most metric_batch_size metrics. |
 | telegraf.kafkaConsumers.test.metric_buffer_limit | int | 100000 | Caches metric_buffer_limit metrics for each output, and flushes this buffer on a successful write. This should be a multiple of metric_batch_size and could not be less than 2 times metric_batch_size. |
 | telegraf.kafkaConsumers.test.offset | string | `"oldest"` | Kafka consumer offset. Possible values are `oldest` and `newest`. |
@@ -943,6 +946,7 @@ Rubin Observatory's telemetry service
 | telegraf-local.kafkaConsumers.test.flush_jitter | string | "0s" | Jitter the flush interval by a random amount. This is primarily to avoid large write spikes for users running a large number of telegraf instances. |
 | telegraf-local.kafkaConsumers.test.max_processing_time | string | "1s" | Maximum processing time for a single message. |
 | telegraf-local.kafkaConsumers.test.max_undelivered_messages | int | 10000 | Maximum number of undelivered messages. Should be a multiple of metric_batch_size, setting it too low may never flush the broker's messages. |
+| telegraf-local.kafkaConsumers.test.measurementRenameRegex | list | `[]` | List of regular expression renames applied to measurement names before writing to InfluxDB. Each entry has a `pattern` and a `replacement`. |
 | telegraf-local.kafkaConsumers.test.metric_batch_size | int | 1000 | Sends metrics to the output in batches of at most metric_batch_size metrics. |
 | telegraf-local.kafkaConsumers.test.metric_buffer_limit | int | 100000 | Caches metric_buffer_limit metrics for each output, and flushes this buffer on a successful write. This should be a multiple of metric_batch_size and could not be less than 2 times metric_batch_size. |
 | telegraf-local.kafkaConsumers.test.offset | string | `"oldest"` | Kafka consumer offset. Possible values are `oldest` and `newest`. |
@@ -1001,6 +1005,7 @@ Rubin Observatory's telemetry service
 | telegraf-standby.kafkaConsumers.test.flush_jitter | string | "0s" | Jitter the flush interval by a random amount. This is primarily to avoid large write spikes for users running a large number of telegraf instances. |
 | telegraf-standby.kafkaConsumers.test.max_processing_time | string | "1s" | Maximum processing time for a single message. |
 | telegraf-standby.kafkaConsumers.test.max_undelivered_messages | int | 10000 | Maximum number of undelivered messages. Should be a multiple of metric_batch_size, setting it too low may never flush the broker's messages. |
+| telegraf-standby.kafkaConsumers.test.measurementRenameRegex | list | `[]` | List of regular expression renames applied to measurement names before writing to InfluxDB. Each entry has a `pattern` and a `replacement`. |
 | telegraf-standby.kafkaConsumers.test.metric_batch_size | int | 1000 | Sends metrics to the output in batches of at most metric_batch_size metrics. |
 | telegraf-standby.kafkaConsumers.test.metric_buffer_limit | int | 100000 | Caches metric_buffer_limit metrics for each output, and flushes this buffer on a successful write. This should be a multiple of metric_batch_size and could not be less than 2 times metric_batch_size. |
 | telegraf-standby.kafkaConsumers.test.offset | string | `"oldest"` | Kafka consumer offset. Possible values are `oldest` and `newest`. |
