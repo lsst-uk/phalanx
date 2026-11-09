@@ -21,7 +21,7 @@ applications:
   qserv-kafka: true
   repertoire: true
   sasquatch: true
-  semaphore: true
+  semaphore: false
   sia: true
   squareone: true
   strimzi: true
